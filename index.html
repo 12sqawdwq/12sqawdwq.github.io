@@ -1,1924 +1,481 @@
-﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ziyu's Creative Space</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css">
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Ziyu Zhao (Victor) — an undergraduate's projects and notes on systems, simulation, developer tools, and scientific computing.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Ziyu Zhao — projects, experiments, and notes">
+  <meta property="og:description" content="Undergraduate projects around terminals, CAE/CAD, embedded systems, and reproducible research workflows.">
+  <meta property="og:type" content="website">
+  <title>Ziyu Zhao — projects, experiments, and notes</title>
   <style>
     :root {
-      --base: #1e1e2e;
-      --mantle: #181825;
-      --crust: #11111b;
-      --surface0: #313244;
-      --surface1: #45475a;
-      --surface2: #585b70;
-      --text: #cdd6f4;
-      --subtext: #a6adc8;
-      --muted: #7f849c;
-      --blue: #89b4fa;
-      --mauve: #cba6f7;
-      --green: #a6e3a1;
-      --teal: #94e2d5;
-      --yellow: #f9e2af;
-      --peach: #fab387;
-      --red: #f38ba8;
-      --border: rgba(205, 214, 244, 0.13);
-      --glass: rgba(30, 30, 46, 0.68);
-      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      --bg: #f5f5f1;
+      --surface: #ffffff;
+      --surface-soft: #ecece6;
+      --text: #161a1d;
+      --muted: #586168;
+      --line: #cfd2cc;
+      --accent: #0b615e;
+      --accent-strong: #084845;
+      --code: #e3e9e6;
+      --max: 1180px;
+      --shadow: 0 14px 40px rgba(22, 26, 29, 0.07);
     }
 
-    * {
-      box-sizing: border-box;
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #111514;
+        --surface: #181d1c;
+        --surface-soft: #202624;
+        --text: #edf1ee;
+        --muted: #adb7b2;
+        --line: #343d39;
+        --accent: #74c7bd;
+        --accent-strong: #a2ded6;
+        --code: #252e2b;
+        --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+      }
+    }
+
+    :root[data-theme="light"] {
+      --bg: #f5f5f1;
+      --surface: #ffffff;
+      --surface-soft: #ecece6;
+      --text: #161a1d;
+      --muted: #586168;
+      --line: #cfd2cc;
+      --accent: #0b615e;
+      --accent-strong: #084845;
+      --code: #e3e9e6;
+      --shadow: 0 14px 40px rgba(22, 26, 29, 0.07);
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #111514;
+      --surface: #181d1c;
+      --surface-soft: #202624;
+      --text: #edf1ee;
+      --muted: #adb7b2;
+      --line: #343d39;
+      --accent: #74c7bd;
+      --accent-strong: #a2ded6;
+      --code: #252e2b;
+      --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
       margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      position: relative;
-      font-family: Inter, system-ui, sans-serif;
       color: var(--text);
-      background:
-        linear-gradient(rgba(137, 180, 250, 0.055) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(137, 180, 250, 0.055) 1px, transparent 1px),
-        radial-gradient(circle at 12% 8%, rgba(203, 166, 247, 0.18), transparent 28%),
-        radial-gradient(circle at 88% 28%, rgba(148, 226, 213, 0.12), transparent 30%),
-        var(--base);
-      background-size: 48px 48px, 48px 48px, 100% 100%, 100% 100%, auto;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.03) 0,
-        rgba(255, 255, 255, 0.03) 1px,
-        transparent 1px,
-        transparent 4px
-      );
-      mix-blend-mode: soft-light;
-      opacity: 0.32;
-      z-index: 0;
-    }
-
-    .particle-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.62;
-    }
-
-    .ambient-lights {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-      z-index: 0;
-    }
-
-    .light {
-      position: absolute;
-      width: 34vw;
-      height: 34vw;
-      min-width: 360px;
-      min-height: 360px;
-      border-radius: 50%;
-      filter: blur(84px);
-      opacity: 0.34;
-      transform: translate3d(0, 0, 0);
-      animation: drift 18s ease-in-out infinite alternate;
-    }
-
-    .light.blue {
-      left: 18%;
-      top: 10%;
-      background: rgba(137, 180, 250, 0.34);
-    }
-
-    .light.mauve {
-      right: 8%;
-      top: 28%;
-      background: rgba(203, 166, 247, 0.28);
-      animation-delay: -6s;
-    }
-
-    .light.green {
-      left: 42%;
-      bottom: -18%;
-      background: rgba(166, 227, 161, 0.22);
-      animation-delay: -11s;
-    }
-
-    @keyframes drift {
-      from { transform: translate3d(-16px, -10px, 0) scale(0.96); }
-      to { transform: translate3d(20px, 18px, 0) scale(1.05); }
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .app {
-      position: relative;
-      z-index: 1;
-      height: 100%;
-      padding: 12px 14px 72px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .waybar {
-      height: 38px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(17, 17, 27, 0.78);
-      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 0 12px;
-      font: 600 13px "JetBrains Mono", monospace;
-    }
-
-    .bar-left,
-    .bar-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--subtext);
-      min-width: 0;
-    }
-
-    .bar-right {
-      justify-content: flex-end;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 5px 9px;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      background: rgba(49, 50, 68, 0.55);
-      white-space: nowrap;
-    }
-
-    .workspace {
-      display: flex;
-      gap: 6px;
-    }
-
-    .ws {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: var(--surface2);
-    }
-
-    .ws.active {
-      width: 24px;
-      background: var(--blue);
-    }
-
-    .view {
-      flex: 1;
-      min-height: 0;
-      display: none;
-      animation: enter 260ms ease both;
-    }
-
-    .view.active {
-      display: block;
-    }
-
-    @keyframes enter {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .grid {
-      height: 100%;
-      display: grid;
-      grid-template-columns: 240px minmax(420px, 1fr) minmax(300px, 0.92fr) 260px;
-      grid-template-rows: 0.86fr 0.66fr 0.66fr;
-      grid-template-areas:
-        "profile terminal terminal docs"
-        "profile projects projects research"
-        "profile projects projects status";
-      gap: 12px;
-    }
-
-    .card {
-      position: relative;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.055), transparent 38%),
-        rgba(30, 30, 46, 0.58);
-      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.045);
-      backdrop-filter: blur(22px) saturate(1.15);
-    }
-
-    .card::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 32%);
-      opacity: 0.55;
-    }
-
-    .profile { grid-area: profile; padding: 14px; display: flex; flex-direction: column; }
-    .terminal-card { grid-area: terminal; display: flex; flex-direction: column; }
-    .docs { grid-area: docs; padding: 15px; }
-    .research { grid-area: research; padding: 15px; }
-    .projects { grid-area: projects; padding: 14px 0 14px 14px; }
-    .status { grid-area: status; padding: 15px; }
-
-    .avatar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 18px;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 16px;
-      border: 1px solid var(--border);
-      background: linear-gradient(135deg, var(--surface0), var(--mantle));
-      display: grid;
-      place-items: center;
-      color: var(--green);
-      font: 800 22px "JetBrains Mono", monospace;
-    }
-
-    .name {
-      font-size: 1.06rem;
-      line-height: 1.1;
-      font-weight: 800;
-    }
-
-    .handle {
-      margin-top: 5px;
-      color: var(--blue);
-      font: 600 0.78rem "JetBrains Mono", monospace;
-    }
-
-    .bio {
-      color: var(--subtext);
+      background: var(--bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
       line-height: 1.65;
-      font-size: 0.86rem;
-      margin-bottom: 14px;
-      overflow-wrap: anywhere;
+      text-rendering: optimizeLegibility;
     }
 
-    .info-list {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 18px;
+    a { color: var(--accent-strong); text-underline-offset: 0.2em; }
+    a:hover { text-decoration-thickness: 2px; }
+    img { display: block; max-width: 100%; }
+    code {
+      padding: 0.1rem 0.32rem;
+      border-radius: 4px;
+      background: var(--code);
+      font: 0.9em ui-monospace, SFMono-Regular, Consolas, monospace;
     }
 
-    .info-row {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      color: var(--subtext);
-      font-size: 0.86rem;
+    .skip-link {
+      position: absolute;
+      left: 1rem;
+      top: -5rem;
+      z-index: 10;
+      padding: 0.7rem 1rem;
+      color: var(--surface);
+      background: var(--text);
     }
+    .skip-link:focus { top: 1rem; }
 
-    .info-row i { color: var(--mauve); font-size: 1.05rem; }
-
-    .info-row span {
-      min-width: 0;
-      overflow-wrap: anywhere;
-      line-height: 1.25;
+    .container { width: min(calc(100% - 2.5rem), var(--max)); margin-inline: auto; }
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(12px);
     }
-
-    .stack-icons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: auto;
-    }
-
-    .tech {
-      height: 36px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(49, 50, 68, 0.55);
-      display: grid;
-      place-items: center;
-      font-size: 1.45rem;
-    }
-
-    .socials {
-      display: flex;
-      gap: 8px;
-      margin-top: 16px;
-    }
-
-    .icon-btn {
-      width: 38px;
-      height: 38px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(49, 50, 68, 0.56);
-      color: var(--text);
-      display: grid;
-      place-items: center;
-      font-size: 1.18rem;
-      transition: transform 160ms ease, border-color 160ms ease, color 160ms ease;
-      cursor: pointer;
-    }
-
-    .icon-btn:hover {
-      transform: translateY(-2px);
-      border-color: rgba(137, 180, 250, 0.58);
-      color: var(--blue);
-    }
-
-    .term-top {
-      height: 42px;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      padding: 0 14px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(17, 17, 27, 0.58);
-      font: 600 0.78rem "JetBrains Mono", monospace;
-      color: var(--subtext);
-    }
-
-    .dot { width: 11px; height: 11px; border-radius: 50%; }
-    .dot.red { background: var(--red); }
-    .dot.yellow { background: var(--yellow); }
-    .dot.green { background: var(--green); }
-
-    .term-screen {
-      flex: 1;
-      min-height: 0;
-      padding: 0;
-      background: rgba(17, 17, 27, 0.42);
-      font: 500 0.92rem "JetBrains Mono", monospace;
-      overflow: auto;
-    }
-
-    .assistant-shell {
-      height: 100%;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 286px;
-      gap: 0;
-    }
-
-    .assistant-main {
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 14px 16px;
-    }
-
-    .assistant-manual {
-      border-left: 1px solid var(--border);
-      background: rgba(24, 24, 37, 0.42);
-      padding: 14px;
-      overflow: auto;
-    }
-
-    .manual-title {
-      color: var(--green);
-      font: 800 0.84rem "JetBrains Mono", monospace;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .manual-list {
-      display: grid;
-      gap: 7px;
-      margin-bottom: 14px;
-    }
-
-    .manual-command {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: rgba(49, 50, 68, 0.5);
-      padding: 8px;
-      cursor: pointer;
-      transition: border-color 160ms ease, transform 160ms ease;
-    }
-
-    .manual-command:hover {
-      border-color: rgba(166, 227, 161, 0.58);
-      transform: translateX(2px);
-    }
-
-    .manual-command code {
-      display: block;
-      color: var(--blue);
-      font: 800 0.78rem "JetBrains Mono", monospace;
-      margin-bottom: 3px;
-    }
-
-    .manual-command span {
-      color: var(--subtext);
-      font: 500 0.74rem Inter, sans-serif;
-      line-height: 1.36;
-    }
-
-    .preset-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .preset {
-      border: 1px solid rgba(137, 180, 250, 0.24);
-      border-radius: 999px;
-      background: rgba(137, 180, 250, 0.08);
-      color: var(--text);
-      padding: 6px 9px;
-      font: 700 0.72rem "JetBrains Mono", monospace;
-      cursor: pointer;
-    }
-
-    .preset:hover {
-      border-color: rgba(137, 180, 250, 0.64);
-      color: var(--blue);
-    }
-
-    .boot {
-      min-height: 100%;
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 22px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .arch {
-      color: var(--blue);
-      font-size: 0.74rem;
-      line-height: 1.08;
-      text-shadow: 0 0 24px rgba(137, 180, 250, 0.36);
-      user-select: none;
-    }
-
-    .boot h1 {
-      font: 800 1.25rem "JetBrains Mono", monospace;
-      letter-spacing: 0;
-      color: var(--text);
-      margin-bottom: 12px;
-    }
-
-    .boot p {
-      max-width: 560px;
-      color: var(--subtext);
-      line-height: 1.65;
-      font-size: 0.9rem;
-    }
-
-    .boot-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
-
-    .cmd-btn,
-    .doc-link {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(49, 50, 68, 0.66);
-      color: var(--text);
-      padding: 9px 12px;
-      font: 700 0.82rem "JetBrains Mono", monospace;
-      cursor: pointer;
-      transition: transform 160ms ease, border-color 160ms ease, color 160ms ease;
-    }
-
-    .cmd-btn:hover,
-    .doc-link:hover {
-      transform: translateY(-2px);
-      border-color: rgba(166, 227, 161, 0.62);
-      color: var(--green);
-    }
-
-    .terminal-output {
-      display: flex;
-      height: 100%;
-      min-height: 0;
-      flex-direction: column;
-    }
-
-    .terminal-output.active {
-      display: flex;
-      flex-direction: column;
-    }
-
-    #terminal-log {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-      padding-bottom: 10px;
-      white-space: pre-wrap;
-    }
-
-    .prompt-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-top: 1px solid rgba(205, 214, 244, 0.08);
-      padding-top: 10px;
-    }
-
-    .prompt {
-      color: var(--green);
-      white-space: nowrap;
-    }
-
-    .terminal-input {
-      flex: 1;
-      min-width: 0;
-      border: 0;
-      outline: 0;
-      color: var(--text);
-      background: transparent;
-      font: inherit;
-    }
-
-    .section-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--green);
-      font: 800 0.85rem "JetBrains Mono", monospace;
-      letter-spacing: 0.02em;
-      margin-bottom: 12px;
-    }
-
-    .plain {
-      color: var(--subtext);
-      font-size: 0.9rem;
-      line-height: 1.62;
-    }
-
-    .doc-list,
-    .fact-list {
-      display: grid;
-      gap: 9px;
-      margin-top: 12px;
-    }
-
-    .blog-jump {
-      display: block;
-      border: 1px solid rgba(166, 227, 161, 0.46);
-      border-radius: 14px;
-      padding: 13px 13px 12px;
-      margin-top: 12px;
-      color: var(--text);
-      background:
-        radial-gradient(circle at 12% 18%, rgba(166, 227, 161, 0.24), transparent 42%),
-        linear-gradient(135deg, rgba(137, 180, 250, 0.18), rgba(203, 166, 247, 0.08));
-      box-shadow: 0 0 28px rgba(166, 227, 161, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-      cursor: pointer;
-      text-align: left;
-      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
-    }
-
-    .blog-jump:hover {
-      transform: translateY(-2px);
-      border-color: rgba(166, 227, 161, 0.78);
-      box-shadow: 0 0 34px rgba(166, 227, 161, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    }
-
-    .blog-jump strong {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--green);
-      font: 800 0.88rem "JetBrains Mono", monospace;
-      margin-bottom: 6px;
-    }
-
-    .blog-jump span {
-      display: block;
-      color: var(--subtext);
-      font-size: 0.78rem;
-      line-height: 1.4;
-    }
-
-    .doc-link {
+    .nav {
+      min-height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 10px 11px;
+      gap: 1.5rem;
+    }
+    .brand {
       color: var(--text);
-      font-size: 0.78rem;
+      font-weight: 750;
+      letter-spacing: -0.02em;
+      text-decoration: none;
     }
-
-    .doc-link i { color: var(--blue); }
-    .doc-link span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-    .fact {
-      border-left: 2px solid var(--mauve);
-      padding-left: 11px;
-      color: var(--subtext);
-      font-size: 0.88rem;
-      line-height: 1.5;
-    }
-
-    .fact strong {
+    .nav-links { display: flex; align-items: center; gap: 1.15rem; }
+    .nav-links a { color: var(--muted); font-size: 0.92rem; text-decoration: none; }
+    .nav-links a:hover { color: var(--text); }
+    .theme-toggle {
+      min-width: 42px;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
       color: var(--text);
-      font-weight: 700;
-    }
-
-    .project-strip {
-      height: calc(100% - 28px);
-      display: grid;
-      grid-auto-flow: column;
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-      grid-auto-columns: minmax(250px, 0.34fr);
-      gap: 12px;
-      overflow-x: auto;
-      overflow-y: hidden;
-      padding-right: 16px;
-      scroll-snap-type: x proximity;
-      scrollbar-color: var(--surface2) transparent;
-      scrollbar-width: thin;
-    }
-
-    .project-strip::-webkit-scrollbar,
-    .term-screen::-webkit-scrollbar,
-    .side-list::-webkit-scrollbar,
-    .article-pane::-webkit-scrollbar,
-    .assistant-manual::-webkit-scrollbar,
-    #terminal-log::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    .project-strip::-webkit-scrollbar-track,
-    .term-screen::-webkit-scrollbar-track,
-    .side-list::-webkit-scrollbar-track,
-    .article-pane::-webkit-scrollbar-track,
-    .assistant-manual::-webkit-scrollbar-track,
-    #terminal-log::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .project-strip::-webkit-scrollbar-thumb,
-    .term-screen::-webkit-scrollbar-thumb,
-    .side-list::-webkit-scrollbar-thumb,
-    .article-pane::-webkit-scrollbar-thumb,
-    .assistant-manual::-webkit-scrollbar-thumb,
-    #terminal-log::-webkit-scrollbar-thumb {
-      border-radius: 999px;
-      background: var(--surface2);
-    }
-
-    .project {
-      scroll-snap-align: start;
-      min-width: 0;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: rgba(24, 24, 37, 0.72);
-      padding: 14px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      transition: transform 160ms ease, border-color 160ms ease;
-    }
-
-    .project:hover {
-      transform: translateY(-3px);
-      border-color: rgba(137, 180, 250, 0.54);
-    }
-
-    .project h3 {
-      font: 800 0.98rem "JetBrains Mono", monospace;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .project p {
-      color: var(--subtext);
-      line-height: 1.48;
-      font-size: 0.82rem;
-      flex: 1;
-      overflow: hidden;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .tag {
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 3px 7px;
-      color: var(--teal);
-      background: rgba(148, 226, 213, 0.08);
-      font: 700 0.7rem "JetBrains Mono", monospace;
-    }
-
-    .meter {
-      height: 7px;
-      border-radius: 999px;
-      background: var(--surface0);
-      overflow: hidden;
-      margin-top: 7px;
-    }
-
-    .meter > span {
-      display: block;
-      height: 100%;
-      background: linear-gradient(90deg, var(--green), var(--blue));
-    }
-
-    .blog-layout,
-    .config-layout {
-      height: 100%;
-      display: grid;
-      grid-template-columns: 320px minmax(0, 1fr);
-      gap: 14px;
-    }
-
-    .side-list {
-      padding: 16px;
-      overflow: auto;
-    }
-
-    .article-pane {
-      padding: 18px;
-      overflow: auto;
-    }
-
-    .note-item {
-      display: block;
-      border: 1px solid var(--border);
-      border-radius: 15px;
-      background: rgba(24, 24, 37, 0.72);
-      padding: 14px;
-      margin-bottom: 10px;
+      background: var(--surface);
       cursor: pointer;
-      transition: transform 160ms ease, border-color 160ms ease;
+      font: inherit;
     }
 
-    .note-item:hover,
-    .note-item.active {
-      transform: translateX(3px);
-      border-color: rgba(203, 166, 247, 0.62);
+    .hero { padding: clamp(5rem, 11vw, 9rem) 0 clamp(4rem, 8vw, 7rem); }
+    .eyebrow {
+      margin: 0 0 1.1rem;
+      color: var(--accent);
+      font: 700 0.78rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
     }
-
-    .note-item h3 {
+    h1, h2, h3 { line-height: 1.15; letter-spacing: -0.035em; }
+    h1 { max-width: 930px; margin: 0; font-size: clamp(2.65rem, 7vw, 6.1rem); font-weight: 780; }
+    .hero-lede { max-width: 780px; margin: 2rem 0 0; color: var(--muted); font-size: clamp(1.08rem, 2.2vw, 1.38rem); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2.1rem; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0.55rem 0.9rem;
+      border: 1px solid var(--line);
+      border-radius: 6px;
       color: var(--text);
-      font-size: 0.96rem;
-      margin-bottom: 7px;
+      background: var(--surface);
+      font-weight: 650;
+      text-decoration: none;
+    }
+    .button.primary { border-color: var(--accent); color: var(--surface); background: var(--accent-strong); }
+    :root[data-theme="dark"] .button.primary { color: #0b1513; background: var(--accent); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) .button.primary { color: #0b1513; background: var(--accent); }
     }
 
-    .note-item p {
-      color: var(--subtext);
-      font-size: 0.82rem;
-      line-height: 1.5;
-    }
+    section { padding: clamp(4rem, 8vw, 7rem) 0; border-top: 1px solid var(--line); }
+    .section-head { display: grid; grid-template-columns: minmax(180px, 0.45fr) 1fr; gap: 2rem; margin-bottom: 2.5rem; }
+    .section-head h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); }
+    .section-head p { max-width: 720px; margin: 0; color: var(--muted); font-size: 1.05rem; }
 
-    .article {
-      max-width: 1120px;
-      margin: 0 auto;
-      color: var(--subtext);
-      line-height: 1.72;
-      font-size: 0.95rem;
-    }
-
-    .article h1,
-    .article h2,
-    .article h3 {
-      color: var(--text);
-      line-height: 1.25;
-      margin: 1.15em 0 0.5em;
-    }
-
-    .article h1 { margin-top: 0; font-size: 1.65rem; }
-    .article h2 { font-size: 1.2rem; color: var(--blue); }
-    .article ul { padding-left: 1.2rem; }
-
-    .article p {
-      margin: 0.55rem 0;
-    }
-
-    .article img {
-      display: block;
-      max-width: min(100%, 980px);
-      max-height: 720px;
-      height: auto;
-      margin: 1rem auto;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(17, 17, 27, 0.35);
-      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.24);
-      object-fit: contain;
-    }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      margin: 1rem 0 1.2rem;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(17, 17, 27, 0.36);
-    }
-
-    .article table {
-      width: 100%;
-      min-width: 760px;
-      border-collapse: collapse;
-      font-size: 0.86rem;
-      line-height: 1.45;
-    }
-
-    .article th,
-    .article td {
-      border: 1px solid rgba(205, 214, 244, 0.18);
-      padding: 0.62rem 0.68rem;
-      vertical-align: top;
-    }
-
-    .article th {
-      color: var(--text);
-      background: rgba(137, 180, 250, 0.12);
-      font-weight: 800;
-      text-align: left;
-    }
-
-    .article tr:nth-child(even) td {
-      background: rgba(255, 255, 255, 0.025);
-    }
-
-    .article pre {
-      overflow-x: auto;
-      padding: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: rgba(17, 17, 27, 0.62);
-    }
-
-    .article code {
-      color: var(--green);
-      background: rgba(166, 227, 161, 0.08);
-      padding: 0.1rem 0.3rem;
-      border-radius: 5px;
-      font-family: "JetBrains Mono", monospace;
-    }
-
-    .doc-frame {
-      width: 100%;
-      height: min(72vh, 820px);
-      margin-top: 1rem;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: #f8fafc;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
-    }
-
-    .config-grid {
+    .featured { display: grid; gap: 1.25rem; }
+    .case-study {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .config-card {
-      padding: 18px;
-      min-height: 160px;
-    }
-
-    .config-card h3 {
-      color: var(--blue);
-      font: 800 1rem "JetBrains Mono", monospace;
-      margin-bottom: 12px;
-    }
-
-    .config-card ul {
-      list-style: none;
-      display: grid;
-      gap: 10px;
-      color: var(--subtext);
-      font-size: 0.9rem;
-    }
-
-    .dock {
-      position: fixed;
-      left: 50%;
-      bottom: 10px;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 9px;
-      padding: 9px;
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      background: rgba(17, 17, 27, 0.82);
-      backdrop-filter: blur(18px);
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
       box-shadow: var(--shadow);
-      z-index: 20;
+    }
+    .case-copy { padding: clamp(1.5rem, 4vw, 2.5rem); }
+    .case-index { color: var(--accent); font: 700 0.76rem ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.08em; }
+    .case-copy h3 { margin: 0.6rem 0 0.9rem; font-size: clamp(1.45rem, 3vw, 2.1rem); }
+    .case-copy > p { color: var(--muted); }
+    .case-facts { display: grid; gap: 0.75rem; margin: 1.5rem 0; }
+    .fact { display: grid; grid-template-columns: 92px 1fr; gap: 0.7rem; font-size: 0.93rem; }
+    .fact strong { color: var(--text); }
+    .fact span { color: var(--muted); }
+    .case-links { display: flex; flex-wrap: wrap; gap: 1rem; font-weight: 650; }
+    .case-media { min-height: 300px; margin: 0; border-left: 1px solid var(--line); background: var(--surface-soft); }
+    .case-media img { width: 100%; height: 100%; object-fit: cover; }
+    .case-media.contain { padding: 1rem; }
+    .case-media.contain img { object-fit: contain; }
+
+    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.25rem; }
+    .project-card { display: flex; flex-direction: column; min-height: 100%; padding: 1.35rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+    .project-card h3 { margin: 0 0 0.7rem; font-size: 1.25rem; }
+    .project-card p { margin: 0 0 1rem; color: var(--muted); }
+    .project-card dl { display: grid; gap: 0.7rem; margin: auto 0 1rem; }
+    .project-card dt { font-size: 0.76rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+    .project-card dd { margin: 0; color: var(--muted); font-size: 0.9rem; }
+    .project-card a { font-weight: 650; }
+
+    .focus-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .focus-item { padding: 1.5rem; border-top: 3px solid var(--accent); background: var(--surface); }
+    .focus-item h3 { margin: 0 0 0.55rem; font-size: 1.25rem; }
+    .focus-item p { margin: 0; color: var(--muted); }
+
+    .principles { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+    .principles h2 { margin: 0; font-size: clamp(2rem, 5vw, 3.8rem); }
+    .principle-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
+    .principle { display: grid; grid-template-columns: 42px 1fr; gap: 1rem; padding: 1.35rem 0; border-bottom: 1px solid var(--line); }
+    .principle b { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .principle h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
+    .principle p { margin: 0; color: var(--muted); }
+
+    .notes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .note { padding: 1.25rem; border: 1px solid var(--line); background: transparent; }
+    .note h3 { margin: 0 0 0.55rem; font-size: 1.05rem; }
+    .note p { margin: 0 0 0.8rem; color: var(--muted); font-size: 0.92rem; }
+
+    .about-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 8vw, 7rem); }
+    .about-grid h2 { margin: 0 0 1rem; font-size: clamp(2rem, 5vw, 3.8rem); }
+    .about-grid p { color: var(--muted); font-size: 1.05rem; }
+    .about-aside { padding: 1.4rem; border: 1px solid var(--line); background: var(--surface); }
+    .about-aside h3 { margin: 0 0 0.8rem; font-size: 1.05rem; }
+    .about-aside ul { margin: 0; padding-left: 1.15rem; color: var(--muted); }
+
+    .contact { text-align: center; }
+    .contact h2 { max-width: 850px; margin: 0 auto 1.4rem; font-size: clamp(2.1rem, 6vw, 4.8rem); }
+    .contact p { color: var(--muted); }
+    .contact-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
+
+    footer { padding: 2rem 0 3rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.88rem; }
+    .footer-row { display: flex; justify-content: space-between; gap: 1rem; }
+
+    @media (max-width: 900px) {
+      .nav-links a:not(.always) { display: none; }
+      .section-head, .principles, .about-grid { grid-template-columns: 1fr; }
+      .case-study { grid-template-columns: 1fr; }
+      .case-media { min-height: 250px; border-top: 1px solid var(--line); border-left: 0; }
+      .project-grid, .notes-grid { grid-template-columns: 1fr 1fr; }
     }
 
-    .dock button,
-    .dock a {
-      width: 46px;
-      height: 46px;
-      border: 1px solid transparent;
-      border-radius: 15px;
-      background: transparent;
-      color: var(--subtext);
-      display: grid;
-      place-items: center;
-      font-size: 1.45rem;
-      cursor: pointer;
-      transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+    @media (max-width: 620px) {
+      .container { width: min(calc(100% - 1.5rem), var(--max)); }
+      .hero { padding-top: 4rem; }
+      .project-grid, .focus-grid, .notes-grid { grid-template-columns: 1fr; }
+      .fact { grid-template-columns: 1fr; gap: 0.1rem; }
+      .footer-row { flex-direction: column; }
     }
 
-    .dock button:hover,
-    .dock a:hover,
-    .dock button.active {
-      transform: translateY(-4px);
-      background: rgba(137, 180, 250, 0.14);
-      color: var(--blue);
-    }
-
-    .blue { color: var(--blue); }
-    .green { color: var(--green); }
-    .mauve { color: var(--mauve); }
-    .yellow { color: var(--yellow); }
-    .red { color: var(--red); }
-
-    @media (max-width: 1080px) {
-      body { overflow: auto; }
-      html { overflow: auto; }
-      .app { min-height: 100vh; height: auto; padding-bottom: 92px; }
-      .grid {
-        height: auto;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto;
-        grid-template-areas:
-          "profile docs"
-          "terminal terminal"
-          "projects projects"
-          "research status";
-      }
-      .terminal-card { min-height: 520px; }
-      .project-strip { height: 240px; }
-      .blog-layout,
-      .config-layout { grid-template-columns: 1fr; }
-      .bar-left .pill:nth-child(2) { display: none; }
-      .assistant-shell { grid-template-columns: 1fr; }
-      .assistant-manual { border-left: 0; border-top: 1px solid var(--border); max-height: 210px; }
-    }
-
-    @media (max-width: 720px) {
-      .app { padding: 10px 10px 88px; }
-      .waybar { grid-template-columns: 1fr auto; }
-      .bar-left .pill:nth-child(n+2) { display: none; }
-      .bar-right { display: none; }
-      .grid {
-        grid-template-columns: 1fr;
-        grid-template-areas:
-          "profile"
-          "terminal"
-          "docs"
-          "projects"
-          "research"
-          "status";
-      }
-      .boot { grid-template-columns: 1fr; }
-      .assistant-main { padding: 12px; }
-      .arch { font-size: 0.7rem; }
-      .config-grid { grid-template-columns: 1fr; }
-      .dock button,
-      .dock a { width: 42px; height: 42px; }
-    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
 </head>
 <body>
-  <canvas id="particle-canvas" class="particle-canvas" aria-hidden="true"></canvas>
-  <div class="ambient-lights" aria-hidden="true">
-    <span class="light blue"></span>
-    <span class="light mauve"></span>
-    <span class="light green"></span>
-  </div>
-  <main class="app">
-    <header class="waybar">
-      <div class="bar-left">
-        <span class="pill"><i class="ph-fill ph-terminal-window"></i> ziyu's creative space</span>
-        <span class="pill">embedded / robotics / digital design</span>
-      </div>
-      <div class="workspace" aria-label="workspace">
-        <span class="ws active"></span><span class="ws"></span><span class="ws"></span><span class="ws"></span>
-      </div>
-      <div class="bar-right">
-        <span class="pill" id="bar-date"></span>
-        <span class="pill" id="bar-time"></span>
-      </div>
-    </header>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-    <section id="dashboard" class="view active">
-      <div class="grid">
-        <aside class="card profile">
-          <div class="avatar-wrap">
-            <div class="avatar">ZZ</div>
-            <div>
-              <div class="name">Ziyu Zhao</div>
-              <div class="handle">@12sqawdwq</div>
-            </div>
-          </div>
-          <p class="bio">Xi'an Jiaotong-Liverpool University undergraduate. Work covers embedded systems, robotics, digital design, CAE workflows and biomedical computing.</p>
-          <div class="info-list">
-            <div class="info-row"><i class="ph-fill ph-map-pin"></i><span>Suzhou / Shanghai</span></div>
-            <div class="info-row"><i class="ph-fill ph-graduation-cap"></i><span>BEng Microelectronic Science and Engineering</span></div>
-            <div class="info-row"><i class="ph-fill ph-flask"></i><span>BIBM 2025 paper; SIA President</span></div>
-            <div class="info-row"><i class="ph-fill ph-envelope"></i><span>ziyuzhao2027@163.com</span></div>
-          </div>
-          <div class="stack-icons" aria-label="skills">
-            <div class="tech" title="C"><i class="devicon-c-plain colored"></i></div>
-            <div class="tech" title="C++"><i class="devicon-cplusplus-plain colored"></i></div>
-            <div class="tech" title="Python"><i class="devicon-python-plain colored"></i></div>
-            <div class="tech" title="MATLAB"><i class="devicon-matlab-plain colored"></i></div>
-            <div class="tech" title="Linux"><i class="devicon-linux-plain colored"></i></div>
-            <div class="tech" title="Arduino"><i class="devicon-arduino-plain colored"></i></div>
-            <div class="tech" title="Git"><i class="devicon-git-plain colored"></i></div>
-            <div class="tech" title="Docker"><i class="devicon-docker-plain colored"></i></div>
-          </div>
-          <div class="socials">
-            <a class="icon-btn" href="https://github.com/12sqawdwq" target="_blank" title="GitHub"><i class="ph-fill ph-github-logo"></i></a>
-            <a class="icon-btn" href="mailto:ziyuzhao2027@163.com" title="Email"><i class="ph-fill ph-envelope"></i></a>
-            <a class="icon-btn" href="CV_Ziyu_Zhao_final.pdf" target="_blank" title="English CV"><i class="ph-fill ph-file-pdf"></i></a>
-          </div>
-        </aside>
+  <header class="site-header">
+    <nav class="nav container" aria-label="Primary navigation">
+      <a class="brand" href="#top">Ziyu Zhao / Victor</a>
+      <div class="nav-links">
+        <a href="#work">Projects</a>
+        <a href="#focus">Exploring</a>
+        <a href="#notes">Notes</a>
+        <a href="#about">About</a>
+        <a class="always" href="https://github.com/12sqawdwq">GitHub</a>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
+      </div>
+    </nav>
+  </header>
 
-        <section class="card terminal-card">
-          <div class="term-top">
-            <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
-            <span style="margin-left:auto">zsh - ziyu@arch</span>
-          </div>
-          <div class="term-screen">
-            <div class="assistant-shell">
-              <div class="assistant-main">
-                <div class="preset-grid" id="preset-grid"></div>
-                <div id="terminal-output" class="terminal-output active">
-                  <div id="terminal-log"></div>
-                  <div class="prompt-line">
-                    <span class="prompt">ask@ziyu:<span id="prompt-path">~</span>$</span>
-                    <input id="terminal-input" class="terminal-input" autocomplete="off" spellcheck="false" placeholder="try: about / projects / read sky_monitor_api / why embedded" />
-                  </div>
-                </div>
+  <main id="main">
+    <div class="hero container" id="top">
+      <p class="eyebrow">Undergraduate · systems · simulation · scientific computing</p>
+      <h1>Small tools, research prototypes, and a few systems that became larger than intended.</h1>
+      <p class="hero-lede">I am an undergraduate interested in terminals, engineering software, simulation, embedded systems, and AI-assisted development. I like tools that expose what the machine is actually doing, especially when “it ran” and “it worked” are two different claims.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#work">Browse projects</a>
+        <a class="button" href="CV_Ziyu_Zhao_final.pdf">Download CV</a>
+        <a class="button" href="mailto:102450592zzy@gmail.com">Email</a>
+      </div>
+    </div>
+
+    <section id="work">
+      <div class="container">
+        <div class="section-head">
+          <h2>Selected projects</h2>
+          <p>Some are tools, some are experiments, and a few became much larger than I originally expected. These are the ones that best show the questions I keep returning to.</p>
+        </div>
+
+        <div class="featured">
+          <article class="case-study">
+            <div class="case-copy">
+              <span class="case-index">01 / ACTIVE EXPERIMENT · TERMINALS</span>
+              <h3>code-with-pi</h3>
+              <p>I wanted to see what a coding agent was actually doing in the shell without losing state between tool calls.</p>
+              <div class="case-facts">
+                <div class="fact"><strong>Question</strong><span>Can the agent and user attach to the same long-lived shell instead of observing separate command processes?</span></div>
+                <div class="fact"><strong>Implementation</strong><span>A C11 broker owns PTY on Linux or ConPTY on Windows; Pi talks to it over authenticated local IPC, and tmux provides the Linux split view.</span></div>
+                <div class="fact"><strong>Checked</strong><span>Tests exercise state persistence, cancellation, transcript replay, resize, large output, installation, and Pi RPC execution.</span></div>
               </div>
-              <aside class="assistant-manual">
-                <div class="manual-title"><i class="ph-fill ph-book-open-text"></i> manual</div>
-                <div class="manual-list" id="manual-list"></div>
-                <p class="plain">Commands also accept short questions such as "show embedded projects", "publication", "contact", or "read ANSYS_skill".</p>
-              </aside>
+              <div class="case-links">
+                <a href="https://github.com/12sqawdwq/code-with-pi">Repository</a>
+                <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">Architecture notes</a>
+              </div>
             </div>
-          </div>
-        </section>
+            <figure class="case-media"><img src="assets/code-with-pi-workspace.png" width="1600" height="900" loading="lazy" alt="Pi interface beside the same persistent terminal workspace on Linux"></figure>
+          </article>
 
-        <section class="card docs">
-          <div class="section-label"><i class="ph-fill ph-folder-open"></i> documents</div>
-          <p class="plain">Resume and source files are kept here for direct reading or download.</p>
-          <button class="blog-jump" onclick="showView('blog')">
-            <strong><i class="ph-fill ph-notebook"></i> open docs blog</strong>
-            <span>Read full local Markdown and HTML docs: embedded, CAE, CAD UI, signal visualization, firmware reports, and simulation records.</span>
-          </button>
-          <div class="doc-list">
-            <a class="doc-link" href="CV_Ziyu_Zhao_final.pdf" target="_blank"><span>CV_Ziyu_Zhao_final.pdf</span><i class="ph-fill ph-arrow-square-out"></i></a>
-            <a class="doc-link" href="CV_赵子羽_中文_latex_style.pdf" target="_blank"><span>CV_赵子羽_中文_latex_style.pdf</span><i class="ph-fill ph-arrow-square-out"></i></a>
-            <a class="doc-link" href="CV_Ziyu_Zhao_optimized.md" target="_blank"><span>CV_Ziyu_Zhao_optimized.md</span><i class="ph-fill ph-arrow-square-out"></i></a>
-            <a class="doc-link" href="CV_Ziyu_Zhao_latex.tex" target="_blank"><span>CV_Ziyu_Zhao_latex.tex</span><i class="ph-fill ph-arrow-square-out"></i></a>
-          </div>
-        </section>
+          <article class="case-study">
+            <div class="case-copy">
+              <span class="case-index">02 / RESEARCH CODE · FINITE ELEMENTS</span>
+              <h3>ANSYS Simulation IOP</h3>
+              <p>A finite-element investigation of how eyelid mechanics and measurement geometry affect transpalpebral tonometry.</p>
+              <div class="case-facts">
+                <div class="fact"><strong>Question</strong><span>Which probe-response terms remain useful once thickness, material response, alignment, contact, and mesh resolution are varied?</span></div>
+                <div class="fact"><strong>Implementation</strong><span>Parameterized APDL models, staged sweeps, post-processing scripts, run manifests, and data-provenance records.</span></div>
+                <div class="fact"><strong>Limits</strong><span>The repository keeps failed extrapolation, unresolved identifiability, and mesh sensitivity visible. It is not a production calibration.</span></div>
+              </div>
+              <div class="case-links">
+                <a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP">Repository</a>
+                <a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/docs/DATA_PROVENANCE.md">Data provenance</a>
+              </div>
+            </div>
+            <figure class="case-media contain"><img src="assets/iop-stress-contours.png" width="1800" height="1200" loading="lazy" alt="Finite-element stress contour comparison for the ocular biomechanics model"></figure>
+          </article>
 
-        <section class="card research">
-          <div class="section-label"><i class="ph-fill ph-article"></i> publication</div>
-          <div class="fact-list">
-            <div class="fact"><strong>BIBM 2025:</strong> conference paper accepted to IEEE International Conference on Bioinformatics and Biomedicine.</div>
-            <div class="fact"><strong>Topic:</strong> biomedical data analysis and disease-related computational modeling.</div>
-            <div class="fact"><strong>Service:</strong> President, Science and Innovation Association, XJTLU.</div>
-          </div>
-        </section>
+          <article class="case-study">
+            <div class="case-copy">
+              <span class="case-index">03 / EXPERIMENTAL · CAE VALIDATION</span>
+              <h3>ANSYS_skill</h3>
+              <p>This grew out of a simple problem: a result object can exist in Mechanical even when the result has not actually been solved and evaluated.</p>
+              <div class="case-facts">
+                <div class="fact"><strong>Question</strong><span>What evidence is enough to distinguish geometry-ready, setup-ready, solver-input-generated, and solved/evaluated states?</span></div>
+                <div class="fact"><strong>Implementation</strong><span>Delivery-file checks, explicit state gates, screenshot examples, a small CLI, and a cantilever reference case.</span></div>
+                <div class="fact"><strong>Boundary</strong><span>Filesystem checks can reject incomplete handoffs; they do not replace review of contours, numerical values, assumptions, or benchmark error.</span></div>
+              </div>
+              <div class="case-links">
+                <a href="https://github.com/12sqawdwq/ANSYS_skill">Repository</a>
+                <a href="docs/html/eye-pressure-callgraph/">Related workflow note</a>
+              </div>
+            </div>
+            <figure class="case-media contain"><img src="assets/ansys-evaluated-result.png" width="1900" height="1050" loading="lazy" alt="Evaluated ANSYS Mechanical contour with legend and numerical result fields"></figure>
+          </article>
+        </div>
 
-        <section class="card projects">
-          <div class="section-label"><i class="ph-fill ph-git-branch"></i> repositories</div>
-          <div class="project-strip" id="project-strip"></div>
-        </section>
+        <div class="project-grid" aria-label="Additional selected projects">
+          <article class="project-card">
+            <h3>ForgeSpec Studio</h3>
+            <p>A prototype for turning loose engineering requirements into structured, inspectable CAD source.</p>
+            <dl>
+              <div><dt>Mechanism</dt><dd>Brief → intent → planner → <code>AssemblySpec</code> → CadQuery.</dd></div>
+              <div><dt>Current scope</dt><dd>A small standards catalog, source checks, manifests, and STEP/STL/source outputs.</dd></div>
+            </dl>
+            <a href="https://github.com/12sqawdwq/ForgeSpec-Studio">Repository</a>
+          </article>
 
-        <section class="card status">
-          <div class="section-label"><i class="ph-fill ph-cpu"></i> stack</div>
-          <div class="fact-list">
-            <div class="fact"><strong>Embedded:</strong> STM32, ESP32, OpenMV, Raspberry Pi, Jetson NX.</div>
-            <div class="fact"><strong>Hardware:</strong> Verilog, FPGA labs, PCB debugging, sensor systems.</div>
-            <div class="fact"><strong>Software:</strong> Python, C/C++, MATLAB, ROS2, FastAPI, GitHub Actions.</div>
-          </div>
-        </section>
+          <article class="project-card">
+            <h3>Harmony TaskFlow</h3>
+            <p>A somewhat over-engineered HarmonyOS prototype that started as a task app.</p>
+            <dl>
+              <div><dt>Mechanism</dt><dd>ArkTS UI, multi-ABI Mihomo core, deep links, Worker/D1 OAuth, and AES-GCM token storage.</dd></div>
+              <div><dt>Checked</dt><dd>Emulator captures, repository hygiene checks, Worker smoke tests, and architecture notes.</dd></div>
+            </dl>
+            <a href="https://github.com/12sqawdwq/Harmony_TaskFlow">Repository</a>
+          </article>
+
+          <article class="project-card">
+            <h3>CoughKD</h3>
+            <p>Research code for cough-audio dataset preparation and model-distillation experiments.</p>
+            <dl>
+              <div><dt>Mechanism</dt><dd>Subject-disjoint manifests, PyTorch/CUDA runs, and teacher–student training.</dd></div>
+              <div><dt>Boundary</dt><dd>Measured baselines, planned targets, and clinical claims are kept separate.</dd></div>
+            </dl>
+            <a href="https://github.com/12sqawdwq/CoughKD">Repository</a>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section id="blog" class="view">
-      <div class="blog-layout">
-        <aside class="card side-list">
-          <div class="section-label"><i class="ph-fill ph-notebook"></i> technical notes</div>
-          <div id="note-list"></div>
-        </aside>
-        <article class="card article-pane">
-          <div id="article" class="article"></div>
-        </article>
+    <section id="focus">
+      <div class="container">
+        <div class="section-head">
+          <h2>Things I am exploring</h2>
+          <p>These are current questions rather than a finished specialization. I am still figuring out which layer I want to spend most of my time in.</p>
+        </div>
+        <div class="focus-grid">
+          <article class="focus-item"><h3>Coding agents and terminals</h3><p>How should PTY lifetime, process ownership, shell state, monitoring, and human takeover work when an agent is issuing commands?</p></article>
+          <article class="focus-item"><h3>CAE validation</h3><p>What evidence distinguishes a configured model from a solved and evaluated one, and which checks can be automated without overstating correctness?</p></article>
+          <article class="focus-item"><h3>Source-first CAD</h3><p>How much of an AI-assisted CAD pipeline can remain deterministic, inspectable, and reconstructable before geometry is exported?</p></article>
+          <article class="focus-item"><h3>Scientific computing</h3><p>Parameter sweeps, sensitivity, provenance, manifests, failed assumptions, and the point where a result stops surviving validation.</p></article>
+          <article class="focus-item"><h3>HPC experiments</h3><p>Dataset splits, training environments, topology, model scaling, and keeping enough run context to explain a result later.</p></article>
+          <article class="focus-item"><h3>Embedded boundaries</h3><p>What changes when software meets sensors, timing constraints, native code, communication protocols, and imperfect hardware?</p></article>
+        </div>
       </div>
     </section>
 
-    <section id="config" class="view">
-      <div class="config-layout">
-        <aside class="card side-list">
-          <div class="section-label"><i class="ph-fill ph-sliders-horizontal"></i> creative space</div>
-          <p class="plain">This page keeps factual context only: documents, project categories and commonly used tools.</p>
-          <div class="doc-list">
-            <a class="doc-link" href="CV_Ziyu_Zhao_final.pdf" target="_blank"><span>English CV PDF</span><i class="ph-fill ph-file-pdf"></i></a>
-            <a class="doc-link" href="CV_赵子羽_中文_latex_style.pdf" target="_blank"><span>中文简历 PDF</span><i class="ph-fill ph-file-pdf"></i></a>
-            <a class="doc-link" href="https://github.com/12sqawdwq" target="_blank"><span>GitHub profile</span><i class="ph-fill ph-github-logo"></i></a>
-          </div>
+    <section>
+      <div class="container principles">
+        <h2>Things I try not to hand-wave.</h2>
+        <div class="principle-list">
+          <article class="principle"><b>01</b><div><h3>What state the system actually reached</h3><p>“Created,” “configured,” “solved,” and “evaluated” are different states. I try not to collapse all four into “done.”</p></div></article>
+          <article class="principle"><b>02</b><div><h3>Where an artifact came from</h3><p>Inputs, code revisions, environments, run manifests, and generated outputs are much more useful when they can be traced.</p></div></article>
+          <article class="principle"><b>03</b><div><h3>What a test can actually establish</h3><p>A screenshot can show UI behavior; it cannot establish numerical convergence or physical credibility.</p></div></article>
+          <article class="principle"><b>04</b><div><h3>What failed later</h3><p>Failed extrapolation, sensitivity, and identifiability limits often explain more than a polished success case.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="notes">
+      <div class="container">
+        <div class="section-head">
+          <h2>Notes</h2>
+          <p>A few diagrams and extracted documents from current and older experiments. They are closer to working notes than finished articles.</p>
+        </div>
+        <div class="notes-grid">
+          <article class="note"><h3>Eye-pressure model call graph</h3><p>A navigable view of the simulation and analysis workflow.</p><a href="docs/html/eye-pressure-callgraph/">Open document</a></article>
+          <article class="note"><h3>ForgeSpec application structure</h3><p>An extracted view of the CAD planning and browser application.</p><a href="docs/html/forgespec-studio-app/">Open document</a></article>
+          <article class="note"><h3>Embedded sensing system</h3><p>Firmware and hardware call-graph material from an STM32 pressure-sensing project.</p><a href="docs/html/smart-cushion-stm32-callgraph/">Open document</a></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about">
+      <div class="container about-grid">
+        <div>
+          <h2>About</h2>
+          <p>I am Ziyu Zhao (Victor), a third-year undergraduate heading into my fourth year in Microelectronics Science and Technology at Xi'an Jiaotong-Liverpool University. I tend to turn small annoyances and open questions into repositories; some remain rough experiments, while others accumulate native code, test scripts, diagrams, and more edge cases than expected.</p>
+          <p>I use coding agents often as part of development. What interests me is less who typed each line and more how the problem is framed, which mechanisms are chosen, how failures are debugged, and what evidence survives validation. I have not fully specialized yet; so far I keep returning to engineering software, systems tooling, and scientific computing.</p>
+          <p>Public research includes <a href="https://doi.org/10.1109/BIBM66473.2025.11356522">PAD-Former</a> for PI-RADS classification, finite-element work on transpalpebral tonometry, and medical-audio compression experiments.</p>
+        </div>
+        <aside class="about-aside">
+          <h3>Public material</h3>
+          <ul>
+            <li><a href="CV_Ziyu_Zhao_final.pdf">Curriculum vitae (PDF)</a></li>
+            <li><a href="CV_Ziyu_Zhao_optimized.md">Curriculum vitae (Markdown)</a></li>
+            <li><a href="https://github.com/12sqawdwq?tab=repositories">Public repositories</a></li>
+            <li><a href="https://doi.org/10.1109/BIBM66473.2025.11356522">IEEE BIBM publication</a></li>
+          </ul>
         </aside>
-        <section class="card article-pane">
-          <div class="config-grid">
-            <div class="card config-card">
-              <h3>embedded</h3>
-              <ul>
-                <li>STM32 HAL / CubeMX / OpenOCD</li>
-                <li>LCD1602, sensors, EXTI, timer interrupt</li>
-                <li>OpenMV tracking and camera-based control</li>
-                <li>Linux/headless board workflow</li>
-              </ul>
-            </div>
-            <div class="card config-card">
-              <h3>digital design</h3>
-              <ul>
-                <li>Verilog labs and AXI-Stream exercises</li>
-                <li>Vivado simulation and board validation</li>
-                <li>Basic timing, reset and handshake checks</li>
-              </ul>
-            </div>
-            <div class="card config-card">
-              <h3>computing</h3>
-              <ul>
-                <li>Python data processing and FastAPI services</li>
-                <li>MATLAB visualization and numerical scripts</li>
-                <li>ROS2 nodes and Jetson / Raspberry Pi setup</li>
-              </ul>
-            </div>
-            <div class="card config-card">
-              <h3>engineering docs</h3>
-              <ul>
-                <li>Resume source in Markdown and LaTeX</li>
-                <li>CAE validation notes for ANSYS workflows</li>
-                <li>Repository READMEs and reproducible setup notes</li>
-              </ul>
-            </div>
-          </div>
-        </section>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="container">
+        <p class="eyebrow">Contact</p>
+        <h2>If any of these questions overlap with yours, feel free to get in touch.</h2>
+        <p>Repository issues are best for project-specific discussion. Email works for research and collaboration conversations.</p>
+        <div class="contact-links">
+          <a class="button primary" href="mailto:102450592zzy@gmail.com">102450592zzy@gmail.com</a>
+          <a class="button" href="https://github.com/12sqawdwq">GitHub</a>
+        </div>
       </div>
     </section>
   </main>
 
-  <nav class="dock" aria-label="navigation">
-    <button class="active" data-view="dashboard" title="Dashboard"><i class="ph-fill ph-squares-four"></i></button>
-    <button data-view="blog" title="Notes"><i class="ph-fill ph-notebook"></i></button>
-    <button data-view="config" title="Config"><i class="ph-fill ph-sliders-horizontal"></i></button>
-    <a href="https://github.com/12sqawdwq" target="_blank" title="GitHub"><i class="ph-fill ph-github-logo"></i></a>
-  </nav>
+  <footer>
+    <div class="container footer-row">
+      <span>© <span id="year">2026</span> Ziyu Zhao</span>
+      <span>Personal technical homepage · static HTML · no analytics</span>
+    </div>
+  </footer>
 
-  <script src="docs-data.js"></script>
   <script>
-    const projects = [
-      {
-        name: "MES204_lcd",
-        href: "https://github.com/12sqawdwq/MES204_lcd",
-        desc: "STM32 LCD1602 project with custom CGRAM characters, timer-driven display updates and limited-memory UI logic.",
-        tags: ["STM32", "LCD1602", "C"]
-      },
-      {
-        name: "mes204_plus",
-        href: "https://github.com/12sqawdwq/mes204_plus",
-        desc: "Extended embedded coursework repository for sensor acquisition, interrupt handling and board-level testing.",
-        tags: ["Embedded", "Sensors", "HAL"]
-      },
-      {
-        name: "openmv_green_tracking",
-        href: "https://github.com/12sqawdwq/openmv_green_tracking",
-        desc: "OpenMV color tracking workflow for green target detection, threshold tuning and camera-side control experiments.",
-        tags: ["OpenMV", "Vision", "Robotics"]
-      },
-      {
-        name: "verilog_code_test",
-        href: "https://github.com/12sqawdwq/verilog_code_test",
-        desc: "Digital logic exercises covering simulation, module boundaries and AXI-Stream style handshakes.",
-        tags: ["Verilog", "FPGA", "Vivado"]
-      },
-      {
-        name: "stm32-cli-toolkit",
-        href: "https://github.com/12sqawdwq/stm32-cli-toolkit",
-        desc: "Shell toolkit for STM32 build, flash and reset operations on Linux/headless development machines.",
-        tags: ["CLI", "OpenOCD", "CMake"]
-      },
-      {
-        name: "sky_monitor_api",
-        href: "https://github.com/12sqawdwq/sky_monitor_api",
-        desc: "FastAPI service for star catalog queries, sky-coordinate conversion and chart-ready JSON output.",
-        tags: ["FastAPI", "Skyfield", "SQLite"]
-      },
-      {
-        name: "ForgeSpec-Studio",
-        href: "https://github.com/12sqawdwq/ForgeSpec-Studio",
-        desc: "Engineering specification workspace for CAD-like component descriptions and structured project documentation.",
-        tags: ["CadQuery", "Docs", "Tooling"]
-      },
-      {
-        name: "ANSYS_skill",
-        href: "https://github.com/12sqawdwq/ANSYS_skill",
-        desc: "CAE checklist repository for Mechanical setup, mesh/load/solve review and result evidence capture.",
-        tags: ["ANSYS", "CAE", "FEM"]
-      }
-    ];
-
-    let notes = window.DOCS_DATA || [
-      {
-        title: "MES204_lcd README",
-        meta: "source: GitHub README / STM32 LCD1602",
-        repo: "MES204_lcd",
-        body: `# MES204_lcd README
-
-Source: https://github.com/12sqawdwq/MES204_lcd
-
-## Project abstract
-
-STM32 T-Rex Runner is an embedded real-time system on STM32F446xx. The project ports a simple runner game to LCD1602 and treats the character display as a constrained rendering target.
-
-## Technical points from the project document
-
-- LCD1602 rendering engine with Custom Graphics RAM (CGRAM) resource management.
-- Timer interrupts for deterministic animation timing.
-- EXTI input path for low-latency button response.
-- Non-blocking state machine to keep gameplay responsive under limited display memory.
-
-## Resume mapping
-
-This is the strongest embedded display project for showing constrained UI design, firmware architecture and board-level debugging.`
-      },
-      {
-        title: "mes204_plus README",
-        meta: "source: GitHub README / STM32 LCD2004 graphics",
-        repo: "mes204_plus",
-        body: `# mes204_plus README
-
-Source: https://github.com/12sqawdwq/mes204_plus
-
-## Project scope
-
-MES204 Final Project is an STM32F446xx 20x4 LCD graphics engine. It explores what can be rendered on limited character LCD hardware.
-
-## Features recorded in the repository
-
-- Optimized 8-bit parallel driver for an HD44780-compatible LCD.
-- Graphics primitives used as the basis for higher-level effects.
-- Wireframe 3D renderer for simple object transforms.
-- Mathematical visual effects, particle effects and character-video playback.
-- CMake and ARM GCC workflow for reproducible builds.
-
-## Why it matters
-
-Compared with a normal LCD demo, this project shows rendering abstraction, timing awareness and display-resource tradeoffs.`
-      },
-      {
-        title: "verilog_code_test README",
-        meta: "source: GitHub README / AXI-Stream RTL",
-        repo: "verilog_code_test",
-        body: `# verilog_code_test README
-
-Source: https://github.com/12sqawdwq/verilog_code_test
-
-## Module
-
-AXI Stream header insertion module.
-
-## Parameters and ports
-
-- DATA_WD: data width, default 32 bits.
-- DATA_BYTE_WD: byte width derived from DATA_WD.
-- valid_in / data_in / keep_in / last_in / ready_in for input stream control.
-- valid_out / data_out / keep_out / last_out / ready_out for output stream control.
-- valid_insert / data_insert / keep_insert / byte_insert_cnt for header insertion.
-
-## Internal logic recorded in the document
-
-The README describes valid registers, output data registers, byte counters, insertion state, buffer-valid flags and buffered data. The main review point is whether ready/valid handshaking preserves continuous transfer without bubbles.`
-      },
-      {
-        title: "stm32-cli-toolkit README",
-        meta: "source: GitHub README / Bash-Zsh tooling",
-        repo: "stm32-cli-toolkit",
-        body: `# stm32-cli-toolkit README
-
-Source: https://github.com/12sqawdwq/stm32-cli-toolkit
-
-## Purpose
-
-A lightweight command-line wrapper for STM32 development on Linux, especially remote development, headless servers and keyboard-driven workflows.
-
-## Features recorded in the repository
-
-- Smart flashing: automatically detects .elf or *_new artifacts in build/ and flashes through OpenOCD.
-- Multi-series support: STM32F4, STM32L4 and similar targets through command arguments.
-- USB rescue command for common remote OpenOCD failure cases.
-- Bash and Zsh compatibility.
-- Parallel build through available CPU cores.
-
-## Resume use
-
-This project is useful as a developer-tooling example, but it should be secondary to the embedded display and robotics projects.`
-      },
-      {
-        title: "sky_monitor_api README",
-        meta: "source: GitHub README / FastAPI astronomy service",
-        repo: "sky_monitor_api",
-        body: `# sky_monitor_api README
-
-Source: https://github.com/12sqawdwq/sky_monitor_api
-
-## Service
-
-Sky Monitor API is a FastAPI backend for a location-aware stargazing assistant. It calculates visible bright stars, planets and known deep-sky objects from GPS coordinates and observation time.
-
-## Data path
-
-- HYG Database for star catalog data.
-- Skyfield and JPL DE421 ephemerides for planet positions.
-- SQLite catalog queries for local star data.
-- Messier / NGC metadata for deep-sky objects.
-- /sky/chart returns chart_x, chart_y and chart_radius for direct polar chart rendering.
-
-## Documentation value
-
-This is the clearest software/API project because the README records endpoints, project structure and deployment-facing details.`
-      },
-      {
-        title: "ForgeSpec-Studio README",
-        meta: "source: GitHub README / CAD automation",
-        repo: "ForgeSpec-Studio",
-        body: `# ForgeSpec-Studio README
-
-Source: https://github.com/12sqawdwq/ForgeSpec-Studio
-
-## Project
-
-ForgeSpec Studio turns natural-language engineering requirements into source-first parametric CAD packages, renders a browser preview and exports STEP, STL, Python and metadata files from a Python CAD backend.
-
-## Features recorded in the README
-
-- FastAPI backend with browser UI.
-- CadQuery STEP/STL export with runnable Python source snapshots.
-- Brief -> intent -> planner -> deterministic AssemblySpec pipeline.
-- Standards-backed part expansion for common fasteners.
-- Provider support plus deterministic fallback templates.
-- Job-scoped outputs with manifest and assurance report artifacts.
-
-## Resume positioning
-
-Use this as an AI-assisted engineering-tool project, but describe it through pipeline, export artifacts and validation rather than generic AI wording.`
-      },
-      {
-        title: "ANSYS_skill README",
-        meta: "source: GitHub README / CAE validation",
-        repo: "ANSYS_skill",
-        body: `# ANSYS_skill README
-
-Source: https://github.com/12sqawdwq/ANSYS_skill
-
-## Current focus
-
-The repository is evolving from an Ansys workflow skill into a simulation validation platform for a real engineering handoff path:
-
-Discovery / SpaceClaim geometry -> Workbench project -> Mechanical mesh/load/solve/evaluate/save
-
-## Acceptance criterion
-
-The repository states a strict criterion: the object existing is not enough. Mechanical must show contour, legend and non-empty Min/Max values.
-
-## Current layers
-
-- ansys-mechanical-mvp for Discovery-to-Mechanical minimum viable path.
-- cae-validation-platform for FEM/CFD review and platform refactor guidance.
-- src/ansys_skill_platform as a Python package skeleton for validation and CLI automation.`
-      },
-      {
-        title: "Resume source map",
-        meta: "source: local Markdown and LaTeX CV files",
-        repo: null,
-        body: `# Resume source map
-
-Source files in this folder:
-
-- CV_Ziyu_Zhao_optimized.md
-- CV_Ziyu_Zhao_latex.tex
-- CV_Ziyu_Zhao_final.pdf
-- Chinese CV PDF and Markdown source
-
-## Sections reflected on this site
-
-- Internship experience: InnoX Academy, ByteDance Volcano Engine Data Department, DeepBlue Technology, Sanyi 3D Technology.
-- Publication: BIBM 2025 conference paper, CCF-B.
-- Projects: engineering tools, embedded systems, digital design, computer systems and biomedical systems.
-- Skills: C/C++, Python, MATLAB, Verilog, STM32, ESP32, ROS2, FastAPI, ANSYS, SolidWorks, CadQuery, OpenOCD and CMake.`
-      }
-    ];
-
-    const manualCommands = [
-      { cmd: "about", desc: "short profile and current focus" },
-      { cmd: "experience", desc: "internship timeline" },
-      { cmd: "publication", desc: "BIBM paper citation" },
-      { cmd: "projects", desc: "ranked project overview" },
-      { cmd: "embedded", desc: "embedded / robotics projects" },
-      { cmd: "chip", desc: "digital design and RTL work" },
-      { cmd: "docs", desc: "resume and source document links" },
-      { cmd: "read mes204-lcd", desc: "open full embedded README" },
-      { cmd: "read cough-project", desc: "open cough audio research doc" },
-      { cmd: "read 270-day-learning-plan", desc: "open self-learning roadmap" },
-      { cmd: "read mes201-signal-visualization", desc: "open interactive HTML note" },
-      { cmd: "repo MES204_lcd", desc: "open GitHub repository" },
-      { cmd: "contact", desc: "email and GitHub" },
-      { cmd: "clear", desc: "clear the assistant panel" }
-    ];
-
-    const presetQuestions = [
-      "about",
-      "projects",
-      "embedded",
-      "publication",
-      "read mes204-lcd",
-      "read mes201-signal-visualization",
-      "read forgespec-studio-app",
-      "docs"
-    ];
-
-    const fileSystem = {
-      "/home/ziyu": ["projects", "documents", "notes", "README.md", "publication.txt"],
-      "/home/ziyu/projects": projects.map(project => project.name),
-      "/home/ziyu/documents": [
-        "CV_Ziyu_Zhao_final.pdf",
-        "CV_Ziyu_Zhao_optimized.md",
-        "CV_Ziyu_Zhao_latex.tex"
-      ],
-      "/home/ziyu/notes": notes.map(note => note.title.replaceAll(" ", "_") + ".md")
-    };
-
-    let currentPath = "/home/ziyu";
-    const log = document.getElementById("terminal-log");
-    const input = document.getElementById("terminal-input");
-    const promptPath = document.getElementById("prompt-path");
-
-    function updateClock() {
-      const now = new Date();
-      document.getElementById("bar-date").textContent = now.toLocaleDateString("zh-CN", { month: "2-digit", day: "2-digit", weekday: "short" });
-      document.getElementById("bar-time").textContent = now.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
-    }
-
-    function initParticles() {
-      const canvas = document.getElementById("particle-canvas");
-      const ctx = canvas.getContext("2d", { alpha: true });
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      let width = 0;
-      let height = 0;
-      let particles = [];
-      let frame = 0;
-      let raf = 0;
-
-      function resize() {
-        const ratio = Math.min(window.devicePixelRatio || 1, 1.75);
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = Math.floor(width * ratio);
-        canvas.height = Math.floor(height * ratio);
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-
-        const count = reduceMotion ? 28 : Math.min(92, Math.max(46, Math.floor((width * height) / 26000)));
-        particles = Array.from({ length: count }, () => ({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          vx: (Math.random() - 0.5) * 0.18,
-          vy: (Math.random() - 0.5) * 0.18,
-          r: Math.random() * 1.4 + 0.45,
-          hue: Math.random() > 0.58 ? "166, 227, 161" : "137, 180, 250"
-        }));
-      }
-
-      function draw() {
-        frame += 1;
-        ctx.clearRect(0, 0, width, height);
-
-        for (const p of particles) {
-          if (!reduceMotion) {
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.x < -10) p.x = width + 10;
-            if (p.x > width + 10) p.x = -10;
-            if (p.y < -10) p.y = height + 10;
-            if (p.y > height + 10) p.y = -10;
-          }
-
-          ctx.beginPath();
-          ctx.fillStyle = `rgba(${p.hue}, 0.55)`;
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-
-        if (frame % 2 === 0) {
-          ctx.lineWidth = 0.6;
-          for (let i = 0; i < particles.length; i += 1) {
-            for (let j = i + 1; j < particles.length; j += 1) {
-              const a = particles[i];
-              const b = particles[j];
-              const dx = a.x - b.x;
-              const dy = a.y - b.y;
-              const dist = Math.sqrt(dx * dx + dy * dy);
-              if (dist < 120) {
-                ctx.strokeStyle = `rgba(137, 180, 250, ${0.075 * (1 - dist / 120)})`;
-                ctx.beginPath();
-                ctx.moveTo(a.x, a.y);
-                ctx.lineTo(b.x, b.y);
-                ctx.stroke();
-              }
-            }
-          }
-        }
-
-        raf = requestAnimationFrame(draw);
-      }
-
-      resize();
-      draw();
-      window.addEventListener("resize", resize, { passive: true });
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) cancelAnimationFrame(raf);
-        else draw();
-      });
-    }
-
-    function renderProjects() {
-      const strip = document.getElementById("project-strip");
-      strip.innerHTML = projects.map(project => `
-        <a class="project" href="${project.href}" target="_blank">
-          <h3>${project.name}</h3>
-          <p>${project.desc}</p>
-          <div class="tags">${project.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
-        </a>
-      `).join("");
-    }
-
-    function renderNotes(activeIndex = 0) {
-      const list = document.getElementById("note-list");
-      list.innerHTML = notes.map((note, index) => `
-        <button class="note-item ${index === activeIndex ? "active" : ""}" onclick="renderNotes(${index})">
-          <h3>${note.title}</h3>
-          <p>${note.meta}</p>
-        </button>
-      `).join("");
-      const article = document.getElementById("article");
-      const activeNote = notes[activeIndex];
-      article.innerHTML = marked.parse(activeNote.body);
-      enhanceArticle(article);
-      resolveArticleAssets(article, activeNote.url);
-    }
-
-    function enhanceArticle(article) {
-      article.querySelectorAll("table").forEach(table => {
-        if (table.parentElement?.classList.contains("table-wrap")) return;
-        const wrap = document.createElement("div");
-        wrap.className = "table-wrap";
-        table.parentNode.insertBefore(wrap, table);
-        wrap.appendChild(table);
-      });
-
-      article.querySelectorAll("a").forEach(link => {
-        if (link.hostname && link.hostname !== location.hostname) {
-          link.target = "_blank";
-          link.rel = "noopener noreferrer";
-        }
-      });
-    }
-
-    function resolveArticleAssets(article, sourceUrl) {
-      if (!sourceUrl) return;
-      const base = sourceUrl.split("/").slice(0, -1).join("/");
-      article.querySelectorAll("img").forEach(img => {
-        const src = img.getAttribute("src") || "";
-        if (src && !src.startsWith("http") && !src.startsWith("data:") && !src.startsWith("/")) {
-          img.src = `${base}/${src}`;
-        }
-      });
-    }
-
-    function renderAssistantControls() {
-      const manual = document.getElementById("manual-list");
-      manual.innerHTML = manualCommands.map(item => `
-        <button class="manual-command" onclick="askCommand('${item.cmd.replaceAll("'", "\\'")}')">
-          <code>${item.cmd}</code>
-          <span>${item.desc}</span>
-        </button>
-      `).join("");
-
-      const presets = document.getElementById("preset-grid");
-      presets.innerHTML = presetQuestions.map(command => `
-        <button class="preset" onclick="askCommand('${command.replaceAll("'", "\\'")}')">${command}</button>
-      `).join("");
-    }
-
-    function showView(id) {
-      document.querySelectorAll(".view").forEach(view => view.classList.toggle("active", view.id === id));
-      document.querySelectorAll(".dock button[data-view]").forEach(button => button.classList.toggle("active", button.dataset.view === id));
-    }
-
-    function printLine(html = "") {
-      const row = document.createElement("div");
-      row.innerHTML = html;
-      log.appendChild(row);
-      log.scrollTop = log.scrollHeight;
-    }
-
-    function printMarkdown(markdown, sourceUrl = "") {
-      const row = document.createElement("div");
-      row.className = "article";
-      row.innerHTML = marked.parse(markdown);
-      enhanceArticle(row);
-      resolveArticleAssets(row, sourceUrl);
-      log.appendChild(row);
-      log.scrollTop = log.scrollHeight;
-    }
-
-    function askCommand(command) {
-      input.value = command;
-      runCommand(command);
-      input.value = "";
-      input.focus();
-    }
-
-    function bootTerminal() {
-      showView("dashboard");
-      input.focus();
-    }
-
-    function normalizePath(target) {
-      if (!target || target === "~") return "/home/ziyu";
-      if (target === "..") {
-        if (currentPath === "/home/ziyu") return currentPath;
-        return currentPath.split("/").slice(0, -1).join("/") || "/";
-      }
-      if (target.startsWith("/")) return target;
-      return `${currentPath}/${target}`.replaceAll("//", "/");
-    }
-
-    function listPath(path) {
-      if (Array.isArray(fileSystem[path])) return fileSystem[path].join("  ");
-      return null;
-    }
-
-    function matchProject(query) {
-      const lowered = query.toLowerCase();
-      return projects.find(project => lowered.includes(project.name.toLowerCase())) ||
-        projects.find(project => project.tags.some(tag => lowered.includes(tag.toLowerCase())));
-    }
-
-    function matchNote(query) {
-      const lowered = query.toLowerCase();
-      return notes.find(note => note.slug && lowered.includes(note.slug.toLowerCase())) ||
-        notes.find(note => note.repo && lowered.includes(note.repo.toLowerCase())) ||
-        notes.find(note => lowered.includes(note.title.toLowerCase().replace(" readme", "")));
-    }
-
-    function responseForQuery(query) {
-      const q = query.toLowerCase();
-
-      if (["help", "manual", "man"].includes(q)) {
-        return manualCommands.map(item => `<span class="green">${item.cmd}</span> :: ${item.desc}`).join("<br>");
-      }
-
-      if (q === "about" || q.includes("who") || q.includes("profile") || q.includes("介绍")) {
-        return `Ziyu Zhao is a Microelectronics undergraduate at XJTLU. Current work spans embedded systems, robotics, digital design, CAE workflows and biomedical computing. Strongest public evidence: BIBM 2025 paper, STM32 LCD projects, AXI-Stream RTL notes, Sky Monitor API and CAE validation documentation.`;
-      }
-
-      if (q.includes("experience") || q.includes("intern") || q.includes("实习")) {
-        return `Internship timeline:<br><br><span class="green">InnoX Academy</span> - embedded / algorithm development intern, medical intraocular-pressure measurement device and ANSYS-based biomechanical analysis.<br><span class="green">ByteDance Volcano Engine Data Department</span> - technical operations intern, community Q&A, benchmark comparison and LLM agent product analysis.<br><span class="green">DeepBlue Technology</span> - embedded software engineer, wheeled biped robot gait control, Raspberry Pi 5 planning, SLAM and CAN communication.<br><span class="green">Sanyi 3D Technology</span> - embedded full-stack engineer, FDM printer assembly, SolidWorks motion system and Marlin firmware.`;
-      }
-
-      if (q.includes("publication") || q.includes("paper") || q.includes("bibm") || q.includes("论文")) {
-        return `Z. Zhao, H. S. Gan, Y. Cao, Z. A. Ocal, and I. O. Koska, "PAD-Former: A Two-Stage PI-RADS Classification Framework with Multi-Modal Anomaly Diffusion and Cross-Attention," in <em>Proc. 2025 IEEE International Conference on Bioinformatics and Biomedicine (BIBM)</em>, 2025, pp. 6162-6169. DOI: <a class="blue" target="_blank" href="https://doi.org/10.1109/BIBM66473.2025.11356522">10.1109/BIBM66473.2025.11356522</a>. BIBM conference paper; CCF-B.`;
-      }
-
-      if (q.includes("project") || q.includes("项目")) {
-        return projects.map((project, index) => `${index + 1}. <a class="blue" target="_blank" href="${project.href}">${project.name}</a> - ${project.desc}`).join("<br>");
-      }
-
-      if (q.includes("embedded") || q.includes("stm32") || q.includes("robot") || q.includes("嵌入")) {
-        return [`MES204_lcd`, `mes204_plus`, `openmv_green_tracking`, `stm32-cli-toolkit`]
-          .map(name => projects.find(project => project.name === name))
-          .filter(Boolean)
-          .map(project => `<a class="blue" target="_blank" href="${project.href}">${project.name}</a> - ${project.desc}`)
-          .join("<br>");
-      }
-
-      if (q.includes("chip") || q.includes("rtl") || q.includes("verilog") || q.includes("fpga") || q.includes("芯片")) {
-        const project = projects.find(item => item.name === "verilog_code_test");
-        return `<a class="blue" target="_blank" href="${project.href}">${project.name}</a> - ${project.desc}<br><br>Documented review points: DATA_WD parameters, valid/ready handshaking, keep/last signals, insertion state and buffering logic.`;
-      }
-
-      if (q === "docs" || q.includes("document") || q.includes("resume") || q.includes("简历")) {
-        return `<a class="blue" target="_blank" href="CV_Ziyu_Zhao_final.pdf">English CV PDF</a><br><a class="blue" target="_blank" href="CV_Ziyu_Zhao_optimized.md">English CV Markdown</a><br><a class="blue" target="_blank" href="CV_Ziyu_Zhao_latex.tex">LaTeX source</a><br><br>The docs blog now loads ${notes.length} local Markdown documents from project, simulation, research, and self-learning folders. Try <span class="green">read mes204-lcd</span>, <span class="green">read cough-project</span>, or <span class="green">read 270-day-learning-plan</span>.`;
-      }
-
-      if (q.includes("skill") || q.includes("stack") || q.includes("能力")) {
-        return `Programming and HDL: C/C++, Python, MATLAB, Verilog, JavaScript, HTML/CSS.<br>Embedded and robotics: STM32, ESP32, Raspberry Pi, OpenMV, ROS2, CAN, I2C, SPI, Bluetooth, PID control, sensor fusion, SLAM.<br>Engineering tools: ANSYS, SolidWorks, CadQuery, GNU Toolchain, OpenOCD, CMake, Git.`;
-      }
-
-      if (q.includes("contact") || q.includes("email") || q.includes("github") || q.includes("联系")) {
-        return `Email: <a class="blue" href="mailto:ziyuzhao2027@163.com">ziyuzhao2027@163.com</a><br>GitHub: <a class="blue" target="_blank" href="https://github.com/12sqawdwq">github.com/12sqawdwq</a>`;
-      }
-
-      if (q.startsWith("read ") || q.includes("readme")) {
-        const note = matchNote(q.replace("read ", ""));
-        if (note) return { markdown: note.body, sourceUrl: note.url };
-      }
-
-      const note = matchNote(q);
-      if (note) return { markdown: note.body, sourceUrl: note.url };
-
-      const project = matchProject(q);
-      if (project) return `<a class="blue" target="_blank" href="${project.href}">${project.name}</a><br>${project.desc}<br><br>Try <span class="green">read ${project.name}</span> if a README-derived document is available.`;
-
-      return `I can answer from the local CV source and linked repository READMEs. Try <span class="green">about</span>, <span class="green">projects</span>, <span class="green">embedded</span>, <span class="green">publication</span>, <span class="green">docs</span>, or <span class="green">read sky_monitor_api</span>.`;
-    }
-
-    function runCommand(raw, silent = false) {
-      const command = raw.trim();
-      if (!command) return;
-      if (!silent) printLine(`<span class="prompt">ask@ziyu:${promptPath.textContent}$</span> ${command}`);
-
-      if (command === "clear") {
-        log.innerHTML = "";
-        return;
-      }
-
-      const [cmd, ...args] = command.split(/\s+/);
-      const rest = args.join(" ");
-
-      if (cmd === "ls") {
-        const target = normalizePath(rest);
-        const content = listPath(rest ? target : currentPath);
-        printLine(content ? content : `<span class="red">not a directory: ${rest || currentPath}</span>`);
-        return;
-      }
-
-      if (cmd === "pwd") {
-        printLine(currentPath);
-        return;
-      }
-
-      if (cmd === "cd") {
-        const target = normalizePath(rest);
-        if (Array.isArray(fileSystem[target])) {
-          currentPath = target;
-          promptPath.textContent = currentPath === "/home/ziyu" ? "~" : currentPath.replace("/home/ziyu", "~");
-        } else {
-          printLine(`<span class="red">no such directory: ${rest}</span>`);
-        }
-        return;
-      }
-
-      if (cmd === "cat") {
-        catFile(rest);
-        return;
-      }
-
-      if (cmd === "repo") {
-        openRepo(rest);
-        return;
-      }
-
-      const result = responseForQuery(command);
-      if (typeof result === "object" && result.markdown) printMarkdown(result.markdown, result.sourceUrl);
-      else printLine(result);
-    }
-
-    function catFile(name) {
-      if (!name) {
-        printLine(`<span class="red">usage:</span> cat [file]`);
-        return;
-      }
-      if (name === "README.md") {
-        printLine(`# Ziyu Zhao`);
-        printLine(`Embedded systems, robotics, digital design and biomedical computing.`);
-        printLine(`Documents: CV_Ziyu_Zhao_final.pdf, CV_Ziyu_Zhao_optimized.md, CV_Ziyu_Zhao_latex.tex`);
-        return;
-      }
-      if (name === "publication.txt") {
-        printLine(`BIBM 2025 conference paper, IEEE International Conference on Bioinformatics and Biomedicine.`);
-        return;
-      }
-      const project = projects.find(item => item.name === name);
-      if (project) {
-        printLine(`${project.name}`);
-        printLine(project.desc);
-        printLine(project.href);
-        return;
-      }
-      const note = notes.find(item => `${item.title.replaceAll(" ", "_")}.md` === name);
-      if (note) {
-        printMarkdown(note.body, note.url);
-        return;
-      }
-      printLine(`<span class="red">file not found:</span> ${name}`);
-    }
-
-    function openRepo(name) {
-      if (!name) {
-        printLine(`<span class="red">usage:</span> repo [name]`);
-        return;
-      }
-      const project = projects.find(item => item.name.toLowerCase() === name.toLowerCase());
-      if (!project) {
-        printLine(`<span class="red">repo not found:</span> ${name}`);
-        return;
-      }
-      window.open(project.href, "_blank");
-      printLine(`opened ${project.href}`);
-    }input.addEventListener("keydown", event => {
-      if (event.key === "Enter") {
-        runCommand(input.value);
-        input.value = "";
-      }
+    const root = document.documentElement;
+    const button = document.getElementById('theme-toggle');
+    const saved = localStorage.getItem('portfolio-theme');
+    if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
+    button.addEventListener('click', () => {
+      const current = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const next = current === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      localStorage.setItem('portfolio-theme', next);
     });
-
-    document.querySelectorAll(".dock button[data-view]").forEach(button => {
-      button.addEventListener("click", () => showView(button.dataset.view));
-    });
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "`") bootTerminal();
-    });
-
-    updateClock();
-    setInterval(updateClock, 30000);
-    initParticles();
-    renderProjects();
-    renderAssistantControls();
-    renderNotes();
-    printLine(`<span class="blue">Ziyu's Creative Space assistant</span> is ready. Use the presets or type <span class="green">help</span>.`);
-    runCommand("about", true);
-    if (location.hash === "#blog") showView("blog");
+    document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
