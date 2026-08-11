@@ -3,479 +3,310 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ziyu Zhao (Victor) — an undergraduate's projects and notes on systems, simulation, developer tools, and scientific computing.">
+  <meta name="description" content="Ziyu Zhao's project index and technical notes on systems, simulation, CAD, embedded software, and scientific computing.">
   <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Ziyu Zhao — projects, experiments, and notes">
-  <meta property="og:description" content="Undergraduate projects around terminals, CAE/CAD, embedded systems, and reproducible research workflows.">
+  <meta property="og:title" content="Ziyu Zhao — projects and technical notes">
+  <meta property="og:description" content="A text-first index of engineering projects, experiments, research code, and working notes.">
   <meta property="og:type" content="website">
-  <title>Ziyu Zhao — projects, experiments, and notes</title>
+  <title>Ziyu Zhao — projects and technical notes</title>
   <style>
     :root {
-      --bg: #f5f5f1;
-      --surface: #ffffff;
-      --surface-soft: #ecece6;
-      --text: #161a1d;
-      --muted: #586168;
-      --line: #cfd2cc;
-      --accent: #0b615e;
-      --accent-strong: #084845;
-      --code: #e3e9e6;
-      --max: 1180px;
-      --shadow: 0 14px 40px rgba(22, 26, 29, 0.07);
+      --page: #f8f8f5;
+      --paper: #ffffff;
+      --text: #202124;
+      --muted: #5f6368;
+      --line: #c8c9c4;
+      --link: #174ea6;
+      --visited: #5f3b82;
+      --header: #30343b;
+      --header-text: #ffffff;
+      --mark: #e9ecef;
+      --width: 980px;
     }
 
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #111514;
-        --surface: #181d1c;
-        --surface-soft: #202624;
-        --text: #edf1ee;
-        --muted: #adb7b2;
-        --line: #343d39;
-        --accent: #74c7bd;
-        --accent-strong: #a2ded6;
-        --code: #252e2b;
-        --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+        --page: #151718;
+        --paper: #1d2022;
+        --text: #e8eaed;
+        --muted: #bdc1c6;
+        --line: #505356;
+        --link: #8ab4f8;
+        --visited: #c5a7e8;
+        --header: #272a2e;
+        --header-text: #f1f3f4;
+        --mark: #292d30;
       }
     }
 
-    :root[data-theme="light"] {
-      --bg: #f5f5f1;
-      --surface: #ffffff;
-      --surface-soft: #ecece6;
-      --text: #161a1d;
-      --muted: #586168;
-      --line: #cfd2cc;
-      --accent: #0b615e;
-      --accent-strong: #084845;
-      --code: #e3e9e6;
-      --shadow: 0 14px 40px rgba(22, 26, 29, 0.07);
-    }
-
-    :root[data-theme="dark"] {
-      --bg: #111514;
-      --surface: #181d1c;
-      --surface-soft: #202624;
-      --text: #edf1ee;
-      --muted: #adb7b2;
-      --line: #343d39;
-      --accent: #74c7bd;
-      --accent-strong: #a2ded6;
-      --code: #252e2b;
-      --shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
+    * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
       margin: 0;
       color: var(--text);
-      background: var(--bg);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size: 16px;
-      line-height: 1.65;
-      text-rendering: optimizeLegibility;
+      background: var(--page);
+      font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
-    a { color: var(--accent-strong); text-underline-offset: 0.2em; }
+    a { color: var(--link); text-underline-offset: 0.16em; }
+    a:visited { color: var(--visited); }
     a:hover { text-decoration-thickness: 2px; }
-    img { display: block; max-width: 100%; }
-    code {
-      padding: 0.1rem 0.32rem;
-      border-radius: 4px;
-      background: var(--code);
-      font: 0.9em ui-monospace, SFMono-Regular, Consolas, monospace;
-    }
+    code, .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
+    code { padding: 0.08rem 0.25rem; background: var(--mark); }
 
     .skip-link {
       position: absolute;
-      left: 1rem;
-      top: -5rem;
-      z-index: 10;
-      padding: 0.7rem 1rem;
-      color: var(--surface);
-      background: var(--text);
-    }
-    .skip-link:focus { top: 1rem; }
-
-    .container { width: min(calc(100% - 2.5rem), var(--max)); margin-inline: auto; }
-    .site-header {
-      position: sticky;
+      left: -9999px;
       top: 0;
-      z-index: 5;
-      border-bottom: 1px solid var(--line);
-      background: color-mix(in srgb, var(--bg) 92%, transparent);
-      backdrop-filter: blur(12px);
+      padding: 0.5rem 0.75rem;
+      color: #000;
+      background: #fff;
     }
-    .nav {
-      min-height: 64px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-    }
-    .brand {
-      color: var(--text);
-      font-weight: 750;
-      letter-spacing: -0.02em;
-      text-decoration: none;
-    }
-    .nav-links { display: flex; align-items: center; gap: 1.15rem; }
-    .nav-links a { color: var(--muted); font-size: 0.92rem; text-decoration: none; }
-    .nav-links a:hover { color: var(--text); }
-    .theme-toggle {
-      min-width: 42px;
-      min-height: 36px;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      color: var(--text);
-      background: var(--surface);
-      cursor: pointer;
-      font: inherit;
-    }
+    .skip-link:focus { left: 0.5rem; top: 0.5rem; z-index: 2; }
 
-    .hero { padding: clamp(5rem, 11vw, 9rem) 0 clamp(4rem, 8vw, 7rem); }
-    .eyebrow {
-      margin: 0 0 1.1rem;
-      color: var(--accent);
-      font: 700 0.78rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
-      letter-spacing: 0.12em;
+    .site-header {
+      color: var(--header-text);
+      background: var(--header);
+      border-bottom: 4px solid #777c83;
+    }
+    .wrap { width: min(calc(100% - 2rem), var(--width)); margin-inline: auto; }
+    .header-inner { padding: 1.35rem 0 1rem; }
+    .site-header h1 { margin: 0; font-size: 2rem; line-height: 1.2; }
+    .site-header p { max-width: 760px; margin: 0.35rem 0 0; color: #d9dce0; }
+    .site-header nav { margin-top: 1rem; }
+    .site-header nav ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 1.2rem;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .site-header nav a,
+    .site-header nav a:visited { color: #fff; font-weight: 650; }
+
+    main { padding: 1.8rem 0 3rem; }
+    section { margin-top: 2.4rem; }
+    section:first-child { margin-top: 0; }
+    h2 {
+      margin: 0 0 0.85rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--line);
+      font-size: 1.45rem;
+      line-height: 1.3;
+    }
+    h3 { margin: 1.5rem 0 0.5rem; font-size: 1.05rem; }
+    p { max-width: 800px; }
+    .intro { font-size: 1.02rem; }
+    .quiet { color: var(--muted); }
+
+    .project-list {
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+      list-style: none;
+    }
+    .project {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.8fr) minmax(0, 2.4fr) minmax(120px, 0.7fr);
+      gap: 0.75rem 1.2rem;
+      padding: 0.9rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .project-name { font-weight: 700; }
+    .project-name small {
+      display: block;
+      margin-top: 0.18rem;
+      color: var(--muted);
+      font: 0.75rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
       text-transform: uppercase;
     }
-    h1, h2, h3 { line-height: 1.15; letter-spacing: -0.035em; }
-    h1 { max-width: 930px; margin: 0; font-size: clamp(2.65rem, 7vw, 6.1rem); font-weight: 780; }
-    .hero-lede { max-width: 780px; margin: 2rem 0 0; color: var(--muted); font-size: clamp(1.08rem, 2.2vw, 1.38rem); }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 2.1rem; }
-    .button {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      padding: 0.55rem 0.9rem;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      color: var(--text);
-      background: var(--surface);
-      font-weight: 650;
-      text-decoration: none;
-    }
-    .button.primary { border-color: var(--accent); color: var(--surface); background: var(--accent-strong); }
-    :root[data-theme="dark"] .button.primary { color: #0b1513; background: var(--accent); }
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme]) .button.primary { color: #0b1513; background: var(--accent); }
-    }
+    .project p { margin: 0; }
+    .project-links { text-align: right; }
+    .project-links a { display: inline-block; margin-left: 0.55rem; }
 
-    section { padding: clamp(4rem, 8vw, 7rem) 0; border-top: 1px solid var(--line); }
-    .section-head { display: grid; grid-template-columns: minmax(180px, 0.45fr) 1fr; gap: 2rem; margin-bottom: 2.5rem; }
-    .section-head h2 { margin: 0; font-size: clamp(1.8rem, 4vw, 3rem); }
-    .section-head p { max-width: 720px; margin: 0; color: var(--muted); font-size: 1.05rem; }
-
-    .featured { display: grid; gap: 1.25rem; }
-    .case-study {
+    .note-groups {
       display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      overflow: hidden;
-      background: var(--surface);
-      box-shadow: var(--shadow);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 2.5rem;
     }
-    .case-copy { padding: clamp(1.5rem, 4vw, 2.5rem); }
-    .case-index { color: var(--accent); font: 700 0.76rem ui-monospace, SFMono-Regular, Consolas, monospace; letter-spacing: 0.08em; }
-    .case-copy h3 { margin: 0.6rem 0 0.9rem; font-size: clamp(1.45rem, 3vw, 2.1rem); }
-    .case-copy > p { color: var(--muted); }
-    .case-facts { display: grid; gap: 0.75rem; margin: 1.5rem 0; }
-    .fact { display: grid; grid-template-columns: 92px 1fr; gap: 0.7rem; font-size: 0.93rem; }
-    .fact strong { color: var(--text); }
-    .fact span { color: var(--muted); }
-    .case-links { display: flex; flex-wrap: wrap; gap: 1rem; font-weight: 650; }
-    .case-media { min-height: 300px; margin: 0; border-left: 1px solid var(--line); background: var(--surface-soft); }
-    .case-media img { width: 100%; height: 100%; object-fit: cover; }
-    .case-media.contain { padding: 1rem; }
-    .case-media.contain img { object-fit: contain; }
+    .note-list { margin: 0; padding-left: 1.2rem; }
+    .note-list li { margin: 0.55rem 0; padding-left: 0.2rem; }
+    .note-list span { display: block; color: var(--muted); font-size: 0.92rem; }
 
-    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.25rem; }
-    .project-card { display: flex; flex-direction: column; min-height: 100%; padding: 1.35rem; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
-    .project-card h3 { margin: 0 0 0.7rem; font-size: 1.25rem; }
-    .project-card p { margin: 0 0 1rem; color: var(--muted); }
-    .project-card dl { display: grid; gap: 0.7rem; margin: auto 0 1rem; }
-    .project-card dt { font-size: 0.76rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
-    .project-card dd { margin: 0; color: var(--muted); font-size: 0.9rem; }
-    .project-card a { font-weight: 650; }
-
-    .focus-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-    .focus-item { padding: 1.5rem; border-top: 3px solid var(--accent); background: var(--surface); }
-    .focus-item h3 { margin: 0 0 0.55rem; font-size: 1.25rem; }
-    .focus-item p { margin: 0; color: var(--muted); }
-
-    .principles { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
-    .principles h2 { margin: 0; font-size: clamp(2rem, 5vw, 3.8rem); }
-    .principle-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
-    .principle { display: grid; grid-template-columns: 42px 1fr; gap: 1rem; padding: 1.35rem 0; border-bottom: 1px solid var(--line); }
-    .principle b { color: var(--accent); font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
-    .principle h3 { margin: 0 0 0.35rem; font-size: 1.05rem; }
-    .principle p { margin: 0; color: var(--muted); }
-
-    .notes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
-    .note { padding: 1.25rem; border: 1px solid var(--line); background: transparent; }
-    .note h3 { margin: 0 0 0.55rem; font-size: 1.05rem; }
-    .note p { margin: 0 0 0.8rem; color: var(--muted); font-size: 0.92rem; }
-
-    .about-grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 8vw, 7rem); }
-    .about-grid h2 { margin: 0 0 1rem; font-size: clamp(2rem, 5vw, 3.8rem); }
-    .about-grid p { color: var(--muted); font-size: 1.05rem; }
-    .about-aside { padding: 1.4rem; border: 1px solid var(--line); background: var(--surface); }
-    .about-aside h3 { margin: 0 0 0.8rem; font-size: 1.05rem; }
-    .about-aside ul { margin: 0; padding-left: 1.15rem; color: var(--muted); }
-
-    .contact { text-align: center; }
-    .contact h2 { max-width: 850px; margin: 0 auto 1.4rem; font-size: clamp(2.1rem, 6vw, 4.8rem); }
-    .contact p { color: var(--muted); }
-    .contact-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
-
-    footer { padding: 2rem 0 3rem; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.88rem; }
-    .footer-row { display: flex; justify-content: space-between; gap: 1rem; }
-
-    @media (max-width: 900px) {
-      .nav-links a:not(.always) { display: none; }
-      .section-head, .principles, .about-grid { grid-template-columns: 1fr; }
-      .case-study { grid-template-columns: 1fr; }
-      .case-media { min-height: 250px; border-top: 1px solid var(--line); border-left: 0; }
-      .project-grid, .notes-grid { grid-template-columns: 1fr 1fr; }
+    .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; padding: 0; list-style: none; }
+    footer {
+      padding: 1.2rem 0 2rem;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
     }
 
-    @media (max-width: 620px) {
-      .container { width: min(calc(100% - 1.5rem), var(--max)); }
-      .hero { padding-top: 4rem; }
-      .project-grid, .focus-grid, .notes-grid { grid-template-columns: 1fr; }
-      .fact { grid-template-columns: 1fr; gap: 0.1rem; }
-      .footer-row { flex-direction: column; }
+    @media (max-width: 700px) {
+      .wrap { width: min(calc(100% - 1.25rem), var(--width)); }
+      .site-header h1 { font-size: 1.65rem; }
+      .project { grid-template-columns: 1fr; gap: 0.35rem; }
+      .project-links { text-align: left; }
+      .project-links a { margin: 0 0.75rem 0 0; }
+      .note-groups { grid-template-columns: 1fr; }
     }
-
-    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   </style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#content">Skip to content</a>
 
   <header class="site-header">
-    <nav class="nav container" aria-label="Primary navigation">
-      <a class="brand" href="#top">Ziyu Zhao / Victor</a>
-      <div class="nav-links">
-        <a href="#work">Projects</a>
-        <a href="#focus">Exploring</a>
-        <a href="#notes">Notes</a>
-        <a href="#about">About</a>
-        <a class="always" href="https://github.com/12sqawdwq">GitHub</a>
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch color theme" title="Switch color theme">◐</button>
-      </div>
-    </nav>
+    <div class="wrap header-inner">
+      <h1>Ziyu Zhao (Victor)</h1>
+      <p>Projects, research code, and technical notes on systems, simulation, CAD, embedded software, and scientific computing.</p>
+      <nav aria-label="Primary navigation">
+        <ul>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#notes">Notes</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="CV_Ziyu_Zhao_final.pdf">CV</a></li>
+          <li><a href="https://github.com/12sqawdwq">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
-  <main id="main">
-    <div class="hero container" id="top">
-      <p class="eyebrow">Undergraduate · systems · simulation · scientific computing</p>
-      <h1>Small tools, research prototypes, and a few systems that became larger than intended.</h1>
-      <p class="hero-lede">I am an undergraduate interested in terminals, engineering software, simulation, embedded systems, and AI-assisted development. I like tools that expose what the machine is actually doing, especially when “it ran” and “it worked” are two different claims.</p>
-      <div class="hero-actions">
-        <a class="button primary" href="#work">Browse projects</a>
-        <a class="button" href="CV_Ziyu_Zhao_final.pdf">Download CV</a>
-        <a class="button" href="mailto:102450592zzy@gmail.com">Email</a>
-      </div>
-    </div>
-
-    <section id="work">
-      <div class="container">
-        <div class="section-head">
-          <h2>Selected projects</h2>
-          <p>Some are tools, some are experiments, and a few became much larger than I originally expected. These are the ones that best show the questions I keep returning to.</p>
-        </div>
-
-        <div class="featured">
-          <article class="case-study">
-            <div class="case-copy">
-              <span class="case-index">01 / ACTIVE EXPERIMENT · TERMINALS</span>
-              <h3>code-with-pi</h3>
-              <p>I wanted to see what a coding agent was actually doing in the shell without losing state between tool calls.</p>
-              <div class="case-facts">
-                <div class="fact"><strong>Question</strong><span>Can the agent and user attach to the same long-lived shell instead of observing separate command processes?</span></div>
-                <div class="fact"><strong>Implementation</strong><span>A C11 broker owns PTY on Linux or ConPTY on Windows; Pi talks to it over authenticated local IPC, and tmux provides the Linux split view.</span></div>
-                <div class="fact"><strong>Checked</strong><span>Tests exercise state persistence, cancellation, transcript replay, resize, large output, installation, and Pi RPC execution.</span></div>
-              </div>
-              <div class="case-links">
-                <a href="https://github.com/12sqawdwq/code-with-pi">Repository</a>
-                <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">Architecture notes</a>
-              </div>
-            </div>
-            <figure class="case-media"><img src="assets/code-with-pi-workspace.png" width="1600" height="900" loading="lazy" alt="Pi interface beside the same persistent terminal workspace on Linux"></figure>
-          </article>
-
-          <article class="case-study">
-            <div class="case-copy">
-              <span class="case-index">02 / RESEARCH CODE · FINITE ELEMENTS</span>
-              <h3>ANSYS Simulation IOP</h3>
-              <p>A finite-element investigation of how eyelid mechanics and measurement geometry affect transpalpebral tonometry.</p>
-              <div class="case-facts">
-                <div class="fact"><strong>Question</strong><span>Which probe-response terms remain useful once thickness, material response, alignment, contact, and mesh resolution are varied?</span></div>
-                <div class="fact"><strong>Implementation</strong><span>Parameterized APDL models, staged sweeps, post-processing scripts, run manifests, and data-provenance records.</span></div>
-                <div class="fact"><strong>Limits</strong><span>The repository keeps failed extrapolation, unresolved identifiability, and mesh sensitivity visible. It is not a production calibration.</span></div>
-              </div>
-              <div class="case-links">
-                <a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP">Repository</a>
-                <a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/docs/DATA_PROVENANCE.md">Data provenance</a>
-              </div>
-            </div>
-            <figure class="case-media contain"><img src="assets/iop-stress-contours.png" width="1800" height="1200" loading="lazy" alt="Finite-element stress contour comparison for the ocular biomechanics model"></figure>
-          </article>
-
-          <article class="case-study">
-            <div class="case-copy">
-              <span class="case-index">03 / EXPERIMENTAL · CAE VALIDATION</span>
-              <h3>ANSYS_skill</h3>
-              <p>This grew out of a simple problem: a result object can exist in Mechanical even when the result has not actually been solved and evaluated.</p>
-              <div class="case-facts">
-                <div class="fact"><strong>Question</strong><span>What evidence is enough to distinguish geometry-ready, setup-ready, solver-input-generated, and solved/evaluated states?</span></div>
-                <div class="fact"><strong>Implementation</strong><span>Delivery-file checks, explicit state gates, screenshot examples, a small CLI, and a cantilever reference case.</span></div>
-                <div class="fact"><strong>Boundary</strong><span>Filesystem checks can reject incomplete handoffs; they do not replace review of contours, numerical values, assumptions, or benchmark error.</span></div>
-              </div>
-              <div class="case-links">
-                <a href="https://github.com/12sqawdwq/ANSYS_skill">Repository</a>
-                <a href="docs/html/eye-pressure-callgraph/">Related workflow note</a>
-              </div>
-            </div>
-            <figure class="case-media contain"><img src="assets/ansys-evaluated-result.png" width="1900" height="1050" loading="lazy" alt="Evaluated ANSYS Mechanical contour with legend and numerical result fields"></figure>
-          </article>
-        </div>
-
-        <div class="project-grid" aria-label="Additional selected projects">
-          <article class="project-card">
-            <h3>ForgeSpec Studio</h3>
-            <p>A prototype for turning loose engineering requirements into structured, inspectable CAD source.</p>
-            <dl>
-              <div><dt>Mechanism</dt><dd>Brief → intent → planner → <code>AssemblySpec</code> → CadQuery.</dd></div>
-              <div><dt>Current scope</dt><dd>A small standards catalog, source checks, manifests, and STEP/STL/source outputs.</dd></div>
-            </dl>
-            <a href="https://github.com/12sqawdwq/ForgeSpec-Studio">Repository</a>
-          </article>
-
-          <article class="project-card">
-            <h3>Harmony TaskFlow</h3>
-            <p>A somewhat over-engineered HarmonyOS prototype that started as a task app.</p>
-            <dl>
-              <div><dt>Mechanism</dt><dd>ArkTS UI, multi-ABI Mihomo core, deep links, Worker/D1 OAuth, and AES-GCM token storage.</dd></div>
-              <div><dt>Checked</dt><dd>Emulator captures, repository hygiene checks, Worker smoke tests, and architecture notes.</dd></div>
-            </dl>
-            <a href="https://github.com/12sqawdwq/Harmony_TaskFlow">Repository</a>
-          </article>
-
-          <article class="project-card">
-            <h3>CoughKD</h3>
-            <p>Research code for cough-audio dataset preparation and model-distillation experiments.</p>
-            <dl>
-              <div><dt>Mechanism</dt><dd>Subject-disjoint manifests, PyTorch/CUDA runs, and teacher–student training.</dd></div>
-              <div><dt>Boundary</dt><dd>Measured baselines, planned targets, and clinical claims are kept separate.</dd></div>
-            </dl>
-            <a href="https://github.com/12sqawdwq/CoughKD">Repository</a>
-          </article>
-        </div>
-      </div>
+  <main class="wrap" id="content">
+    <section aria-labelledby="home-heading">
+      <h2 id="home-heading">Home</h2>
+      <p class="intro">I am an undergraduate studying Microelectronics Science and Technology at Xi'an Jiaotong-Liverpool University. This page is an index of things I build, test, and write down.</p>
+      <p class="quiet">Most entries are experiments or working notes. Repository READMEs state the tested environment, available evidence, and known limitations.</p>
     </section>
 
-    <section id="focus">
-      <div class="container">
-        <div class="section-head">
-          <h2>Things I am exploring</h2>
-          <p>These are current questions rather than a finished specialization. I am still figuring out which layer I want to spend most of my time in.</p>
-        </div>
-        <div class="focus-grid">
-          <article class="focus-item"><h3>Coding agents and terminals</h3><p>How should PTY lifetime, process ownership, shell state, monitoring, and human takeover work when an agent is issuing commands?</p></article>
-          <article class="focus-item"><h3>CAE validation</h3><p>What evidence distinguishes a configured model from a solved and evaluated one, and which checks can be automated without overstating correctness?</p></article>
-          <article class="focus-item"><h3>Source-first CAD</h3><p>How much of an AI-assisted CAD pipeline can remain deterministic, inspectable, and reconstructable before geometry is exported?</p></article>
-          <article class="focus-item"><h3>Scientific computing</h3><p>Parameter sweeps, sensitivity, provenance, manifests, failed assumptions, and the point where a result stops surviving validation.</p></article>
-          <article class="focus-item"><h3>HPC experiments</h3><p>Dataset splits, training environments, topology, model scaling, and keeping enough run context to explain a result later.</p></article>
-          <article class="focus-item"><h3>Embedded boundaries</h3><p>What changes when software meets sensors, timing constraints, native code, communication protocols, and imperfect hardware?</p></article>
-        </div>
-      </div>
+    <section id="projects" aria-labelledby="projects-heading">
+      <h2 id="projects-heading">Project index</h2>
+
+      <h3>Systems and developer tools</h3>
+      <ul class="project-list">
+        <li class="project">
+          <div class="project-name">code-with-pi<small>active experiment</small></div>
+          <p>A C11 broker keeps one PTY/ConPTY shell alive so Pi and its user can observe or take over the same terminal through authenticated local IPC.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/code-with-pi">code</a><a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">notes</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">Harmony_TaskFlow<small>prototype</small></div>
+          <p>HarmonyOS integration work involving ArkTS, deep links, Calendar OAuth, Workers/D1, VPN Extension behavior, and a multi-ABI Mihomo core.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/Harmony_TaskFlow">code</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">pixel_probetop<small>supporting project</small></div>
+          <p>A dependency-light Python hub and Linux agent for multi-server monitoring, with a small Web UI and Android/Pixel viewer.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/pixel_probetop">code</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">stm32-cli-toolkit<small>small tool</small></div>
+          <p>Shell wrappers around OpenOCD for building and flashing STM32 projects from a terminal or headless machine.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/stm32-cli-toolkit">code</a></div>
+        </li>
+      </ul>
+
+      <h3>Engineering and scientific computing</h3>
+      <ul class="project-list">
+        <li class="project">
+          <div class="project-name">ANSYS_skill<small>experimental</small></div>
+          <p>Checks whether an automated Mechanical workflow reached geometry, setup, solver-input, and solved/evaluated states without treating file existence as physical validation.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/ANSYS_skill">code</a><a href="https://github.com/12sqawdwq/ANSYS_skill/blob/main/README.md">method</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">ForgeSpec-Studio<small>prototype</small></div>
+          <p>Turns a loose engineering brief into typed intent, a reviewable <code>AssemblySpec</code>, and deterministic CadQuery source and geometry.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/ForgeSpec-Studio">code</a><a href="docs/html/forgespec-studio-app/">structure</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">ANSYS_simulation_IOP<small>research code</small></div>
+          <p>APDL models and analysis scripts for transpalpebral tonometry, including parameter sweeps, provenance, mesh sensitivity, and failed calibration checks.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP">code</a><a href="docs/html/eye-pressure-callgraph/">call graph</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">CoughKD<small>research prototype</small></div>
+          <p>Subject-disjoint cough-audio data preparation and PyTorch/CUDA teacher–student experiments. Planned targets and measured runs remain separate.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/CoughKD">code</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">sky_monitor_api<small>supporting project</small></div>
+          <p>A FastAPI service that calculates visible bright stars, planets, and deep-sky objects for a location and observation time.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/sky_monitor_api">code</a></div>
+        </li>
+      </ul>
+
+      <h3>Embedded and small experiments</h3>
+      <ul class="project-list">
+        <li class="project">
+          <div class="project-name">MES204 LCD projects<small>course experiments</small></div>
+          <p>STM32F446 LCD1602/2004 work: a T-Rex game, custom character rendering, and graphics experiments on constrained displays.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/MES204_lcd">game</a><a href="https://github.com/12sqawdwq/mes204_plus">graphics</a></div>
+        </li>
+        <li class="project">
+          <div class="project-name">terminal-gauss-Mamma-viz<small>small experiment</small></div>
+          <p>A C terminal renderer for sampled mathematical surfaces and a deliberately unserious terminal character.</p>
+          <div class="project-links"><a href="https://github.com/12sqawdwq/terminal-gauss-Mamma-viz">code</a></div>
+        </li>
+      </ul>
     </section>
 
-    <section>
-      <div class="container principles">
-        <h2>Things I try not to hand-wave.</h2>
-        <div class="principle-list">
-          <article class="principle"><b>01</b><div><h3>What state the system actually reached</h3><p>“Created,” “configured,” “solved,” and “evaluated” are different states. I try not to collapse all four into “done.”</p></div></article>
-          <article class="principle"><b>02</b><div><h3>Where an artifact came from</h3><p>Inputs, code revisions, environments, run manifests, and generated outputs are much more useful when they can be traced.</p></div></article>
-          <article class="principle"><b>03</b><div><h3>What a test can actually establish</h3><p>A screenshot can show UI behavior; it cannot establish numerical convergence or physical credibility.</p></div></article>
-          <article class="principle"><b>04</b><div><h3>What failed later</h3><p>Failed extrapolation, sensitivity, and identifiability limits often explain more than a polished success case.</p></div></article>
-        </div>
-      </div>
-    </section>
+    <section id="notes" aria-labelledby="notes-heading">
+      <h2 id="notes-heading">Notes and blog</h2>
+      <p class="quiet">Short explanations, diagrams, validation records, and study notes. These are working documents rather than a chronological personal blog.</p>
 
-    <section id="notes">
-      <div class="container">
-        <div class="section-head">
-          <h2>Notes</h2>
-          <p>A few diagrams and extracted documents from current and older experiments. They are closer to working notes than finished articles.</p>
-        </div>
-        <div class="notes-grid">
-          <article class="note"><h3>Eye-pressure model call graph</h3><p>A navigable view of the simulation and analysis workflow.</p><a href="docs/html/eye-pressure-callgraph/">Open document</a></article>
-          <article class="note"><h3>ForgeSpec application structure</h3><p>An extracted view of the CAD planning and browser application.</p><a href="docs/html/forgespec-studio-app/">Open document</a></article>
-          <article class="note"><h3>Embedded sensing system</h3><p>Firmware and hardware call-graph material from an STM32 pressure-sensing project.</p><a href="docs/html/smart-cushion-stm32-callgraph/">Open document</a></article>
-        </div>
-      </div>
-    </section>
-
-    <section id="about">
-      <div class="container about-grid">
+      <div class="note-groups">
         <div>
-          <h2>About</h2>
-          <p>I am Ziyu Zhao (Victor), a third-year undergraduate heading into my fourth year in Microelectronics Science and Technology at Xi'an Jiaotong-Liverpool University. I tend to turn small annoyances and open questions into repositories; some remain rough experiments, while others accumulate native code, test scripts, diagrams, and more edge cases than expected.</p>
-          <p>I use coding agents often as part of development. What interests me is less who typed each line and more how the problem is framed, which mechanisms are chosen, how failures are debugged, and what evidence survives validation. I have not fully specialized yet; so far I keep returning to engineering software, systems tooling, and scientific computing.</p>
-          <p>Public research includes <a href="https://doi.org/10.1109/BIBM66473.2025.11356522">PAD-Former</a> for PI-RADS classification, finite-element work on transpalpebral tonometry, and medical-audio compression experiments.</p>
-        </div>
-        <aside class="about-aside">
-          <h3>Public material</h3>
-          <ul>
-            <li><a href="CV_Ziyu_Zhao_final.pdf">Curriculum vitae (PDF)</a></li>
-            <li><a href="CV_Ziyu_Zhao_optimized.md">Curriculum vitae (Markdown)</a></li>
-            <li><a href="https://github.com/12sqawdwq?tab=repositories">Public repositories</a></li>
-            <li><a href="https://doi.org/10.1109/BIBM66473.2025.11356522">IEEE BIBM publication</a></li>
+          <h3>Systems and tooling</h3>
+          <ul class="note-list">
+            <li><a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">Persistent terminal architecture</a><span>Broker ownership, PTY lifecycle, IPC, and attach modes.</span></li>
+            <li><a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/TEST-RESULTS.md">Persistent terminal validation record</a><span>Platforms, tests, and remaining gaps.</span></li>
+            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/jetbrains-network-validation/report.md">JetBrains network validation</a><span>A proxy and connectivity troubleshooting record.</span></li>
           </ul>
-        </aside>
+
+          <h3>CAD and embedded systems</h3>
+          <ul class="note-list">
+            <li><a href="docs/html/forgespec-studio-app/">ForgeSpec application structure</a><span>Extracted application and planning call graph.</span></li>
+            <li><a href="docs/html/smart-cushion-stm32-callgraph/">STM32 sensing-system call graph</a><span>Firmware paths from a pressure-sensing project.</span></li>
+            <li><a href="docs/html/smart-cushion-pcb-drc/">PCB design-rule notes</a><span>Extracted board checks and design material.</span></li>
+            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/mes204-lcd/README.md">STM32 LCD project notes</a><span>Display protocol, firmware layout, and execution notes.</span></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3>Simulation and research</h3>
+          <ul class="note-list">
+            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/README.md">When an ANSYS result is actually evaluated</a><span>Evidence that separates an object from a solved result.</span></li>
+            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/skill/failure_taxonomy.md">Mechanical workflow failure taxonomy</a><span>Incomplete handoffs and misleading intermediate states.</span></li>
+            <li><a href="docs/html/eye-pressure-callgraph/">Eye-pressure model call graph</a><span>Simulation, sweep, and analysis paths.</span></li>
+            <li><a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/docs/DATA_PROVENANCE.md">IOP model data provenance</a><span>Model levels, inputs, and limits on interpretation.</span></li>
+            <li><a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/thickness_mesh_independence/DETAILED_REPORT.md">Mesh-sensitivity audit</a><span>Three mesh levels and unresolved output variation.</span></li>
+          </ul>
+
+          <h3>Study and visualization</h3>
+          <ul class="note-list">
+            <li><a href="docs/html/mes201-signal-visualization/">Signal visualization</a><span>Interactive material for signals and systems.</span></li>
+            <li><a href="docs/html/lorenz-p5-sketch/">Lorenz-system sketch</a><span>A small browser visualization experiment.</span></li>
+            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/learning-plan/270-day-engineering-cs-chip-learning-plan.md">Engineering/CS/chip study index</a><span>A long-form learning plan and topic map.</span></li>
+          </ul>
+        </div>
       </div>
     </section>
 
-    <section class="contact" id="contact">
-      <div class="container">
-        <p class="eyebrow">Contact</p>
-        <h2>If any of these questions overlap with yours, feel free to get in touch.</h2>
-        <p>Repository issues are best for project-specific discussion. Email works for research and collaboration conversations.</p>
-        <div class="contact-links">
-          <a class="button primary" href="mailto:102450592zzy@gmail.com">102450592zzy@gmail.com</a>
-          <a class="button" href="https://github.com/12sqawdwq">GitHub</a>
-        </div>
-      </div>
+    <section id="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">About and contact</h2>
+      <p>I use coding agents as part of development, but try to keep the problem definition, architecture, debugging record, experiments, and validation boundaries inspectable. Current interests include engineering software, systems tooling, CAE/CAD, and scientific computing.</p>
+      <p>Public research includes the <a href="https://doi.org/10.1109/BIBM66473.2025.11356522">PAD-Former PI-RADS classification paper</a>, finite-element work on transpalpebral tonometry, and medical-audio compression experiments.</p>
+      <ul class="links">
+        <li><a href="mailto:102450592zzy@gmail.com">Email</a></li>
+        <li><a href="https://github.com/12sqawdwq">GitHub profile</a></li>
+        <li><a href="https://github.com/12sqawdwq?tab=repositories">All repositories</a></li>
+        <li><a href="CV_Ziyu_Zhao_final.pdf">CV (PDF)</a></li>
+        <li><a href="CV_Ziyu_Zhao_optimized.md">CV (Markdown)</a></li>
+      </ul>
     </section>
   </main>
 
   <footer>
-    <div class="container footer-row">
-      <span>© <span id="year">2026</span> Ziyu Zhao</span>
-      <span>Personal technical homepage · static HTML · no analytics</span>
-    </div>
+    <div class="wrap">Last reorganized in 2026 · static HTML · no framework · no analytics</div>
   </footer>
-
-  <script>
-    const root = document.documentElement;
-    const button = document.getElementById('theme-toggle');
-    const saved = localStorage.getItem('portfolio-theme');
-    if (saved === 'light' || saved === 'dark') root.dataset.theme = saved;
-    button.addEventListener('click', () => {
-      const current = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      const next = current === 'dark' ? 'light' : 'dark';
-      root.dataset.theme = next;
-      localStorage.setItem('portfolio-theme', next);
-    });
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
 </body>
 </html>
