@@ -14,7 +14,7 @@ series: "Validating Mechanical automation"
 series_order: 3
 featured: false
 source: docs/ansys-skill/skill/failure_taxonomy.md
-source_url: https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/skill/failure_taxonomy.md
+source_url: https://github.com/12sqawdwq/12sqawdwq.github.io/blob/main/docs/ansys-skill/skill/failure_taxonomy.md
 ---
 
 This taxonomy came from false-completion cases: geometry without a solver handoff, solver input without a solved state, and exports that did not preserve an evaluated result.

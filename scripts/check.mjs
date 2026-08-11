@@ -40,6 +40,7 @@ async function htmlFiles(directory) {
 
 const generated = [
   path.join(ROOT, "index.html"),
+  path.join(ROOT, "12sqwdwq.github.io", "index.html"),
   path.join(ROOT, "docs", "html", "jetbrains-network-validation", "index.html"),
   ...(await htmlFiles(path.join(ROOT, "writing"))),
   ...(await htmlFiles(path.join(ROOT, "projects"))),
@@ -53,8 +54,12 @@ function resolveInternal(reference, sourceFile) {
   let target;
   if (!clean) {
     target = sourceFile;
-  } else if (clean.startsWith(site.basePath)) {
-    target = path.join(ROOT, ...clean.slice(site.basePath.length).split("/").filter(Boolean));
+  } else if (
+    clean.startsWith("/") &&
+    (site.basePath === "" || clean === site.basePath || clean.startsWith(`${site.basePath}/`))
+  ) {
+    const projectPath = site.basePath ? clean.slice(site.basePath.length) : clean;
+    target = path.join(ROOT, ...projectPath.split("/").filter(Boolean));
   } else if (clean.startsWith("/")) {
     return { outsideProject: true, fragment };
   } else {

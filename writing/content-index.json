@@ -14,7 +14,7 @@
     "project": "ANSYS_skill",
     "series": "Validating Mechanical automation",
     "featured": true,
-    "url": "/12sqwdwq.github.io/writing/ansys-result-state-gates/"
+    "url": "/writing/ansys-result-state-gates/"
   },
   {
     "title": "Separating measured cough-model runs from the experiment plan",
@@ -30,7 +30,7 @@
     "project": "CoughKD",
     "series": null,
     "featured": true,
-    "url": "/12sqwdwq.github.io/writing/coughkd-measured-baseline/"
+    "url": "/writing/coughkd-measured-baseline/"
   },
   {
     "title": "The trend survived mesh refinement; the amplitude did not",
@@ -46,7 +46,7 @@
     "project": "ANSYS_simulation_IOP",
     "series": null,
     "featured": true,
-    "url": "/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/"
+    "url": "/writing/eyelid-mesh-sensitivity/"
   },
   {
     "title": "Why ForgeSpec keeps a typed specification between a prompt and CAD",
@@ -63,7 +63,7 @@
     "project": "ForgeSpec-Studio",
     "series": null,
     "featured": true,
-    "url": "/12sqwdwq.github.io/writing/forgespec-assembly-spec/"
+    "url": "/writing/forgespec-assembly-spec/"
   },
   {
     "title": "What the HarmonyOS prototype could and could not verify",
@@ -80,7 +80,7 @@
     "project": "Harmony_TaskFlow",
     "series": null,
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/"
+    "url": "/writing/harmonyos-integration-boundaries/"
   },
   {
     "title": "When a parameter sweep cannot identify its own model",
@@ -96,7 +96,7 @@
     "project": "ANSYS_simulation_IOP",
     "series": null,
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/iop-parameter-identifiability/"
+    "url": "/writing/iop-parameter-identifiability/"
   },
   {
     "title": "Separating DNS failure from slow CDN delivery",
@@ -112,7 +112,7 @@
     "project": null,
     "series": null,
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/jetbrains-network-validation/"
+    "url": "/writing/jetbrains-network-validation/"
   },
   {
     "title": "Failure taxonomy for automated Mechanical handoffs",
@@ -129,7 +129,7 @@
     "project": "ANSYS_skill",
     "series": "Validating Mechanical automation",
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/mechanical-failure-taxonomy/"
+    "url": "/writing/mechanical-failure-taxonomy/"
   },
   {
     "title": "A narrow Mechanical delivery protocol",
@@ -146,7 +146,7 @@
     "project": "ANSYS_skill",
     "series": "Validating Mechanical automation",
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/mechanical-mvp-protocol/"
+    "url": "/writing/mechanical-mvp-protocol/"
   },
   {
     "title": "One shell, two observers: the persistent terminal architecture",
@@ -163,7 +163,7 @@
     "project": "code-with-pi",
     "series": "Building code-with-pi",
     "featured": true,
-    "url": "/12sqwdwq.github.io/writing/persistent-terminal-architecture/"
+    "url": "/writing/persistent-terminal-architecture/"
   },
   {
     "title": "Known limits of a shared persistent terminal",
@@ -180,7 +180,7 @@
     "project": "code-with-pi",
     "series": "Building code-with-pi",
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/persistent-terminal-limitations/"
+    "url": "/writing/persistent-terminal-limitations/"
   },
   {
     "title": "What I tested in the persistent terminal broker",
@@ -197,7 +197,7 @@
     "project": "code-with-pi",
     "series": "Building code-with-pi",
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/persistent-terminal-validation/"
+    "url": "/writing/persistent-terminal-validation/"
   },
   {
     "title": "A T-Rex runner on a 16×2 character LCD",
@@ -212,6 +212,6 @@
     "project": "MES204_lcd",
     "series": null,
     "featured": false,
-    "url": "/12sqwdwq.github.io/writing/stm32-lcd-trex/"
+    "url": "/writing/stm32-lcd-trex/"
   }
 ]

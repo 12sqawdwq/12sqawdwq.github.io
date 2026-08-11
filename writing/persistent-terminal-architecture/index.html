@@ -8,17 +8,17 @@
   <meta property="og:title" content="One shell, two observers: the persistent terminal architecture — Ziyu Zhao (Victor)">
   <meta property="og:description" content="How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.">
   <meta property="og:type" content="article">
-  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-architecture">
-  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
-  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <link rel="canonical" href="https://12sqawdwq.github.io/writing/persistent-terminal-architecture">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/writing/rss.xml">
+  <link rel="stylesheet" href="/assets/site.css">
   <title>One shell, two observers: the persistent terminal architecture — Ziyu Zhao (Victor)</title>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
-      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+      <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a aria-current="page" href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
     </div>
   </header>
   <main class="wrap article-wrap" id="content"><article>
@@ -26,9 +26,9 @@
       <p class="eyebrow">Build Note</p>
       <h1>One shell, two observers: the persistent terminal architecture</h1>
       <p class="article-description">How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.</p>
-      <p class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a>, <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
-      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/code-with-pi/">code-with-pi</a></p>
-      <p class="relation">Part 1 of <a href="/12sqwdwq.github.io/writing/series/building-code-with-pi/">Building code-with-pi</a></p>
+      <p class="entry-meta">Aug 6, 2026 · <a href="/writing/build-notes/">Build Note</a> · <a href="/writing/topics/systems/">Systems</a>, <a href="/writing/topics/developer-tools/">Developer Tools</a>, <a href="/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/projects/code-with-pi/">code-with-pi</a></p>
+      <p class="relation">Part 1 of <a href="/writing/series/building-code-with-pi/">Building code-with-pi</a></p>
     </header>
     <div class="prose"><p>This is the current architecture note for the terminal broker. It focuses on process ownership, command state, marker parsing, cancellation, output tiers, and the places where Windows and POSIX still differ.</p>
 <hr>
@@ -93,25 +93,25 @@
 <h2 id="linux-tmux-path" tabindex="-1">Linux/tmux path</h2>
 <p>The Linux path uses a POSIX PTY, Unix-domain sockets, termios attach, and tmux only as the pane host. It selects <code>PI_TERMINAL_SHELL</code> or the caller's <code>SHELL</code>. Bash uses an rcfile/PROMPT_COMMAND adapter. zsh starts through a temporary ZDOTDIR wrapper that loads the user's original <code>.zshenv</code>/<code>.zprofile</code>/<code>.zshrc</code>, restores the original ZDOTDIR, and appends <code>__pi_live_prompt_marker</code> with <code>add-zsh-hook precmd</code>; existing Oh My Zsh, P10k, plugin, completion, and user hooks stay intact. Runtime code does not use <code>send-keys</code> or <code>capture-pane</code>; the Kitty/tmux integration test uses those tmux test APIs to drive and inspect the native attach pane.</p>
 <p>Session data remains under <code>XDG_STATE_HOME</code>, while control/attach sockets use a short private directory under <code>XDG_RUNTIME_DIR</code> (or <code>/tmp</code> fallback) to stay within <code>sockaddr_un</code> path limits. <code>pio</code> first creates the final tmux split with placeholders, reads the right pane's dimensions, starts the PTY at that size, waits for the first private prompt marker, and only then respawns the Pi/attach panes. This prevents width-dependent P10k instant/final prompts from being replayed at a different geometry. The launcher explicitly carries HOME, PATH, and XDG values into panes so a long-lived tmux server cannot substitute stale environment values.</p>
-<p>Arch Linux broker, install/uninstall, and Kitty/tmux workspace tests pass. POSIX still lacks Windows parity for automatic shell restart, attach backpressure, and output-settle behavior; see <a href="/12sqwdwq.github.io/docs/code-with-pi/LIMITATIONS.md">LIMITATIONS.md</a>.</p>
+<p>Arch Linux broker, install/uninstall, and Kitty/tmux workspace tests pass. POSIX still lacks Windows parity for automatic shell restart, attach backpressure, and output-settle behavior; see <a href="/docs/code-with-pi/LIMITATIONS.md">LIMITATIONS.md</a>.</p>
 </div>
     <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">repository document →</a></p>
   </article>
   <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
-        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+        <a class="entry-title" href="/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/writing/notes/">Note</a></div>
 
       </li><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-validation/">What I tested in the persistent terminal broker</a>
-        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <a class="entry-title" href="/writing/persistent-terminal-validation/">What I tested in the persistent terminal broker</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
 
       </li><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
-        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+        <a class="entry-title" href="/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/writing/notes/">Note</a></div>
 
       </li><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
-        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <a class="entry-title" href="/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
 
       </li></ol></section></main>
   <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>

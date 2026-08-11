@@ -11,7 +11,11 @@ import YAML from "yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = path.join(ROOT, "content", "writing");
-const GENERATED_DIRS = [path.join(ROOT, "writing"), path.join(ROOT, "projects")];
+const GENERATED_DIRS = [
+  path.join(ROOT, "writing"),
+  path.join(ROOT, "projects"),
+  path.join(ROOT, "12sqwdwq.github.io"),
+];
 const TYPES = {
   Essay: "essays",
   "Build Note": "build-notes",
@@ -407,6 +411,30 @@ await writeRoute(
     body: homeBody,
   }),
 );
+
+const legacySiteRoute = "/12sqwdwq.github.io/";
+const legacyRedirect = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=/">
+  <link rel="canonical" href="${canonical("/")}">
+  <link rel="stylesheet" href="${href("/assets/site.css")}">
+  <title>Site moved — ${escapeHtml(site.name)}</title>
+</head>
+<body>
+  <main class="wrap" id="content">
+    <header class="page-heading">
+      <p class="eyebrow">Address corrected</p>
+      <h1>This site has moved.</h1>
+      <p>The canonical address is now <a href="${href("/")}">${escapeHtml(`${site.siteUrl}/`)}</a>.</p>
+    </header>
+  </main>
+</body>
+</html>
+`;
+await writeRoute(legacySiteRoute, legacyRedirect);
 
 const redactedNetworkBody = `<header class="page-heading"><p class="eyebrow">Redacted legacy URL</p><h1>JetBrains Remote Development network validation</h1><p>The earlier page at this address rendered a raw diagnostic bundle containing infrastructure-specific identifiers. It has been replaced with a public-safe summary that preserves the troubleshooting method and evidence boundaries.</p><p><a href="${href("/writing/jetbrains-network-validation/")}">Read the redacted notebook entry →</a></p></header>`;
 await writeRoute(

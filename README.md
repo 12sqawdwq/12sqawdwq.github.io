@@ -2,6 +2,8 @@
 
 Static GitHub Pages site for projects and technical writing.
 
+Live site: <https://12sqawdwq.github.io/>
+
 ## Content model
 
 Public notebook entries live in `content/writing/`. Each Markdown file requires frontmatter for:

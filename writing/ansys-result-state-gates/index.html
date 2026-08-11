@@ -8,17 +8,17 @@
   <meta property="og:title" content="A result object is not an evaluated result — Ziyu Zhao (Victor)">
   <meta property="og:description" content="Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.">
   <meta property="og:type" content="article">
-  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/ansys-result-state-gates">
-  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
-  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <link rel="canonical" href="https://12sqawdwq.github.io/writing/ansys-result-state-gates">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/writing/rss.xml">
+  <link rel="stylesheet" href="/assets/site.css">
   <title>A result object is not an evaluated result — Ziyu Zhao (Victor)</title>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
-      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+      <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a aria-current="page" href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
     </div>
   </header>
   <main class="wrap article-wrap" id="content"><article>
@@ -26,9 +26,9 @@
       <p class="eyebrow">Build Note</p>
       <h1>A result object is not an evaluated result</h1>
       <p class="article-description">Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.</p>
-      <p class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/engineering-software/">Engineering Software</a>, <a href="/12sqwdwq.github.io/writing/topics/cae/">CAE</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
-      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/ANSYS_skill/">ANSYS_skill</a></p>
-      <p class="relation">Part 1 of <a href="/12sqwdwq.github.io/writing/series/validating-mechanical-automation/">Validating Mechanical automation</a></p>
+      <p class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/writing/build-notes/">Build Note</a> · <a href="/writing/topics/engineering-software/">Engineering Software</a>, <a href="/writing/topics/cae/">CAE</a>, <a href="/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/projects/ANSYS_skill/">ANSYS_skill</a></p>
+      <p class="relation">Part 1 of <a href="/writing/series/validating-mechanical-automation/">Validating Mechanical automation</a></p>
     </header>
     <div class="prose"><p>The useful distinction in this project is not between “automation” and “manual work.” It is between an object that exists and evidence that supports a precise workflow state. Filesystem and GUI checks still do not establish physical correctness.</p>
 <hr>
@@ -138,7 +138,7 @@ python <span class="hljs-literal">-m</span> ansys_skill_platform.cli validate `
 <h2 id="visual-review-examples" tabindex="-1">Visual Review Examples</h2>
 <h3 id="not-yet-accepted-result-object-exists-but-is-not-evaluated" tabindex="-1">Not Yet Accepted: Result Object Exists But Is Not Evaluated</h3>
 <p>The first screenshot shows a Mechanical model where result objects are present in the tree, but the selected result has no real contour and the result values are still blank/red. This is a setup-ready state, not a solved/evaluated delivery.</p>
-<p><img src="/12sqwdwq.github.io/docs/ansys-skill/assets/images/not-evaluated-result.png" alt="Mechanical result object exists but is not evaluated"></p>
+<p><img src="/docs/ansys-skill/assets/images/not-evaluated-result.png" alt="Mechanical result object exists but is not evaluated"></p>
 <p>Checklist signals:</p>
 <ul>
 <li>result object is selected</li>
@@ -149,7 +149,7 @@ python <span class="hljs-literal">-m</span> ansys_skill_platform.cli validate `
 </ul>
 <h3 id="accepted-target-evaluated-mechanical-contour" tabindex="-1">Accepted Target: Evaluated Mechanical Contour</h3>
 <p>The second screenshot shows the desired target state: Mechanical displays a colored contour with legend, min/max markers, and populated numerical values.</p>
-<p><img src="/12sqwdwq.github.io/docs/ansys-skill/assets/images/evaluated-contour-result.png" alt="Evaluated Mechanical equivalent stress contour"></p>
+<p><img src="/docs/ansys-skill/assets/images/evaluated-contour-result.png" alt="Evaluated Mechanical equivalent stress contour"></p>
 <p>Checklist signals:</p>
 <ul>
 <li>body shows colored contour</li>
@@ -275,20 +275,20 @@ python <span class="hljs-literal">-m</span> ansys_skill_platform.cli validate &l
     <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/ANSYS_skill/blob/main/README.md">repository document →</a></p>
   </article>
   <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-mvp-protocol/">A narrow Mechanical delivery protocol</a>
-        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <a class="entry-title" href="/writing/mechanical-mvp-protocol/">A narrow Mechanical delivery protocol</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
 
       </li><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-failure-taxonomy/">Failure taxonomy for automated Mechanical handoffs</a>
-        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+        <a class="entry-title" href="/writing/mechanical-failure-taxonomy/">Failure taxonomy for automated Mechanical handoffs</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/writing/notes/">Note</a></div>
 
       </li><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/forgespec-assembly-spec/">Why ForgeSpec keeps a typed specification between a prompt and CAD</a>
-        <div class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <a class="entry-title" href="/writing/forgespec-assembly-spec/">Why ForgeSpec keeps a typed specification between a prompt and CAD</a>
+        <div class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
 
       </li><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
-        <div class="entry-meta">Aug 10, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+        <a class="entry-title" href="/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
+        <div class="entry-meta">Aug 10, 2026 · <a href="/writing/research-notes/">Research Note</a> · Working</div>
 
       </li></ol></section></main>
   <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>

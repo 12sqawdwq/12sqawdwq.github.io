@@ -8,17 +8,17 @@
   <meta property="og:title" content="A T-Rex runner on a 16×2 character LCD — Ziyu Zhao (Victor)">
   <meta property="og:description" content="Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.">
   <meta property="og:type" content="article">
-  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/stm32-lcd-trex">
-  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
-  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <link rel="canonical" href="https://12sqawdwq.github.io/writing/stm32-lcd-trex">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/writing/rss.xml">
+  <link rel="stylesheet" href="/assets/site.css">
   <title>A T-Rex runner on a 16×2 character LCD — Ziyu Zhao (Victor)</title>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
   <header class="site-header">
     <div class="wrap header-row">
-      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
-      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+      <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a aria-current="page" href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
     </div>
   </header>
   <main class="wrap article-wrap" id="content"><article>
@@ -26,8 +26,8 @@
       <p class="eyebrow">Build Note</p>
       <h1>A T-Rex runner on a 16×2 character LCD</h1>
       <p class="article-description">Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.</p>
-      <p class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/embedded/">Embedded</a></p>
-      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/MES204_lcd/">MES204 LCD projects</a></p>
+      <p class="entry-meta">Jun 1, 2026 · <a href="/writing/build-notes/">Build Note</a> · <a href="/writing/topics/embedded/">Embedded</a></p>
+      <p class="relation">Related project: <a href="/projects/MES204_lcd/">MES204 LCD projects</a></p>
 
     </header>
     <div class="prose"><p>This course project used a character display as a constrained rendering system. The implementation note retains the original architecture description and its attribution to earlier LCD game examples.</p>
@@ -35,7 +35,7 @@
 <blockquote>
 <p>A faithful implementation of the classic Chrome Dino game on the STM32F446xx microcontroller, featuring a custom LCD1602 rendering engine and interrupt-driven architecture.</p>
 </blockquote>
-<p><img src="/12sqwdwq.github.io/docs/mes204-lcd/demo.gif" alt="Demo"></p>
+<p><img src="/docs/mes204-lcd/demo.gif" alt="Demo"></p>
 <p><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
 <img src="https://img.shields.io/badge/platform-STM32-green.svg" alt="Platform">
 <img src="https://img.shields.io/badge/language-C-orange.svg" alt="Language"></p>
@@ -62,15 +62,15 @@
 <h3 id="chip-architecture-pinout" tabindex="-1">Chip Architecture &amp; Pinout</h3>
 <p>Below are diagrams detailing the architecture and pin definitions of the STM32F446xx, which are crucial for understanding the hardware connections and capabilities.</p>
 <p><strong>STM32F4 MCU Package Structure:</strong>
-<img src="/12sqwdwq.github.io/docs/mes204-lcd/STM32F4MCUPackageStructure.png" alt="STM32F4 MCU Package Structure"></p>
+<img src="/docs/mes204-lcd/STM32F4MCUPackageStructure.png" alt="STM32F4 MCU Package Structure"></p>
 <p><strong>Pin Definitions for the Chip:</strong>
-<img src="/12sqwdwq.github.io/docs/mes204-lcd/PinDefinitionsfortheChip.png" alt="Pin Definitions for the Chip"></p>
+<img src="/docs/mes204-lcd/PinDefinitionsfortheChip.png" alt="Pin Definitions for the Chip"></p>
 <p><strong>Chip Data Link Architecture:</strong>
-<img src="/12sqwdwq.github.io/docs/mes204-lcd/ChipDataLinkArchitecture.png" alt="Chip Data Link Architecture"></p>
+<img src="/docs/mes204-lcd/ChipDataLinkArchitecture.png" alt="Chip Data Link Architecture"></p>
 <p><strong>Firmware Components:</strong>
-<img src="/12sqwdwq.github.io/docs/mes204-lcd/FrimwareComponents.png" alt="Firmware Components"></p>
+<img src="/docs/mes204-lcd/FrimwareComponents.png" alt="Firmware Components"></p>
 <p><strong>STM32CubeF4 Architecture Overview:</strong>
-<img src="/12sqwdwq.github.io/docs/mes204-lcd/STM32CubeF4ArchitectureOverview.png" alt="STM32CubeF4 Architecture Overview"></p>
+<img src="/docs/mes204-lcd/STM32CubeF4ArchitectureOverview.png" alt="STM32CubeF4 Architecture Overview"></p>
 <hr>
 <h2 id="architectural-deep-dive" tabindex="-1">🏗 Architectural Deep Dive</h2>
 <h3 id="1-real-time-constraints-timing" tabindex="-1">1. Real-Time Constraints &amp; Timing</h3>
@@ -188,7 +188,7 @@
 </code></pre>
 <h2 id="graphics-implementation-via-cgram" tabindex="-1">🎨 Graphics Implementation via CGRAM</h2>
 <p>The visual fidelity is achieved by exploiting the eight available Custom Graphics Character slots (CGRAM) in the HD44780 controller. The <code>Lcd_load_custom_chars()</code> function populates these slots during initialization.</p>
-<p><img src="/12sqwdwq.github.io/docs/mes204-lcd/custom_characters.png" alt="Custom Characters"></p>
+<p><img src="/docs/mes204-lcd/custom_characters.png" alt="Custom Characters"></p>
 <h3 id="custom-character-mapping" tabindex="-1">Custom Character Mapping</h3>
 <div class="table-scroll"><table>
 <thead>
@@ -255,8 +255,8 @@
     <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/MES204_lcd">repository document →</a></p>
   </article>
   <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
-        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
-        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <a class="entry-title" href="/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
 
       </li></ol></section></main>
   <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
 <title>Ziyu Zhao (Victor) — Writing</title>
-<link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing</link>
+<link>https://12sqawdwq.github.io/writing</link>
 <description>Essays, build notes, research notes, and working technical notes.</description>
 <language>en</language>
 <item>
   <title>A result object is not an evaluated result</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/ansys-result-state-gates</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/ansys-result-state-gates</guid>
+  <link>https://12sqawdwq.github.io/writing/ansys-result-state-gates</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/ansys-result-state-gates</guid>
   <pubDate>Sun, 17 May 2026 00:00:00 GMT</pubDate>
   <description>Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.</description>
   <category>Build Note</category>
@@ -17,8 +17,8 @@
 </item>
 <item>
   <title>Separating DNS failure from slow CDN delivery</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/jetbrains-network-validation</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/jetbrains-network-validation</guid>
+  <link>https://12sqawdwq.github.io/writing/jetbrains-network-validation</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/jetbrains-network-validation</guid>
   <pubDate>Wed, 29 Apr 2026 00:00:00 GMT</pubDate>
   <description>A redacted remote-development download investigation that isolates resolver, redirect, edge-selection, and throughput stages.</description>
   <category>Note</category>
@@ -27,8 +27,8 @@
 </item>
 <item>
   <title>Separating measured cough-model runs from the experiment plan</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/coughkd-measured-baseline</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/coughkd-measured-baseline</guid>
+  <link>https://12sqawdwq.github.io/writing/coughkd-measured-baseline</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/coughkd-measured-baseline</guid>
   <pubDate>Mon, 27 Apr 2026 00:00:00 GMT</pubDate>
   <description>A subject-disjoint Coswara pipeline, compact teacher–student baselines, and the evidence boundary before any clinical or SOTA claim.</description>
   <category>Research Note</category>
@@ -37,8 +37,8 @@
 </item>
 <item>
   <title>What the HarmonyOS prototype could and could not verify</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/harmonyos-integration-boundaries</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/harmonyos-integration-boundaries</guid>
+  <link>https://12sqawdwq.github.io/writing/harmonyos-integration-boundaries</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/harmonyos-integration-boundaries</guid>
   <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
   <description>ArkTS UI, browser OAuth and deep links, native Mihomo libraries, VPN Extension limits, and repository-level evidence.</description>
   <category>Build Note</category>
@@ -48,8 +48,8 @@
 </item>
 <item>
   <title>Why ForgeSpec keeps a typed specification between a prompt and CAD</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/forgespec-assembly-spec</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/forgespec-assembly-spec</guid>
+  <link>https://12sqawdwq.github.io/writing/forgespec-assembly-spec</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/forgespec-assembly-spec</guid>
   <pubDate>Sun, 24 May 2026 00:00:00 GMT</pubDate>
   <description>Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.</description>
   <category>Build Note</category>
@@ -59,8 +59,8 @@
 </item>
 <item>
   <title>The trend survived mesh refinement; the amplitude did not</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity</guid>
+  <link>https://12sqawdwq.github.io/writing/eyelid-mesh-sensitivity</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/eyelid-mesh-sensitivity</guid>
   <pubDate>Mon, 10 Aug 2026 00:00:00 GMT</pubDate>
   <description>A three-level finite-element audit where response ordering remained stable but the absolute output missed the registered mesh-independence criterion.</description>
   <category>Research Note</category>
@@ -69,8 +69,8 @@
 </item>
 <item>
   <title>Known limits of a shared persistent terminal</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-limitations</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-limitations</guid>
+  <link>https://12sqawdwq.github.io/writing/persistent-terminal-limitations</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/persistent-terminal-limitations</guid>
   <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
   <description>Failure boundaries in shell recovery, cancellation, replay, backpressure, terminal negotiation, and interactive programs.</description>
   <category>Note</category>
@@ -80,8 +80,8 @@
 </item>
 <item>
   <title>One shell, two observers: the persistent terminal architecture</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-architecture</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-architecture</guid>
+  <link>https://12sqawdwq.github.io/writing/persistent-terminal-architecture</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/persistent-terminal-architecture</guid>
   <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
   <description>How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.</description>
   <category>Build Note</category>
@@ -91,8 +91,8 @@
 </item>
 <item>
   <title>What I tested in the persistent terminal broker</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-validation</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-validation</guid>
+  <link>https://12sqawdwq.github.io/writing/persistent-terminal-validation</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/persistent-terminal-validation</guid>
   <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
   <description>Observed Windows and Linux checks for PTY lifecycle, authenticated IPC, state persistence, cancellation, replay, and human takeover.</description>
   <category>Build Note</category>
@@ -102,8 +102,8 @@
 </item>
 <item>
   <title>When a parameter sweep cannot identify its own model</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/iop-parameter-identifiability</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/iop-parameter-identifiability</guid>
+  <link>https://12sqawdwq.github.io/writing/iop-parameter-identifiability</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/iop-parameter-identifiability</guid>
   <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
   <description>Why independent endpoints for most eyelid thicknesses cannot support thickness-specific rational calibration parameters.</description>
   <category>Research Note</category>
@@ -112,8 +112,8 @@
 </item>
 <item>
   <title>A narrow Mechanical delivery protocol</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/mechanical-mvp-protocol</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/mechanical-mvp-protocol</guid>
+  <link>https://12sqawdwq.github.io/writing/mechanical-mvp-protocol</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/mechanical-mvp-protocol</guid>
   <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
   <description>A stepwise Discovery-to-Workbench-to-Mechanical path with explicit success signals and recovery actions.</description>
   <category>Build Note</category>
@@ -123,8 +123,8 @@
 </item>
 <item>
   <title>A T-Rex runner on a 16×2 character LCD</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/stm32-lcd-trex</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/stm32-lcd-trex</guid>
+  <link>https://12sqawdwq.github.io/writing/stm32-lcd-trex</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/stm32-lcd-trex</guid>
   <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
   <description>Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.</description>
   <category>Build Note</category>
@@ -132,8 +132,8 @@
 </item>
 <item>
   <title>Failure taxonomy for automated Mechanical handoffs</title>
-  <link>https://12sqawdwq.github.io/12sqwdwq.github.io/writing/mechanical-failure-taxonomy</link>
-  <guid isPermaLink="true">https://12sqawdwq.github.io/12sqwdwq.github.io/writing/mechanical-failure-taxonomy</guid>
+  <link>https://12sqawdwq.github.io/writing/mechanical-failure-taxonomy</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/mechanical-failure-taxonomy</guid>
   <pubDate>Mon, 01 Jun 2026 00:00:00 GMT</pubDate>
   <description>Seven ways an ANSYS workflow can look complete while its solver, evaluation, delivery, or exported evidence is still incomplete.</description>
   <category>Note</category>
