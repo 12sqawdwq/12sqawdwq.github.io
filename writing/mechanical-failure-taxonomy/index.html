@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Seven ways an ANSYS workflow can look complete while its solver, evaluation, delivery, or exported evidence is still incomplete.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Failure taxonomy for automated Mechanical handoffs — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Seven ways an ANSYS workflow can look complete while its solver, evaluation, delivery, or exported evidence is still incomplete.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/mechanical-failure-taxonomy">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>Failure taxonomy for automated Mechanical handoffs — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Note</p>
+      <h1>Failure taxonomy for automated Mechanical handoffs</h1>
+      <p class="article-description">Seven ways an ANSYS workflow can look complete while its solver, evaluation, delivery, or exported evidence is still incomplete.</p>
+      <p class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a> · <a href="/12sqwdwq.github.io/writing/topics/engineering-software/">Engineering Software</a>, <a href="/12sqwdwq.github.io/writing/topics/cae/">CAE</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/ANSYS_skill/">ANSYS_skill</a></p>
+      <p class="relation">Part 3 of <a href="/12sqwdwq.github.io/writing/series/validating-mechanical-automation/">Validating Mechanical automation</a></p>
+    </header>
+    <div class="prose"><p>This taxonomy came from false-completion cases: geometry without a solver handoff, solver input without a solved state, and exports that did not preserve an evaluated result.</p>
+<hr>
+<p>Use this taxonomy to avoid false completion when Codex drives Ansys Mechanical.</p>
+<h2 id="f1-object-exists-but-result-is-not-evaluated" tabindex="-1">F1: Object Exists But Result Is Not Evaluated</h2>
+<p>Symptom: Total Deformation, Equivalent Stress, or another result exists in the tree, but the body is gray or Min/Max values are blank/red.</p>
+<p>Meaning: setup exists, evaluated result does not.</p>
+<p>Detection: Mechanical viewport lacks contour or Details has empty result ranges.</p>
+<p>Recovery: do not recreate the model. Solve and Evaluate All Results, then inspect contour, legend, and Min/Max.</p>
+<h2 id="f2-project-saved-but-files-folder-is-incomplete" tabindex="-1">F2: Project Saved But <code>_files</code> Folder Is Incomplete</h2>
+<p>Symptom: <code>.wbpj</code> exists but Workbench opens with missing-file warnings or no Mechanical database.</p>
+<p>Meaning: project container was saved without its full data directory.</p>
+<p>Detection: missing <code>project_files/</code> or missing <code>.mechdb</code> below that directory.</p>
+<p>Recovery: reopen the original project location, save again, and deliver <code>.wbpj</code> with its matching <code>_files</code> folder.</p>
+<h2 id="f3-mechanical-tree-has-result-object-but-no-contour" tabindex="-1">F3: Mechanical Tree Has Result Object But No Contour</h2>
+<p>Symptom: result object can be selected, but viewport remains plain gray or no legend appears.</p>
+<p>Meaning: result object is inserted but not displayable as evaluated postprocessing data.</p>
+<p>Detection: no contour legend and no Min/Max markers.</p>
+<p>Recovery: select Solution, run Solve if needed, run Evaluate All Results, then select the result again.</p>
+<h2 id="f4-solver-input-exists-but-no-solved-state" tabindex="-1">F4: Solver Input Exists But No Solved State</h2>
+<p>Symptom: <code>ds.dat</code> exists, maybe even contains <code>solve</code>, but Mechanical still shows unresolved/update-required result status.</p>
+<p>Meaning: solver input generation and solved/evaluated GUI state are different gates.</p>
+<p>Detection: <code>ds.dat</code> exists but Mechanical has no contour or Solution Information has no completed solve.</p>
+<p>Recovery: use Mechanical Solution Information to confirm the solve, fix errors, solve again, and evaluate results.</p>
+<h2 id="f5-codex-stops-after-geometry-creation" tabindex="-1">F5: Codex Stops After Geometry Creation</h2>
+<p>Symptom: <code>.dsco</code>, <code>.scdocx</code>, or geometry screenshots exist, but no <code>.wbpj</code> Mechanical deliverable exists.</p>
+<p>Meaning: the workflow ended before the solver stage.</p>
+<p>Detection: no Workbench project and no Mechanical tree.</p>
+<p>Recovery: create a Workbench Static Structural system, attach geometry, open Model in Mechanical, and continue the protocol from material assignment.</p>
+<h2 id="f6-gui-state-and-filesystem-state-disagree" tabindex="-1">F6: GUI State And Filesystem State Disagree</h2>
+<p>Symptom: files suggest a project exists, but GUI shows unsolved, unevaluated, or missing results.</p>
+<p>Meaning: filesystem evidence is necessary but not sufficient.</p>
+<p>Detection: checker passes file gates but Mechanical viewport lacks accepted result evidence.</p>
+<p>Recovery: trust Mechanical acceptance state over filesystem heuristics. Solve/evaluate/save again, then rerun the checker.</p>
+<h2 id="f7-exported-evidence-exists-but-is-not-trustworthy" tabindex="-1">F7: Exported Evidence Exists But Is Not Trustworthy</h2>
+<p>Symptom: <code>.avz</code> or screenshots exist, but they are small, stale, gray, or do not show result values.</p>
+<p>Meaning: export happened before or outside the accepted evaluated state.</p>
+<p>Detection: suspiciously small exports, missing legend, or mismatch between export timestamp and latest solve.</p>
+<p>Recovery: select evaluated result in Mechanical, verify contour and Min/Max, export evidence again, and save the project.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/skill/failure_taxonomy.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/ansys-result-state-gates/">A result object is not an evaluated result</a>
+        <div class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-mvp-protocol/">A narrow Mechanical delivery protocol</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/forgespec-assembly-spec/">Why ForgeSpec keeps a typed specification between a prompt and CAD</a>
+        <div class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
+        <div class="entry-meta">Aug 10, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

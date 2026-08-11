@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="A result object is not an evaluated result — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/ansys-result-state-gates">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>A result object is not an evaluated result — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>A result object is not an evaluated result</h1>
+      <p class="article-description">Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.</p>
+      <p class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/engineering-software/">Engineering Software</a>, <a href="/12sqwdwq.github.io/writing/topics/cae/">CAE</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/ANSYS_skill/">ANSYS_skill</a></p>
+      <p class="relation">Part 1 of <a href="/12sqwdwq.github.io/writing/series/validating-mechanical-automation/">Validating Mechanical automation</a></p>
+    </header>
+    <div class="prose"><p>The useful distinction in this project is not between “automation” and “manual work.” It is between an object that exists and evidence that supports a precise workflow state. Filesystem and GUI checks still do not establish physical correctness.</p>
+<hr>
+<p><strong>Experiments in checking solver state and result evidence in automated ANSYS Mechanical workflows.</strong></p>
+<p>This repository grew out of a simple validation problem: in Mechanical, the existence of a result object does not imply that the model has been solved and evaluated correctly. I wanted a more explicit way to record what state a workflow had actually reached.</p>
+<p>The current repository is part agent guidance, part failure-case notebook, and part small Python validation prototype. It does not try to prove that a simulation is physically correct. It checks whether the expected delivery files and result evidence exist, then leaves the engineering assumptions and numerical credibility open for review.</p>
+<pre class="hljs"><code>Discovery / SpaceClaim geometry
+  → Workbench project
+  → Mechanical setup and mesh
+  → solver input and solution state
+  → evaluated result evidence
+  → benchmark comparison and report
+</code></pre>
+<p>A geometry file, a result object, or an exported view is not proof of a solved result. The current checks look for the matching Workbench delivery envelope, solver artifacts, an evaluated contour and legend, populated numerical Min/Max values, and a relevant analytical or numerical benchmark.</p>
+<blockquote>
+<p><strong>Working rule:</strong> do not report a workflow as complete merely because the expected objects exist. Report the strongest state that the available solver and post-processing evidence supports.</p>
+</blockquote>
+<h2 id="what-is-in-the-repository" tabindex="-1">What is in the repository</h2>
+<ul>
+<li><code>ansys-mechanical-mvp/</code> — agent guidance and checks for the Discovery-to-Mechanical minimum viable path.</li>
+<li><code>cae-validation-platform/</code> — broader FEM/CFD review notes and experiments with validator/report contracts.</li>
+<li><code>src/ansys_skill_platform/</code> — a small tested Python package for workflow configuration, delivery checks, benchmark references, and CLI experiments.</li>
+<li><code>benchmarks/</code> and <code>examples/</code> — machine-readable cantilever reference data and a configured workflow example.</li>
+<li><code>tests/</code> — unit coverage for configuration, pipeline execution, Mechanical delivery checks, and the benchmark model.</li>
+</ul>
+<h2 id="skills" tabindex="-1">Skills</h2>
+<h3 id="ansys-mechanical-mvp" tabindex="-1">Ansys Mechanical MVP</h3>
+<pre class="hljs"><code>ansys-mechanical-mvp/
+</code></pre>
+<p>Use this skill when working on:</p>
+<ul>
+<li>Discovery or SpaceClaim geometry handoff</li>
+<li>Workbench <code>.wbpj</code> project delivery</li>
+<li>Mechanical <code>Static Structural</code> setup</li>
+<li>mesh/load/result-object review</li>
+<li>PyMAPDL benchmark comparison</li>
+<li>deciding whether Mechanical results are truly solved and evaluated</li>
+</ul>
+<p>Claude Code users can start from:</p>
+<pre class="hljs"><code>CLAUDE.md
+</code></pre>
+<p>Codex users can start from:</p>
+<pre class="hljs"><code>ansys-mechanical-mvp/SKILL.md
+</code></pre>
+<h3 id="broader-cae-validation-notes" tabindex="-1">Broader CAE validation notes</h3>
+<pre class="hljs"><code>cae-validation-platform/
+</code></pre>
+<p>Use this skill when the task is bigger than a single Ansys Mechanical deliverable:</p>
+<ul>
+<li>reviewing a CAE automation repository from a strict FEM/CFD engineering standpoint</li>
+<li>testing how a README/checklist repository might become executable validation tooling</li>
+<li>defining solver-state and result-credibility gates</li>
+<li>designing benchmark databases, validator contracts, report contracts, and plugin boundaries</li>
+<li>planning future support for Mechanical, MAPDL, Fluent, Abaqus, CalculiX, PyMAPDL, PyDPF, or LLM-assisted CAE QA</li>
+</ul>
+<p>The skill deliberately separates:</p>
+<ul>
+<li>physics credibility</li>
+<li>numerical credibility</li>
+<li>solver-state evidence</li>
+<li>postprocessing evidence</li>
+<li>software architecture</li>
+</ul>
+<h2 id="prototype-package" tabindex="-1">Prototype package</h2>
+<p>The current Python layer is deliberately small:</p>
+<pre class="hljs"><code>src/ansys_skill_platform/
+  cli.py
+  benchmarks/
+    cantilever.py
+  validators/
+    mechanical.py
+benchmarks/
+  cantilever/
+    benchmark.json
+tests/
+</code></pre>
+<p>It is an experiment in moving from checklist-driven review toward checks that can be run, tested, and reported consistently.</p>
+<h3 id="cli" tabindex="-1">CLI</h3>
+<p>Run a full configured workflow:</p>
+<pre class="hljs"><code><span class="hljs-variable">$env:PYTHONPATH</span> = <span class="hljs-string">&quot;.\src&quot;</span>
+python <span class="hljs-literal">-m</span> ansys_skill_platform.cli run .\examples\cantilever_workflow.yaml
+</code></pre>
+<p>Run the package directly during development:</p>
+<pre class="hljs"><code><span class="hljs-variable">$env:PYTHONPATH</span> = <span class="hljs-string">&quot;.\src&quot;</span>
+python <span class="hljs-literal">-m</span> ansys_skill_platform.cli benchmark cantilever
+</code></pre>
+<p>Validate a Workbench Mechanical delivery envelope:</p>
+<pre class="hljs"><code><span class="hljs-variable">$env:PYTHONPATH</span> = <span class="hljs-string">&quot;.\src&quot;</span>
+python <span class="hljs-literal">-m</span> ansys_skill_platform.cli validate `
+  <span class="hljs-string">&quot;D:\ansys_runs\benchmark\cantilever_workbench.wbpj&quot;</span> `
+  <span class="hljs-literal">--exports</span> <span class="hljs-string">&quot;D:\ansys_runs\benchmark\mechanical_exports&quot;</span> `
+  <span class="hljs-literal">--json</span> validation<span class="hljs-literal">-report</span>.json
+</code></pre>
+<p>After editable installation, the same command becomes:</p>
+<pre class="hljs"><code>ansys<span class="hljs-literal">-skill</span> validate <span class="hljs-string">&quot;D:\ansys_runs\benchmark\cantilever_workbench.wbpj&quot;</span>
+</code></pre>
+<p>The validator checks the delivery envelope: <code>.wbpj</code>, <code>_files</code>, <code>.mechdb</code>, <code>ds.dat</code>, solver-input tokens, and suspicious AVZ exports. It still does not replace Mechanical GUI validation.</p>
+<h2 id="why-this-skill-exists" tabindex="-1">Why This Skill Exists</h2>
+<p>During the cantilever beam benchmark, the workflow reached several intermediate states that looked close to done but were not actually final deliverables:</p>
+<ul>
+<li><code>.dsco</code> visual geometry existed, but it was not a real Mechanical solver result.</li>
+<li><code>.avz</code> exports existed, but small exported view files were not enough to prove solved contours.</li>
+<li>Mechanical result objects existed in the tree, but they still needed <code>Solve</code> and <code>Evaluate All Results</code>.</li>
+<li>A gray body with empty red Min/Max fields was not an evaluated stress or deformation result.</li>
+</ul>
+<p>This skill keeps those states separate and gives Codex a repeatable review checklist.</p>
+<h2 id="visual-review-examples" tabindex="-1">Visual Review Examples</h2>
+<h3 id="not-yet-accepted-result-object-exists-but-is-not-evaluated" tabindex="-1">Not Yet Accepted: Result Object Exists But Is Not Evaluated</h3>
+<p>The first screenshot shows a Mechanical model where result objects are present in the tree, but the selected result has no real contour and the result values are still blank/red. This is a setup-ready state, not a solved/evaluated delivery.</p>
+<p><img src="/12sqwdwq.github.io/docs/ansys-skill/assets/images/not-evaluated-result.png" alt="Mechanical result object exists but is not evaluated"></p>
+<p>Checklist signals:</p>
+<ul>
+<li>result object is selected</li>
+<li>geometry is still gray</li>
+<li>no stress/deformation contour legend is visible</li>
+<li>Minimum/Maximum fields are empty or red</li>
+<li>result item still needs solve/evaluate</li>
+</ul>
+<h3 id="accepted-target-evaluated-mechanical-contour" tabindex="-1">Accepted Target: Evaluated Mechanical Contour</h3>
+<p>The second screenshot shows the desired target state: Mechanical displays a colored contour with legend, min/max markers, and populated numerical values.</p>
+<p><img src="/12sqwdwq.github.io/docs/ansys-skill/assets/images/evaluated-contour-result.png" alt="Evaluated Mechanical equivalent stress contour"></p>
+<p>Checklist signals:</p>
+<ul>
+<li>body shows colored contour</li>
+<li>legend is visible</li>
+<li>Min/Max markers are displayed</li>
+<li>Details panel contains numerical Minimum/Maximum values</li>
+<li>result object has been evaluated after the latest mesh/load change</li>
+</ul>
+<h2 id="minimum-viable-path" tabindex="-1">Minimum Viable Path</h2>
+<p>The recommended workflow is deliberately narrow:</p>
+<ol>
+<li>Build or edit geometry in Discovery / SpaceClaim.</li>
+<li>Save the geometry as <code>.scdocx</code>.</li>
+<li>Create a Workbench <code>Static Structural</code> system.</li>
+<li>Attach the geometry to the Workbench system.</li>
+<li>Open the <code>Model</code> cell in Mechanical.</li>
+<li>Define material in Mechanical.</li>
+<li>Generate mesh in Mechanical.</li>
+<li>Apply supports and loads in Mechanical.</li>
+<li>Add result objects in Mechanical.</li>
+<li>Solve in Mechanical.</li>
+<li>Evaluate all results in Mechanical.</li>
+<li>Save the <code>.wbpj</code> with its matching <code>_files</code> directory.</li>
+</ol>
+<h2 id="final-acceptance-criteria" tabindex="-1">Final Acceptance Criteria</h2>
+<p>A Workbench Mechanical deliverable is accepted only when all of the following are true:</p>
+<ul>
+<li><code>.wbpj</code> opens without missing-file warnings.</li>
+<li>Matching <code>_files</code> directory exists beside the <code>.wbpj</code>.</li>
+<li>Mechanical Outline contains expected mesh, material, support, load, and result objects.</li>
+<li>Mesh has been generated.</li>
+<li>Solution has been solved after the latest setup change.</li>
+<li>Result objects have been evaluated.</li>
+<li>Selected result shows a colored contour.</li>
+<li>The graphics window shows a legend.</li>
+<li>Details panel shows non-empty Minimum and Maximum values.</li>
+<li>Benchmark cases have a numerical reference, such as Euler-Bernoulli displacement or PyMAPDL output.</li>
+</ul>
+<h2 id="repository-layout" tabindex="-1">Repository Layout</h2>
+<pre class="hljs"><code>CLAUDE.md
+README.md
+pyproject.toml
+ansys-mechanical-mvp/
+  SKILL.md
+  agents/
+    openai.yaml
+  references/
+    mechanical-mvp.md
+  scripts/
+    check_mechanical_delivery.py
+cae-validation-platform/
+  SKILL.md
+  agents/
+    openai.yaml
+  references/
+    strict-fem-cfd-review.md
+    platform-refactor-playbook.md
+src/
+  ansys_skill_platform/
+    cli.py
+    benchmarks/
+    validators/
+benchmarks/
+  cantilever/
+    benchmark.json
+tests/
+assets/
+  images/
+    not-evaluated-result.png
+    evaluated-contour-result.png
+</code></pre>
+<h2 id="quick-filesystem-check" tabindex="-1">Quick Filesystem Check</h2>
+<p>The bundled script can catch missing project pieces and suspicious exports:</p>
+<pre class="hljs"><code>python .\ansys<span class="hljs-literal">-mechanical-mvp</span>\scripts\check_mechanical_delivery.py `
+  <span class="hljs-string">&quot;D:\ansys_runs\benchmark\cantilever_workbench.wbpj&quot;</span> `
+  <span class="hljs-literal">--exports</span> <span class="hljs-string">&quot;D:\ansys_runs\benchmark\mechanical_exports&quot;</span>
+</code></pre>
+<p>This script does not prove engineering correctness. It only checks files. Final validation still happens in Mechanical by visually confirming contours, legend, and numeric result ranges.</p>
+<h2 id="important-distinction" tabindex="-1">Important Distinction</h2>
+<p>Use precise status language:</p>
+<ul>
+<li><code>Geometry ready</code>: Discovery / SpaceClaim geometry exists.</li>
+<li><code>Project ready</code>: <code>.wbpj</code> and <code>_files</code> exist.</li>
+<li><code>Setup ready</code>: Mechanical tree contains material, mesh, supports, loads, and result objects.</li>
+<li><code>Solver input generated</code>: files such as <code>ds.dat</code> exist.</li>
+<li><code>Solved/evaluated</code>: Mechanical shows contour, legend, and non-empty Min/Max values.</li>
+</ul>
+<p>Do not collapse these states into a single &quot;done&quot; status.</p>
+<h2 id="installation" tabindex="-1">Installation</h2>
+<p>To use this skill locally with Codex, copy or clone <code>ansys-mechanical-mvp</code> into your Codex skills directory:</p>
+<pre class="hljs"><code><span class="hljs-built_in">Copy-Item</span> <span class="hljs-literal">-Recurse</span> .\ansys<span class="hljs-literal">-mechanical-mvp</span> <span class="hljs-string">&quot;<span class="hljs-variable">$env:USERPROFILE</span>\.codex\skills\ansys-mechanical-mvp&quot;</span>
+</code></pre>
+<p>Then ask Codex to use the <code>ansys-mechanical-mvp</code> skill when building or reviewing Ansys Discovery / Workbench Mechanical deliverables.</p>
+<h2 id="development" tabindex="-1">Development</h2>
+<p>Run tests with:</p>
+<pre class="hljs"><code><span class="hljs-variable">$env:PYTHONPATH</span> = <span class="hljs-string">&quot;.\src&quot;</span>
+python <span class="hljs-literal">-m</span> unittest discover <span class="hljs-literal">-s</span> tests
+</code></pre>
+<p>Run the validator on a project:</p>
+<pre class="hljs"><code><span class="hljs-variable">$env:PYTHONPATH</span> = <span class="hljs-string">&quot;.\src&quot;</span>
+python <span class="hljs-literal">-m</span> ansys_skill_platform.cli validate &lt;project.wbpj&gt; <span class="hljs-literal">--exports</span> &lt;optional<span class="hljs-literal">-export-dir</span>&gt;
+</code></pre>
+<h2 id="roadmap" tabindex="-1">Roadmap</h2>
+<p>Possible next experiments:</p>
+<ul>
+<li>package the validator as a stable CLI</li>
+<li>add richer Mechanical solver-input parsing</li>
+<li>generate JSON and Markdown engineering reports</li>
+<li>add benchmark database entries beyond the cantilever case</li>
+<li>add PyMAPDL / PyDPF result extraction</li>
+<li>add mesh-convergence and sanity-check workflows</li>
+</ul>
+<p>Longer-term direction:</p>
+<ul>
+<li>plugin validators for Mechanical, MAPDL, Fluent, Abaqus, and CalculiX</li>
+<li>simulation QA dashboards</li>
+<li>CI checks for benchmark regressions</li>
+<li>LLM-assisted engineering review agents</li>
+</ul>
+<h2 id="license" tabindex="-1">License</h2>
+<p><a href="https://github.com/12sqawdwq/ANSYS_skill/blob/main/LICENSE">MIT</a>. ANSYS product names and trademarks belong to their respective owners; this repository is an independent open-source validation project.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/ANSYS_skill/blob/main/README.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-mvp-protocol/">A narrow Mechanical delivery protocol</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-failure-taxonomy/">Failure taxonomy for automated Mechanical handoffs</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/forgespec-assembly-spec/">Why ForgeSpec keeps a typed specification between a prompt and CAD</a>
+        <div class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
+        <div class="entry-meta">Aug 10, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

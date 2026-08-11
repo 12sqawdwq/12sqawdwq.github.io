@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ArkTS UI, browser OAuth and deep links, native Mihomo libraries, VPN Extension limits, and repository-level evidence.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="What the HarmonyOS prototype could and could not verify — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="ArkTS UI, browser OAuth and deep links, native Mihomo libraries, VPN Extension limits, and repository-level evidence.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/harmonyos-integration-boundaries">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>What the HarmonyOS prototype could and could not verify — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>What the HarmonyOS prototype could and could not verify</h1>
+      <p class="article-description">ArkTS UI, browser OAuth and deep links, native Mihomo libraries, VPN Extension limits, and repository-level evidence.</p>
+      <p class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/embedded/">Embedded</a>, <a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a>, <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/Harmony_TaskFlow/">Harmony_TaskFlow</a></p>
+
+    </header>
+    <div class="prose"><h2 id="how-the-project-changed" tabindex="-1">How the project changed</h2>
+<p>Harmony TaskFlow began as a task application. It became a systems-integration experiment because the difficult work accumulated at boundaries: browser-to-app deep links, Calendar OAuth, Cloudflare Worker state, ArkTS/native interfaces, multi-ABI Go libraries, VPN Extension behavior, and command-line HarmonyOS builds.</p>
+<p>The repository now contains two applications. TaskFlow covers tasks, boards, profile state, and Calendar synchronization. Mihomo Harmony explores a standalone native core and VPN-facing application behavior.</p>
+<h2 id="calendar-path" tabindex="-1">Calendar path</h2>
+<pre class="hljs"><code>TaskFlow HAP
+  → sign-in in the system browser
+  → Worker OAuth callback
+  → hashed session and encrypted token storage
+  → taskflow:// deep link
+  → Calendar API synchronization
+</code></pre>
+<p>The purpose of this split is to avoid placing a reusable client secret or a desktop-local callback service inside the application flow. Public screenshots and fixtures exclude account addresses, subscription URLs, node credentials, and tokens.</p>
+<h2 id="native-core-path" tabindex="-1">Native core path</h2>
+<p>The Mihomo source is pinned inside the repository, with a HarmonyOS c-shared adapter and a registry for source version, ABI, checksums, and release policy. Generated shared libraries and application packages are not committed. This keeps the source relationship visible while avoiding a binary store in Git history.</p>
+<h2 id="evidence-collected" tabindex="-1">Evidence collected</h2>
+<p>The TaskFlow application and its main views were exercised on a HarmonyOS 6.1.1 API 24 phone emulator. The cloud-auth worker was deployed and health-checked. The native core's local proxy path was verified, and repository hygiene checks cover tracked fixtures and secret-shaped files.</p>
+<h2 id="boundary-that-remained" tabindex="-1">Boundary that remained</h2>
+<p>The emulator image did not provide enough support to treat system VPN behavior as verified. A working local proxy and a loadable multi-ABI core are not equivalent to a validated device-level VPN Extension. The repository therefore keeps those states separate.</p>
+<p>The current local portfolio environment also lacks the full HarmonyOS SDK, OHPM, Hvigor, and HDC toolchain, so this notebook does not claim a fresh local full build.</p>
+<h2 id="what-i-would-test-next" tabindex="-1">What I would test next</h2>
+<p>The next useful evidence would come from a supported physical device: VPN lifecycle, permission transitions, restart behavior, network handoff, foreground/background state, ABI loading, and failure recovery. Until then, the prototype remains an integration record rather than a finished networking product.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/Harmony_TaskFlow">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-architecture/">One shell, two observers: the persistent terminal architecture</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-validation/">What I tested in the persistent terminal broker</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

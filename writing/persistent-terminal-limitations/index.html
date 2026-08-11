@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Failure boundaries in shell recovery, cancellation, replay, backpressure, terminal negotiation, and interactive programs.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Known limits of a shared persistent terminal — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Failure boundaries in shell recovery, cancellation, replay, backpressure, terminal negotiation, and interactive programs.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-limitations">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>Known limits of a shared persistent terminal — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Note</p>
+      <h1>Known limits of a shared persistent terminal</h1>
+      <p class="article-description">Failure boundaries in shell recovery, cancellation, replay, backpressure, terminal negotiation, and interactive programs.</p>
+      <p class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a> · <a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a>, <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/code-with-pi/">code-with-pi</a></p>
+      <p class="relation">Part 3 of <a href="/12sqwdwq.github.io/writing/series/building-code-with-pi/">Building code-with-pi</a></p>
+    </header>
+    <div class="prose"><p>Persistence is useful only if its failure boundaries remain visible. These are the current limits rather than a portability or reliability claim.</p>
+<hr>
+<ol>
+<li>Windows requires ConPTY (Windows 10 1809/build 17763 or later). The validated host is Windows 11 build 26200.</li>
+<li>Linux/POSIX is validated on Arch Linux with Bash 5.3, zsh 5.9.1, Oh My Zsh/Powerlevel10k, tmux 3.6b, Kitty 0.47.1, GCC 16.1.1, and Pi 0.81.1. This does not yet imply distribution-wide or macOS/BSD portability. Automatic shell restart, the Windows 64 MiB attach writer queue, and the PowerShell-specific 150 ms output-settle path do not yet have POSIX parity.</li>
+<li>A command that exits, replaces, or fatally corrupts the shell can destroy shell-local state. The broker reports the loss. Windows can create a fresh shell when configured; POSIX automatic restart is not implemented, and neither platform can reconstruct in-memory variables/functions.</li>
+<li>Ctrl+C is delivered first as ETX through the PTY. Agent cancellation escalates after configured grace periods: Windows uses descendant/Job termination, while POSIX signals the foreground process group. Process discovery and ownership transitions are inherently racy.</li>
+<li>PowerShell and PSReadLine can render bytes after prompt/end callbacks. The Windows broker therefore waits for a 150 ms output-quiescent window. This adds a small command-completion latency and is a pragmatic terminal boundary, not a guarantee against a deliberately delayed background writer.</li>
+<li>Background jobs that continue writing after their launching command has settled are shared terminal output. Later bytes appear in the pane/transcript and can overlap a later command, as they would in a normal interactive shell.</li>
+<li>Reconnect replays a bounded 256 KiB byte tail. It does not emulate terminal screen state, so arbitrary alternate-screen TUIs cannot always restore their prior display after detach. The complete raw transcript remains on disk.</li>
+<li>Monitor/terminal state is kept outside PTY screen content: Windows uses the active pane title and POSIX uses <code>pane_title</code> displayed by a tmux border. A child program can temporarily set its own title, but the attach client reapplies local mode status after the next complete output record or local input event. A live Kitty screenshot passed basic alternate-screen cursor/color/Unicode rendering and restoration; complex full-screen applications during live resize remain application-specific.</li>
+<li><code>Ctrl+\\</code> is reserved by the attach client in terminal mode and cannot be sent to the child through that pane. It was selected to avoid interpreting ordinary <code>:m</code>/<code>:t</code> shell text as local commands. Ctrl+] remains reserved for detach.</li>
+<li>Monitor mode passes recognized CSI/OSC/DCS terminal-generated replies while blocking ordinary human input. Exotic private terminal reply formats outside that recognizer may be ignored; switch to terminal mode if an unusual application requires them.</li>
+<li>Windows attach delivery is bounded to 64 MiB. A terminal that falls more than that far behind is disconnected to protect broker memory. POSIX attach writes are currently synchronous and do not yet provide equivalent queue/backpressure behavior.</li>
+<li>PowerShell object output is passed through a streaming text formatter so the model and transcript receive visible output before completion. Complex formatting can differ slightly from an unwrapped top-level pipeline. Native/TUI programs still write directly to the ConPTY.</li>
+<li>The prompt/helper functions can be intentionally overwritten by a command. The wrapper reinstalls the marker prompt where possible, but this is not a sandbox against hostile same-user shell mutation.</li>
+<li>Marker nonces are random and prevent accidental/foreign OSC collisions. Code running inside the same shell can inspect process state and may forge markers; it already has the user's authority and is outside the isolation boundary.</li>
+<li>Session transcripts and command files are not redacted. Commands, paths, output, and secrets printed by programs remain on disk until cleaned.</li>
+<li><code>pio</code> uses <code>wt.exe -w last</code> when invoked inside Windows Terminal. <code>-w 0</code> was rejected because it targets the first Terminal window rather than reliably following the caller on multi-window desktops. A different Terminal window becoming most-recently-used during the short launch interval can still affect Windows Terminal's own routing.</li>
+<li>The extension overrides <code>bash</code> only when all workspace environment variables are present. <code>pi-raw</code> intentionally retains stock Pi behavior.</li>
+<li>The optional <code>-SetAsDefaultPi</code> path edits a marker-delimited profile block after making a backup. It was not enabled on the validation machine; the default no-profile install and uninstall were tested.</li>
+<li>POSIX commands are dot-sourced to preserve shell state. If a timeout interrupts a foreground command in a multi-statement script, Bash can continue with later statements before returning to the prompt. The broker still reports <code>TIMED_OUT</code>/130, but this is not yet a strict stop-the-script guarantee; destructive multi-step commands should use explicit failure guards.</li>
+<li>The extension currently returns failed/timed-out/interrupted status as structured tool text rather than throwing. Pi therefore does not set its native <code>isError: true</code> flag even though the broker status and exit code are correct.</li>
+<li>Because commands run in an interactive PTY, programs may enable pagers or interactive UI that would be disabled in a pipe. Agent commands should use noninteractive flags such as <code>git --no-pager</code>; timeout recovery works, but an unexpected pager can otherwise wait indefinitely.</li>
+<li>zsh startup plugins and <code>precmd</code> hooks are intentionally preserved. Their output, latency, network calls, or side effects become part of shared prompt recovery and may enter command output before the private marker. A broken user <code>.zshrc</code> can prevent shell readiness; <code>pio</code> fails after its bounded startup wait instead of launching Pi against an unsettled shell.</li>
+<li>The zsh adapter reloads configured startup files in a new process; it cannot clone non-exported variables, temporary aliases/functions, directory stacks, ZLE buffers, or other in-memory state from the caller's already-running zsh.</li>
+</ol>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/LIMITATIONS.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-architecture/">One shell, two observers: the persistent terminal architecture</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-validation/">What I tested in the persistent terminal broker</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

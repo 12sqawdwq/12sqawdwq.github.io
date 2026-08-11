@@ -1,0 +1,217 @@
+[
+  {
+    "title": "A result object is not an evaluated result",
+    "description": "Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.",
+    "date": "2026-05-17",
+    "updated": "2026-08-11",
+    "type": "Build Note",
+    "topics": [
+      "Engineering Software",
+      "CAE",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "ANSYS_skill",
+    "series": "Validating Mechanical automation",
+    "featured": true,
+    "url": "/12sqwdwq.github.io/writing/ansys-result-state-gates/"
+  },
+  {
+    "title": "Separating measured cough-model runs from the experiment plan",
+    "description": "A subject-disjoint Coswara pipeline, compact teacher–student baselines, and the evidence boundary before any clinical or SOTA claim.",
+    "date": "2026-04-27",
+    "updated": "2026-08-11",
+    "type": "Research Note",
+    "topics": [
+      "Medical AI",
+      "Scientific Computing"
+    ],
+    "status": "working",
+    "project": "CoughKD",
+    "series": null,
+    "featured": true,
+    "url": "/12sqwdwq.github.io/writing/coughkd-measured-baseline/"
+  },
+  {
+    "title": "The trend survived mesh refinement; the amplitude did not",
+    "description": "A three-level finite-element audit where response ordering remained stable but the absolute output missed the registered mesh-independence criterion.",
+    "date": "2026-08-10",
+    "updated": null,
+    "type": "Research Note",
+    "topics": [
+      "CAE",
+      "Scientific Computing"
+    ],
+    "status": "working",
+    "project": "ANSYS_simulation_IOP",
+    "series": null,
+    "featured": true,
+    "url": "/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/"
+  },
+  {
+    "title": "Why ForgeSpec keeps a typed specification between a prompt and CAD",
+    "description": "Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.",
+    "date": "2026-05-24",
+    "updated": "2026-08-11",
+    "type": "Build Note",
+    "topics": [
+      "Engineering Software",
+      "CAD",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "ForgeSpec-Studio",
+    "series": null,
+    "featured": true,
+    "url": "/12sqwdwq.github.io/writing/forgespec-assembly-spec/"
+  },
+  {
+    "title": "What the HarmonyOS prototype could and could not verify",
+    "description": "ArkTS UI, browser OAuth and deep links, native Mihomo libraries, VPN Extension limits, and repository-level evidence.",
+    "date": "2026-08-04",
+    "updated": "2026-08-11",
+    "type": "Build Note",
+    "topics": [
+      "Embedded",
+      "Systems",
+      "Developer Tools"
+    ],
+    "status": "published",
+    "project": "Harmony_TaskFlow",
+    "series": null,
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/"
+  },
+  {
+    "title": "When a parameter sweep cannot identify its own model",
+    "description": "Why independent endpoints for most eyelid thicknesses cannot support thickness-specific rational calibration parameters.",
+    "date": "2026-08-06",
+    "updated": null,
+    "type": "Research Note",
+    "topics": [
+      "CAE",
+      "Scientific Computing"
+    ],
+    "status": "working",
+    "project": "ANSYS_simulation_IOP",
+    "series": null,
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/iop-parameter-identifiability/"
+  },
+  {
+    "title": "Separating DNS failure from slow CDN delivery",
+    "description": "A redacted remote-development download investigation that isolates resolver, redirect, edge-selection, and throughput stages.",
+    "date": "2026-04-29",
+    "updated": "2026-08-11",
+    "type": "Note",
+    "topics": [
+      "Systems",
+      "Developer Tools"
+    ],
+    "status": "published",
+    "project": null,
+    "series": null,
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/jetbrains-network-validation/"
+  },
+  {
+    "title": "Failure taxonomy for automated Mechanical handoffs",
+    "description": "Seven ways an ANSYS workflow can look complete while its solver, evaluation, delivery, or exported evidence is still incomplete.",
+    "date": "2026-06-01",
+    "updated": null,
+    "type": "Note",
+    "topics": [
+      "Engineering Software",
+      "CAE",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "ANSYS_skill",
+    "series": "Validating Mechanical automation",
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/mechanical-failure-taxonomy/"
+  },
+  {
+    "title": "A narrow Mechanical delivery protocol",
+    "description": "A stepwise Discovery-to-Workbench-to-Mechanical path with explicit success signals and recovery actions.",
+    "date": "2026-06-01",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Engineering Software",
+      "CAE",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "ANSYS_skill",
+    "series": "Validating Mechanical automation",
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/mechanical-mvp-protocol/"
+  },
+  {
+    "title": "One shell, two observers: the persistent terminal architecture",
+    "description": "How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.",
+    "date": "2026-08-06",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Systems",
+      "Developer Tools",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "code-with-pi",
+    "series": "Building code-with-pi",
+    "featured": true,
+    "url": "/12sqwdwq.github.io/writing/persistent-terminal-architecture/"
+  },
+  {
+    "title": "Known limits of a shared persistent terminal",
+    "description": "Failure boundaries in shell recovery, cancellation, replay, backpressure, terminal negotiation, and interactive programs.",
+    "date": "2026-08-06",
+    "updated": null,
+    "type": "Note",
+    "topics": [
+      "Systems",
+      "Developer Tools",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "code-with-pi",
+    "series": "Building code-with-pi",
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/persistent-terminal-limitations/"
+  },
+  {
+    "title": "What I tested in the persistent terminal broker",
+    "description": "Observed Windows and Linux checks for PTY lifecycle, authenticated IPC, state persistence, cancellation, replay, and human takeover.",
+    "date": "2026-08-06",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Systems",
+      "Developer Tools",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": "code-with-pi",
+    "series": "Building code-with-pi",
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/persistent-terminal-validation/"
+  },
+  {
+    "title": "A T-Rex runner on a 16×2 character LCD",
+    "description": "Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.",
+    "date": "2026-06-01",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Embedded"
+    ],
+    "status": "published",
+    "project": "MES204_lcd",
+    "series": null,
+    "featured": false,
+    "url": "/12sqwdwq.github.io/writing/stm32-lcd-trex/"
+  }
+]

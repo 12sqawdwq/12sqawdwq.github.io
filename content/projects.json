@@ -1,0 +1,98 @@
+[
+  {
+    "id": "code-with-pi",
+    "name": "code-with-pi",
+    "group": "Systems and developer tools",
+    "status": "active experiment",
+    "summary": "A C11 broker keeps one PTY/ConPTY shell alive so Pi and its user can observe or take over the same terminal through authenticated local IPC.",
+    "repo": "https://github.com/12sqawdwq/code-with-pi",
+    "selected": true
+  },
+  {
+    "id": "ANSYS_skill",
+    "name": "ANSYS_skill",
+    "group": "Engineering and scientific computing",
+    "status": "experimental",
+    "summary": "Checks which state an automated Mechanical workflow actually reached without treating file or result-object existence as physical validation.",
+    "repo": "https://github.com/12sqawdwq/ANSYS_skill",
+    "selected": true
+  },
+  {
+    "id": "ForgeSpec-Studio",
+    "name": "ForgeSpec-Studio",
+    "group": "Engineering and scientific computing",
+    "status": "prototype",
+    "summary": "Turns a loose engineering brief into typed intent, a reviewable AssemblySpec, and deterministic CadQuery source and geometry.",
+    "repo": "https://github.com/12sqawdwq/ForgeSpec-Studio",
+    "selected": true,
+    "links": [{"label":"structure","url":"docs/html/forgespec-studio-app/"}]
+  },
+  {
+    "id": "ANSYS_simulation_IOP",
+    "name": "ANSYS_simulation_IOP",
+    "group": "Engineering and scientific computing",
+    "status": "research code",
+    "summary": "APDL models and analysis scripts for transpalpebral tonometry, retaining provenance, mesh dependence, non-identifiability, and failed calibration checks.",
+    "repo": "https://github.com/12sqawdwq/ANSYS_simulation_IOP",
+    "selected": true,
+    "links": [{"label":"call graph","url":"docs/html/eye-pressure-callgraph/"}]
+  },
+  {
+    "id": "Harmony_TaskFlow",
+    "name": "Harmony_TaskFlow",
+    "group": "Systems and developer tools",
+    "status": "prototype",
+    "summary": "HarmonyOS integration work involving ArkTS, deep links, Calendar OAuth, Workers/D1, VPN Extension behavior, and a multi-ABI Mihomo core.",
+    "repo": "https://github.com/12sqawdwq/Harmony_TaskFlow",
+    "selected": true
+  },
+  {
+    "id": "CoughKD",
+    "name": "CoughKD",
+    "group": "Engineering and scientific computing",
+    "status": "research prototype",
+    "summary": "Subject-disjoint cough-audio preparation and PyTorch/CUDA teacher–student experiments with measured runs separated from planned targets.",
+    "repo": "https://github.com/12sqawdwq/CoughKD",
+    "selected": true
+  },
+  {
+    "id": "pixel_probetop",
+    "name": "pixel_probetop",
+    "group": "Systems and developer tools",
+    "status": "supporting project",
+    "summary": "A dependency-light Python hub and Linux agent for multi-server monitoring, with a small Web UI and Android/Pixel viewer.",
+    "repo": "https://github.com/12sqawdwq/pixel_probetop"
+  },
+  {
+    "id": "stm32-cli-toolkit",
+    "name": "stm32-cli-toolkit",
+    "group": "Systems and developer tools",
+    "status": "small tool",
+    "summary": "Shell wrappers around OpenOCD for building and flashing STM32 projects from a terminal or headless machine.",
+    "repo": "https://github.com/12sqawdwq/stm32-cli-toolkit"
+  },
+  {
+    "id": "MES204_lcd",
+    "name": "MES204 LCD projects",
+    "group": "Embedded and small experiments",
+    "status": "course experiments",
+    "summary": "STM32F446 LCD1602/2004 work: a T-Rex game, custom character rendering, and graphics experiments on constrained displays.",
+    "repo": "https://github.com/12sqawdwq/MES204_lcd"
+  },
+  {
+    "id": "terminal-gauss-Mamma-viz",
+    "name": "terminal-gauss-Mamma-viz",
+    "group": "Embedded and small experiments",
+    "status": "small experiment",
+    "summary": "A C terminal renderer for sampled mathematical surfaces using perspective projection, a z-buffer, and ANSI color.",
+    "repo": "https://github.com/12sqawdwq/terminal-gauss-Mamma-viz"
+  },
+  {
+    "id": "sky_monitor_api",
+    "name": "sky_monitor_api",
+    "group": "Engineering and scientific computing",
+    "status": "supporting project",
+    "summary": "A FastAPI service that calculates visible stars, planets, and deep-sky objects for a location and observation time.",
+    "repo": "https://github.com/12sqawdwq/sky_monitor_api"
+  }
+]

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="A T-Rex runner on a 16×2 character LCD — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/stm32-lcd-trex">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>A T-Rex runner on a 16×2 character LCD — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>A T-Rex runner on a 16×2 character LCD</h1>
+      <p class="article-description">Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.</p>
+      <p class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/embedded/">Embedded</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/MES204_lcd/">MES204 LCD projects</a></p>
+
+    </header>
+    <div class="prose"><p>This course project used a character display as a constrained rendering system. The implementation note retains the original architecture description and its attribution to earlier LCD game examples.</p>
+<hr>
+<blockquote>
+<p>A faithful implementation of the classic Chrome Dino game on the STM32F446xx microcontroller, featuring a custom LCD1602 rendering engine and interrupt-driven architecture.</p>
+</blockquote>
+<p><img src="/12sqwdwq.github.io/docs/mes204-lcd/demo.gif" alt="Demo"></p>
+<p><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License">
+<img src="https://img.shields.io/badge/platform-STM32-green.svg" alt="Platform">
+<img src="https://img.shields.io/badge/language-C-orange.svg" alt="Language"></p>
+<h2 id="project-abstract" tabindex="-1">📖 Project Abstract</h2>
+<p>This project serves as a detailed case study in embedded systems design, porting the mechanics of the famous Chrome T-Rex Runner to the <strong>STM32F446xx</strong> platform.</p>
+<p>Unlike simple loops often found in beginner projects, this implementation transforms a minimalist LCD1602 display into a constrained real-time rendering engine. By leveraging the microcontroller's hardware capabilities—specifically <strong>Timer Interrupts</strong> for deterministic timing and <strong>External Interrupts (EXTI)</strong> for low-latency input—we achieve fluid animation and responsive gameplay without blocking the CPU. The core challenge involves optimizing the game's state machine for limited <strong>Custom Graphics RAM (CGRAM)</strong> resources.</p>
+<hr>
+<h2 id="hardware-requirements" tabindex="-1">🛠 Hardware Requirements</h2>
+<ul>
+<li><strong>Microcontroller:</strong> STM32F446xx (e.g., Nucleo-F446RE)</li>
+<li><strong>Display:</strong> LCD1602 (16x2 Character LCD)</li>
+<li><strong>Input:</strong> Push Button (Connected to PC13)</li>
+<li><strong>Debugger:</strong> ST-Link V2/V3</li>
+</ul>
+<hr>
+<h2 id="hardware-platform-stm32f446xx" tabindex="-1">🔩 Hardware Platform: STM32F446xx</h2>
+<p>The choice of the STM32F446xx is central to this project, offering a powerful core and rich peripheral set ideal for real-time applications.</p>
+<h3 id="key-features" tabindex="-1">Key Features</h3>
+<ul>
+<li><strong>Core:</strong> ARM Cortex-M4 running at up to 180 MHz.</li>
+<li><strong>Memory:</strong> 512 KB Flash, 128 KB SRAM.</li>
+<li><strong>Peripherals:</strong> Multiple timers, ADCs, DACs, and communication interfaces.</li>
+</ul>
+<h3 id="chip-architecture-pinout" tabindex="-1">Chip Architecture &amp; Pinout</h3>
+<p>Below are diagrams detailing the architecture and pin definitions of the STM32F446xx, which are crucial for understanding the hardware connections and capabilities.</p>
+<p><strong>STM32F4 MCU Package Structure:</strong>
+<img src="/12sqwdwq.github.io/docs/mes204-lcd/STM32F4MCUPackageStructure.png" alt="STM32F4 MCU Package Structure"></p>
+<p><strong>Pin Definitions for the Chip:</strong>
+<img src="/12sqwdwq.github.io/docs/mes204-lcd/PinDefinitionsfortheChip.png" alt="Pin Definitions for the Chip"></p>
+<p><strong>Chip Data Link Architecture:</strong>
+<img src="/12sqwdwq.github.io/docs/mes204-lcd/ChipDataLinkArchitecture.png" alt="Chip Data Link Architecture"></p>
+<p><strong>Firmware Components:</strong>
+<img src="/12sqwdwq.github.io/docs/mes204-lcd/FrimwareComponents.png" alt="Firmware Components"></p>
+<p><strong>STM32CubeF4 Architecture Overview:</strong>
+<img src="/12sqwdwq.github.io/docs/mes204-lcd/STM32CubeF4ArchitectureOverview.png" alt="STM32CubeF4 Architecture Overview"></p>
+<hr>
+<h2 id="architectural-deep-dive" tabindex="-1">🏗 Architectural Deep Dive</h2>
+<h3 id="1-real-time-constraints-timing" tabindex="-1">1. Real-Time Constraints &amp; Timing</h3>
+<p>The game operates as a fixed-rate real-time system. We utilize hardware interrupts to decouple game logic from input handling, ensuring that heavy rendering tasks never delay input detection.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:left">Parameter</th>
+<th style="text-align:left">Configuration</th>
+<th style="text-align:left">Mechanism</th>
+<th style="text-align:left">C Language Entry Point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>Frame Rate</strong></td>
+<td style="text-align:left"><strong><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>20</mn><mtext> FPS</mtext></mrow><annotation encoding="application/x-tex">20 \text{ FPS}</annotation></semantics></math></span></strong> (<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>50</mn><mtext>ms</mtext></mrow><annotation encoding="application/x-tex">50 \text{ms}</annotation></semantics></math></span> interval)</td>
+<td style="text-align:left"><strong>TIM1 Update Interrupt</strong></td>
+<td style="text-align:left"><code>HAL_TIM_PeriodElapsedCallback()</code> calls <code>Game_Core_Loop()</code></td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Input Latency</strong></td>
+<td style="text-align:left">Sub-millisecond</td>
+<td style="text-align:left"><strong>PC13 EXTI Interrupt</strong></td>
+<td style="text-align:left"><code>HAL_GPIO_EXTI_Callback()</code> sets <code>jump_order</code> flag</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>Synchronization</strong></td>
+<td style="text-align:left">Global <code>volatile</code> Flags</td>
+<td style="text-align:left">Used to communicate input commands between high-priority ISRs and application logic.</td>
+<td style="text-align:left"><code>extern volatile bool jump_order;</code></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="2-repository-structure" tabindex="-1">2. Repository Structure</h3>
+<p>The project adheres to the standard <strong>STM32CubeIDE</strong> file structure, keeping hardware abstraction separated from game logic.</p>
+<pre class="hljs"><code>├── Core/
+│   ├── Inc/
+│   │   ├── dinogame.h           // Game state definitions and function prototypes
+│   │   ├── lcd.h                // LCD struct and Low-level API declarations
+│   │   └── main.h
+│   └── Src/
+│       ├── dinogame.c           // Core game logic, physics, and collision detection
+│       ├── lcd.c                // LCD driver implementation and CGRAM bitmaps
+│       ├── main.c               // MCU peripheral setup and main while(1) loop
+│       └── stm32f4xx_it.c       // Interrupt Service Routines (TIM1, EXTI)
+├── Drivers/                     // STM32 HAL Drivers
+├── CMakeLists.txt               // Build configuration
+└── STM32F446XX_FLASH.ld         // Linker script
+</code></pre>
+<h2 id="code-logic-and-implementation" tabindex="-1">💻 Code Logic and Implementation</h2>
+<h3 id="1-game-state-machine-gsm" tabindex="-1">1. Game State Machine (GSM)</h3>
+<p>Located in <code>dinogame.c</code>, the obstacle system mimics the original game's behavior. Visual movement is encoded in a <strong>5-state cyclical transition</strong> (<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span> to <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn></mrow><annotation encoding="application/x-tex">4</annotation></semantics></math></span>) to simulate smooth scrolling on a blocky display.</p>
+<ul>
+<li><strong>Initialization:</strong> <code>Game_Status_Init()</code> resets arrays, ensuring <code>grass_status[COL]</code> is zeroed.</li>
+<li><strong>Propagation:</strong> The <code>Game_Update_Grass()</code> function executes transitions using in-place array modifications. It uses index skipping (e.g., <code>i = i + 2</code>) to prevent processing the same obstacle twice in one frame.</li>
+</ul>
+<pre class="hljs"><code><span class="hljs-comment">// Example: Core Grass Logic (dinogame.c)</span>
+<span class="hljs-keyword">if</span> (grass_status[i] == <span class="hljs-number">1</span>) {
+    <span class="hljs-keyword">if</span> (i == COL - <span class="hljs-number">1</span>) {
+        <span class="hljs-comment">// Handle end of screen</span>
+        <span class="hljs-keyword">return</span>;
+    } <span class="hljs-keyword">else</span> {
+        grass_status[i] = <span class="hljs-number">2</span>;     <span class="hljs-comment">// Current block transitions state</span>
+        grass_status[i + <span class="hljs-number">1</span>] = <span class="hljs-number">4</span>; <span class="hljs-comment">// Next block prepares to render</span>
+        i = i + <span class="hljs-number">2</span>;               <span class="hljs-comment">// Skip index to prevent double processing</span>
+    }
+}
+<span class="hljs-comment">// Collision logic follows...</span>
+</code></pre>
+<h3 id="2-physics-character-rendering" tabindex="-1">2. Physics &amp; Character Rendering</h3>
+<p>The character uses a <strong>16-step jump cycle</strong> (<code>JUMP_CYCLE = 16</code>). The <code>display_jump_status</code> function maps specific points in this cycle to visual CGRAM frames to achieve animation:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:left">Jump Status Range</th>
+<th style="text-align:left">Row 0 (Top)</th>
+<th style="text-align:left">Row 1 (Bottom)</th>
+<th style="text-align:left">Visual Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0</mn></mrow><annotation encoding="application/x-tex">0</annotation></semantics></math></span></td>
+<td style="text-align:left">Space (' ')</td>
+<td style="text-align:left"><code>DINO_A</code> / <code>DINO_B</code></td>
+<td style="text-align:left">Running/Standing (Ground)</td>
+</tr>
+<tr>
+<td style="text-align:left"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>→</mo><mn>4</mn></mrow><annotation encoding="application/x-tex">1 \to 4</annotation></semantics></math></span></td>
+<td style="text-align:left"><code>DINO_JUMP_BOTTOM</code></td>
+<td style="text-align:left"><code>DINO_A</code></td>
+<td style="text-align:left">Low Jump (Body Split)</td>
+</tr>
+<tr>
+<td style="text-align:left"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>→</mo><mn>11</mn></mrow><annotation encoding="application/x-tex">5 \to 11</annotation></semantics></math></span></td>
+<td style="text-align:left"><code>DINO_JUMP_TOP</code></td>
+<td style="text-align:left">Space (' ')</td>
+<td style="text-align:left">Mid-High Jump (Body in Top Row)</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="3-asynchronous-input-handling" tabindex="-1">3. Asynchronous Input Handling</h3>
+<p>To achieve maximum responsiveness, button input is handled entirely in the interrupt context (ISR).</p>
+<pre class="hljs"><code><span class="hljs-comment">// Example: EXTI Handler (stm32f4xx_it.c)</span>
+<span class="hljs-type">void</span> <span class="hljs-title function_">HAL_GPIO_EXTI_Callback</span><span class="hljs-params">(<span class="hljs-type">uint16_t</span> GPIO_Pin)</span> {
+    <span class="hljs-comment">// ... Debouncing logic ...</span>
+    <span class="hljs-keyword">if</span> (game_start == <span class="hljs-literal">false</span>) {
+        game_start = <span class="hljs-literal">true</span>;
+        Lcd_clear(&amp;lcd); <span class="hljs-comment">// Immediate feedback</span>
+    } <span class="hljs-keyword">else</span> {
+        jump_order = <span class="hljs-literal">true</span>; <span class="hljs-comment">// Signal jump request to the core logic</span>
+    }
+}
+</code></pre>
+<h2 id="graphics-implementation-via-cgram" tabindex="-1">🎨 Graphics Implementation via CGRAM</h2>
+<p>The visual fidelity is achieved by exploiting the eight available Custom Graphics Character slots (CGRAM) in the HD44780 controller. The <code>Lcd_load_custom_chars()</code> function populates these slots during initialization.</p>
+<p><img src="/12sqwdwq.github.io/docs/mes204-lcd/custom_characters.png" alt="Custom Characters"></p>
+<h3 id="custom-character-mapping" tabindex="-1">Custom Character Mapping</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:left">CGRAM Address</th>
+<th style="text-align:left">Macro</th>
+<th style="text-align:left">Graphic Purpose</th>
+<th style="text-align:left">Defined In</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">0x00 - 0x03</td>
+<td style="text-align:left"><code>CHAR_GRASS_F0</code> - <code>F3</code></td>
+<td style="text-align:left">Obstacle animation frames (encoded arrays)</td>
+<td style="text-align:left"><code>lcd.c</code></td>
+</tr>
+<tr>
+<td style="text-align:left">0x04 - 0x07</td>
+<td style="text-align:left"><code>CHAR_DINO_A</code> - <code>JUMP</code></td>
+<td style="text-align:left">Dino run cycle and jump sequence</td>
+<td style="text-align:left"><code>lcd.c</code></td>
+</tr>
+<tr>
+<td style="text-align:left">🚀 Execution Protocol</td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+<td style="text-align:left"></td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="1-compilation" tabindex="-1">1. Compilation</h3>
+<ul>
+<li><strong>Toolchain:</strong> Ensure ARM-None-EABI GCC and STM32 HAL libraries are configured.</li>
+<li><strong>Flags:</strong> <code>-mcpu=cortex-m4 -mthumb</code></li>
+<li><strong>Timer Config:</strong> Verify <code>MX_TIM1_Init</code> settings match the 50 ms target (Prescaler and Period calculated based on APB2 clock).</li>
+</ul>
+<h3 id="2-deployment" tabindex="-1">2. Deployment</h3>
+<ul>
+<li>Flash the generated <code>.elf</code> or <code>.bin</code> binary to the STM32F446xx target using the ST-Link utility or OpenOCD.</li>
+</ul>
+<h3 id="3-controls" tabindex="-1">3. Controls</h3>
+<ul>
+<li><strong>Boot:</strong> The system initializes and displays a waiting prompt.</li>
+<li><strong>Start:</strong> Press the User Button (PC13) to set <code>game_start = true</code>.</li>
+<li><strong>Play:</strong> Press the button to trigger a jump (<code>jump_order = true</code>).</li>
+<li><strong>Score:</strong> Survival time is tracked on the top line of the display.</li>
+</ul>
+<h2 id="acknowledgements-references" tabindex="-1">🤝 Acknowledgements &amp; References</h2>
+<p>This project is inspired by the numerous minimal implementations of the T-Rex Runner across various embedded platforms.</p>
+<ul>
+<li><strong>Original Concept:</strong> Google Chrome's &quot;No Internet&quot; Game.</li>
+<li><strong>Logic Reference:</strong> The complexity and state machine structure were largely inspired by the Python/Raspberry Pi implementation found here: <a href="https://github.com/ipython3/chrome-dino-game-lcd1602-raspberrypi?tab=readme-ov-file">Chrome Dino Game on LCD1602 (Raspberry Pi)</a>.</li>
+<li><strong>Other Implementations &amp; Inspirations:</strong>
+<ul>
+<li><a href="https://github.com/SadaleNet/Arduino1602Snake">Arduino 1602 Snake Game</a></li>
+<li><a href="https://github.com/Blueve/RaspberryPiLCDRunner">Raspberry Pi LCD Runner</a></li>
+<li><a href="https://shumeipai.nxez.com/2020/06/17/raspberry-pi-drives-lcd1602-screen-through-i2c.html">Raspberry Pi I2C LCD1602 Tutorial</a></li>
+</ul>
+</li>
+<li><strong>Disclaimer:</strong> This is an educational project demonstrating embedded real-time logic and is not affiliated with Google.</li>
+</ul>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/MES204_lcd">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

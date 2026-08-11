@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A redacted remote-development download investigation that isolates resolver, redirect, edge-selection, and throughput stages.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Separating DNS failure from slow CDN delivery — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="A redacted remote-development download investigation that isolates resolver, redirect, edge-selection, and throughput stages.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/jetbrains-network-validation">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>Separating DNS failure from slow CDN delivery — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Note</p>
+      <h1>Separating DNS failure from slow CDN delivery</h1>
+      <p class="article-description">A redacted remote-development download investigation that isolates resolver, redirect, edge-selection, and throughput stages.</p>
+      <p class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a> · <a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a>, <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a></p>
+
+
+    </header>
+    <div class="prose"><p>The original evidence bundle contained real infrastructure identifiers and raw resolver output. This public version keeps the troubleshooting method and historical observations while removing hostnames, addresses, private domains, and local paths.</p>
+<hr>
+<p>这是一份经过公开化处理的历史故障记录。原始调查比较了两台远程 Linux 主机访问同一个 JetBrains Remote Development 客户端压缩包时的行为。当前版本保留方法、可复用结论和已观测到的数量级，删除了真实主机名、IP、内部 DNS、私有域名和本地文件路径。</p>
+<h2 id="问题" tabindex="-1">问题</h2>
+<p>同一个下载失败或速度偏慢时，问题究竟发生在：</p>
+<ol>
+<li>名称解析；</li>
+<li>TCP / TLS 建连；</li>
+<li>HTTP 重定向；</li>
+<li>CDN 边缘节点选择；</li>
+<li>实际大文件吞吐。</li>
+</ol>
+<p>把这些阶段拆开，比笼统地说“服务器网络很慢”更有用。</p>
+<h2 id="测试方法" tabindex="-1">测试方法</h2>
+<p>两台主机运行同一组 <code>curl -vL</code> 和 timing 检查：</p>
+<pre class="hljs"><code>curl -vL \
+  -o client.zip \
+  -w <span class="hljs-string">&#x27;\nDNS: %{time_namelookup}s\nTCP: %{time_connect}s\nTLS: %{time_appconnect}s\nTTFB: %{time_starttransfer}s\nTotal: %{time_total}s\nHTTP: %{http_code}\n&#x27;</span> \
+  <span class="hljs-string">&#x27;https://download.jetbrains.com/.../client.zip&#x27;</span>
+</code></pre>
+<p>同时记录：</p>
+<ul>
+<li><code>curl</code> 退出码；</li>
+<li>系统 resolver 与显式公共 resolver 的差异；</li>
+<li>HTTP 重定向目标；</li>
+<li><code>x-geocode</code>、<code>x-amz-cf-pop</code>、<code>cf-ray</code> 等 CDN 头；</li>
+<li>IPv4/IPv6 路由可达性；</li>
+<li>代理环境变量；</li>
+<li>下载大小与总耗时。</li>
+</ul>
+<h2 id="观测" tabindex="-1">观测</h2>
+<h3 id="主机-a-系统-dns-路径失败" tabindex="-1">主机 A：系统 DNS 路径失败</h3>
+<p>系统 resolver 无法解析下载域名，<code>curl</code> 以退出码 6 结束；但显式查询公共 resolver 可以得到记录。这说明故障边界位于本机 stub resolver 或上游 DNS 路径，而不是“目标域名不存在”。</p>
+<p>绕过系统 resolver 后，主机能够进入面向中国区域的加速路径并完成下载，但吞吐仍只有约 1.2–1.3 MiB/s。由此不能把 DNS 修复与高吞吐画等号：它们是两个独立问题。</p>
+<h3 id="主机-b-解析和下载成功-但大文件走远端-pop" tabindex="-1">主机 B：解析和下载成功，但大文件走远端 POP</h3>
+<p>主机 B 可以完成约 750 MB 文件的下载，总耗时约 335–340 秒，平均约 2.1 MiB/s。入口请求显示香港区域信息，但重定向后的实际大文件响应来自旧金山 CloudFront POP。</p>
+<p>这个结果支持一个更具体的描述：入口定位和大文件对象最终命中的边缘节点可能不同。只检查第一次 302 响应，会遗漏真正承担大文件流量的路径。</p>
+<h2 id="解释边界" tabindex="-1">解释边界</h2>
+<p>这些观测不能单独证明 CDN 配置错误，也不能证明某个 POP 是吞吐瓶颈。一次远程测量还混合了：</p>
+<ul>
+<li>当时的网络拥塞；</li>
+<li>云主机出口策略；</li>
+<li>DNS 缓存与 CDN 调度；</li>
+<li>对象缓存状态；</li>
+<li>跨境路径；</li>
+<li>服务端限速或中间链路整形。</li>
+</ul>
+<p>更强的因果结论需要多时段重复、不同对象、受控 DNS、路径追踪和对照主机。</p>
+<h2 id="可复用排查顺序" tabindex="-1">可复用排查顺序</h2>
+<ol>
+<li>先保留 <code>curl</code> 退出码，不把 DNS 失败写成下载慢。</li>
+<li>分别测量 DNS、TCP、TLS、TTFB 和总时间。</li>
+<li>跟随全部重定向，并检查最终大文件响应的 CDN 头。</li>
+<li>比较系统 resolver 与显式 resolver，但不要永久修改 DNS 只为完成一次诊断。</li>
+<li>将 IPv4 与 IPv6 分开验证。</li>
+<li>记录代理环境，但不要把代理 URL 或凭据写进公开日志。</li>
+<li>保存原始证据到受控位置；公开笔记只保留经过泛化的结果。</li>
+</ol>
+<h2 id="结论" tabindex="-1">结论</h2>
+<p>这次调查得到两个不同的故障类型：一台主机的首要问题是系统 DNS 路径；另一台主机能够下载，但入口区域与最终对象 POP 不一致，且大文件吞吐偏低。最重要的收获不是某个瞬时速度，而是形成了一个按解析、连接、重定向和数据传输逐层缩小故障范围的方法。</p>
+<blockquote>
+<p>状态：历史测量记录。CDN、DNS 与网络状态会变化，不应把这里的节点和速度当作当前事实。</p>
+</blockquote>
+</div>
+
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-architecture/">One shell, two observers: the persistent terminal architecture</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-validation/">What I tested in the persistent terminal broker</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

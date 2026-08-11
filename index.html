@@ -3,310 +3,71 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Ziyu Zhao's project index and technical notes on systems, simulation, CAD, embedded software, and scientific computing.">
+  <meta name="description" content="Projects and technical notes on systems, engineering software, simulation, scientific computing, embedded systems, and medical AI.">
   <meta name="color-scheme" content="light dark">
-  <meta property="og:title" content="Ziyu Zhao — projects and technical notes">
-  <meta property="og:description" content="A text-first index of engineering projects, experiments, research code, and working notes.">
+  <meta property="og:title" content="Ziyu Zhao — engineering notebook">
+  <meta property="og:description" content="Projects and technical notes on systems, engineering software, simulation, scientific computing, embedded systems, and medical AI.">
   <meta property="og:type" content="website">
-  <title>Ziyu Zhao — projects and technical notes</title>
-  <style>
-    :root {
-      --page: #f8f8f5;
-      --paper: #ffffff;
-      --text: #202124;
-      --muted: #5f6368;
-      --line: #c8c9c4;
-      --link: #174ea6;
-      --visited: #5f3b82;
-      --header: #30343b;
-      --header-text: #ffffff;
-      --mark: #e9ecef;
-      --width: 980px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --page: #151718;
-        --paper: #1d2022;
-        --text: #e8eaed;
-        --muted: #bdc1c6;
-        --line: #505356;
-        --link: #8ab4f8;
-        --visited: #c5a7e8;
-        --header: #272a2e;
-        --header-text: #f1f3f4;
-        --mark: #292d30;
-      }
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      color: var(--text);
-      background: var(--page);
-      font: 16px/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    a { color: var(--link); text-underline-offset: 0.16em; }
-    a:visited { color: var(--visited); }
-    a:hover { text-decoration-thickness: 2px; }
-    code, .mono { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; }
-    code { padding: 0.08rem 0.25rem; background: var(--mark); }
-
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      padding: 0.5rem 0.75rem;
-      color: #000;
-      background: #fff;
-    }
-    .skip-link:focus { left: 0.5rem; top: 0.5rem; z-index: 2; }
-
-    .site-header {
-      color: var(--header-text);
-      background: var(--header);
-      border-bottom: 4px solid #777c83;
-    }
-    .wrap { width: min(calc(100% - 2rem), var(--width)); margin-inline: auto; }
-    .header-inner { padding: 1.35rem 0 1rem; }
-    .site-header h1 { margin: 0; font-size: 2rem; line-height: 1.2; }
-    .site-header p { max-width: 760px; margin: 0.35rem 0 0; color: #d9dce0; }
-    .site-header nav { margin-top: 1rem; }
-    .site-header nav ul {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.45rem 1.2rem;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .site-header nav a,
-    .site-header nav a:visited { color: #fff; font-weight: 650; }
-
-    main { padding: 1.8rem 0 3rem; }
-    section { margin-top: 2.4rem; }
-    section:first-child { margin-top: 0; }
-    h2 {
-      margin: 0 0 0.85rem;
-      padding-bottom: 0.3rem;
-      border-bottom: 1px solid var(--line);
-      font-size: 1.45rem;
-      line-height: 1.3;
-    }
-    h3 { margin: 1.5rem 0 0.5rem; font-size: 1.05rem; }
-    p { max-width: 800px; }
-    .intro { font-size: 1.02rem; }
-    .quiet { color: var(--muted); }
-
-    .project-list {
-      margin: 0;
-      padding: 0;
-      border-top: 1px solid var(--line);
-      list-style: none;
-    }
-    .project {
-      display: grid;
-      grid-template-columns: minmax(150px, 0.8fr) minmax(0, 2.4fr) minmax(120px, 0.7fr);
-      gap: 0.75rem 1.2rem;
-      padding: 0.9rem 0;
-      border-bottom: 1px solid var(--line);
-    }
-    .project-name { font-weight: 700; }
-    .project-name small {
-      display: block;
-      margin-top: 0.18rem;
-      color: var(--muted);
-      font: 0.75rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace;
-      text-transform: uppercase;
-    }
-    .project p { margin: 0; }
-    .project-links { text-align: right; }
-    .project-links a { display: inline-block; margin-left: 0.55rem; }
-
-    .note-groups {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0 2.5rem;
-    }
-    .note-list { margin: 0; padding-left: 1.2rem; }
-    .note-list li { margin: 0.55rem 0; padding-left: 0.2rem; }
-    .note-list span { display: block; color: var(--muted); font-size: 0.92rem; }
-
-    .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; padding: 0; list-style: none; }
-    footer {
-      padding: 1.2rem 0 2rem;
-      border-top: 1px solid var(--line);
-      color: var(--muted);
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 700px) {
-      .wrap { width: min(calc(100% - 1.25rem), var(--width)); }
-      .site-header h1 { font-size: 1.65rem; }
-      .project { grid-template-columns: 1fr; gap: 0.35rem; }
-      .project-links { text-align: left; }
-      .project-links a { margin: 0 0.75rem 0 0; }
-      .note-groups { grid-template-columns: 1fr; }
-    }
-  </style>
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>Ziyu Zhao — engineering notebook</title>
 </head>
 <body>
   <a class="skip-link" href="#content">Skip to content</a>
-
   <header class="site-header">
-    <div class="wrap header-inner">
-      <h1>Ziyu Zhao (Victor)</h1>
-      <p>Projects, research code, and technical notes on systems, simulation, CAD, embedded software, and scientific computing.</p>
-      <nav aria-label="Primary navigation">
-        <ul>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#notes">Notes</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="CV_Ziyu_Zhao_final.pdf">CV</a></li>
-          <li><a href="https://github.com/12sqawdwq">GitHub</a></li>
-        </ul>
-      </nav>
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a aria-current="page" href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
     </div>
   </header>
-
   <main class="wrap" id="content">
-    <section aria-labelledby="home-heading">
-      <h2 id="home-heading">Home</h2>
-      <p class="intro">I am an undergraduate studying Microelectronics Science and Technology at Xi'an Jiaotong-Liverpool University. This page is an index of things I build, test, and write down.</p>
-      <p class="quiet">Most entries are experiments or working notes. Repository READMEs state the tested environment, available evidence, and known limitations.</p>
-    </section>
-
-    <section id="projects" aria-labelledby="projects-heading">
-      <h2 id="projects-heading">Project index</h2>
-
-      <h3>Systems and developer tools</h3>
-      <ul class="project-list">
-        <li class="project">
-          <div class="project-name">code-with-pi<small>active experiment</small></div>
-          <p>A C11 broker keeps one PTY/ConPTY shell alive so Pi and its user can observe or take over the same terminal through authenticated local IPC.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/code-with-pi">code</a><a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">notes</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">Harmony_TaskFlow<small>prototype</small></div>
-          <p>HarmonyOS integration work involving ArkTS, deep links, Calendar OAuth, Workers/D1, VPN Extension behavior, and a multi-ABI Mihomo core.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/Harmony_TaskFlow">code</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">pixel_probetop<small>supporting project</small></div>
-          <p>A dependency-light Python hub and Linux agent for multi-server monitoring, with a small Web UI and Android/Pixel viewer.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/pixel_probetop">code</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">stm32-cli-toolkit<small>small tool</small></div>
-          <p>Shell wrappers around OpenOCD for building and flashing STM32 projects from a terminal or headless machine.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/stm32-cli-toolkit">code</a></div>
-        </li>
-      </ul>
-
-      <h3>Engineering and scientific computing</h3>
-      <ul class="project-list">
-        <li class="project">
-          <div class="project-name">ANSYS_skill<small>experimental</small></div>
-          <p>Checks whether an automated Mechanical workflow reached geometry, setup, solver-input, and solved/evaluated states without treating file existence as physical validation.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/ANSYS_skill">code</a><a href="https://github.com/12sqawdwq/ANSYS_skill/blob/main/README.md">method</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">ForgeSpec-Studio<small>prototype</small></div>
-          <p>Turns a loose engineering brief into typed intent, a reviewable <code>AssemblySpec</code>, and deterministic CadQuery source and geometry.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/ForgeSpec-Studio">code</a><a href="docs/html/forgespec-studio-app/">structure</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">ANSYS_simulation_IOP<small>research code</small></div>
-          <p>APDL models and analysis scripts for transpalpebral tonometry, including parameter sweeps, provenance, mesh sensitivity, and failed calibration checks.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP">code</a><a href="docs/html/eye-pressure-callgraph/">call graph</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">CoughKD<small>research prototype</small></div>
-          <p>Subject-disjoint cough-audio data preparation and PyTorch/CUDA teacher–student experiments. Planned targets and measured runs remain separate.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/CoughKD">code</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">sky_monitor_api<small>supporting project</small></div>
-          <p>A FastAPI service that calculates visible bright stars, planets, and deep-sky objects for a location and observation time.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/sky_monitor_api">code</a></div>
-        </li>
-      </ul>
-
-      <h3>Embedded and small experiments</h3>
-      <ul class="project-list">
-        <li class="project">
-          <div class="project-name">MES204 LCD projects<small>course experiments</small></div>
-          <p>STM32F446 LCD1602/2004 work: a T-Rex game, custom character rendering, and graphics experiments on constrained displays.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/MES204_lcd">game</a><a href="https://github.com/12sqawdwq/mes204_plus">graphics</a></div>
-        </li>
-        <li class="project">
-          <div class="project-name">terminal-gauss-Mamma-viz<small>small experiment</small></div>
-          <p>A C terminal renderer for sampled mathematical surfaces and a deliberately unserious terminal character.</p>
-          <div class="project-links"><a href="https://github.com/12sqawdwq/terminal-gauss-Mamma-viz">code</a></div>
-        </li>
-      </ul>
-    </section>
-
-    <section id="notes" aria-labelledby="notes-heading">
-      <h2 id="notes-heading">Notes and blog</h2>
-      <p class="quiet">Short explanations, diagrams, validation records, and study notes. These are working documents rather than a chronological personal blog.</p>
-
-      <div class="note-groups">
-        <div>
-          <h3>Systems and tooling</h3>
-          <ul class="note-list">
-            <li><a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">Persistent terminal architecture</a><span>Broker ownership, PTY lifecycle, IPC, and attach modes.</span></li>
-            <li><a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/TEST-RESULTS.md">Persistent terminal validation record</a><span>Platforms, tests, and remaining gaps.</span></li>
-            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/jetbrains-network-validation/report.md">JetBrains network validation</a><span>A proxy and connectivity troubleshooting record.</span></li>
-          </ul>
-
-          <h3>CAD and embedded systems</h3>
-          <ul class="note-list">
-            <li><a href="docs/html/forgespec-studio-app/">ForgeSpec application structure</a><span>Extracted application and planning call graph.</span></li>
-            <li><a href="docs/html/smart-cushion-stm32-callgraph/">STM32 sensing-system call graph</a><span>Firmware paths from a pressure-sensing project.</span></li>
-            <li><a href="docs/html/smart-cushion-pcb-drc/">PCB design-rule notes</a><span>Extracted board checks and design material.</span></li>
-            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/mes204-lcd/README.md">STM32 LCD project notes</a><span>Display protocol, firmware layout, and execution notes.</span></li>
-          </ul>
-        </div>
-
-        <div>
-          <h3>Simulation and research</h3>
-          <ul class="note-list">
-            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/README.md">When an ANSYS result is actually evaluated</a><span>Evidence that separates an object from a solved result.</span></li>
-            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/skill/failure_taxonomy.md">Mechanical workflow failure taxonomy</a><span>Incomplete handoffs and misleading intermediate states.</span></li>
-            <li><a href="docs/html/eye-pressure-callgraph/">Eye-pressure model call graph</a><span>Simulation, sweep, and analysis paths.</span></li>
-            <li><a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/docs/DATA_PROVENANCE.md">IOP model data provenance</a><span>Model levels, inputs, and limits on interpretation.</span></li>
-            <li><a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/thickness_mesh_independence/DETAILED_REPORT.md">Mesh-sensitivity audit</a><span>Three mesh levels and unresolved output variation.</span></li>
-          </ul>
-
-          <h3>Study and visualization</h3>
-          <ul class="note-list">
-            <li><a href="docs/html/mes201-signal-visualization/">Signal visualization</a><span>Interactive material for signals and systems.</span></li>
-            <li><a href="docs/html/lorenz-p5-sketch/">Lorenz-system sketch</a><span>A small browser visualization experiment.</span></li>
-            <li><a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/learning-plan/270-day-engineering-cs-chip-learning-plan.md">Engineering/CS/chip study index</a><span>A long-form learning plan and topic map.</span></li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section id="about" aria-labelledby="about-heading">
-      <h2 id="about-heading">About and contact</h2>
-      <p>I use coding agents as part of development, but try to keep the problem definition, architecture, debugging record, experiments, and validation boundaries inspectable. Current interests include engineering software, systems tooling, CAE/CAD, and scientific computing.</p>
-      <p>Public research includes the <a href="https://doi.org/10.1109/BIBM66473.2025.11356522">PAD-Former PI-RADS classification paper</a>, finite-element work on transpalpebral tonometry, and medical-audio compression experiments.</p>
-      <ul class="links">
-        <li><a href="mailto:102450592zzy@gmail.com">Email</a></li>
-        <li><a href="https://github.com/12sqawdwq">GitHub profile</a></li>
-        <li><a href="https://github.com/12sqawdwq?tab=repositories">All repositories</a></li>
-        <li><a href="CV_Ziyu_Zhao_final.pdf">CV (PDF)</a></li>
-        <li><a href="CV_Ziyu_Zhao_optimized.md">CV (Markdown)</a></li>
-      </ul>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap">Last reorganized in 2026 · static HTML · no framework · no analytics</div>
-  </footer>
+<section class="lede">
+  <p class="eyebrow">Undergraduate engineering notebook</p>
+  <h1>Projects, experiments, and questions I am trying to understand.</h1>
+  <p>I study Microelectronics Science and Technology at Xi'an Jiaotong-Liverpool University. This site keeps project state, technical notes, research limits, and failed checks close to the work that produced them.</p>
+</section>
+<span id="engineering" aria-hidden="true"></span>
+<span id="embedded" aria-hidden="true"></span>
+<span id="research" aria-hidden="true"></span>
+<section id="projects">
+  <div class="section-heading"><h2>Selected work</h2><a href="/12sqwdwq.github.io/projects/">View all projects →</a></div>
+  <ul class="project-index"><li><div><a class="project-name" href="/12sqwdwq.github.io/projects/code-with-pi/">code-with-pi</a><span>active experiment</span></div><p>A C11 broker keeps one PTY/ConPTY shell alive so Pi and its user can observe or take over the same terminal through authenticated local IPC.</p></li><li><div><a class="project-name" href="/12sqwdwq.github.io/projects/ANSYS_skill/">ANSYS_skill</a><span>experimental</span></div><p>Checks which state an automated Mechanical workflow actually reached without treating file or result-object existence as physical validation.</p></li><li><div><a class="project-name" href="/12sqwdwq.github.io/projects/ForgeSpec-Studio/">ForgeSpec-Studio</a><span>prototype</span></div><p>Turns a loose engineering brief into typed intent, a reviewable AssemblySpec, and deterministic CadQuery source and geometry.</p></li><li><div><a class="project-name" href="/12sqwdwq.github.io/projects/ANSYS_simulation_IOP/">ANSYS_simulation_IOP</a><span>research code</span></div><p>APDL models and analysis scripts for transpalpebral tonometry, retaining provenance, mesh dependence, non-identifiability, and failed calibration checks.</p></li><li><div><a class="project-name" href="/12sqwdwq.github.io/projects/Harmony_TaskFlow/">Harmony_TaskFlow</a><span>prototype</span></div><p>HarmonyOS integration work involving ArkTS, deep links, Calendar OAuth, Workers/D1, VPN Extension behavior, and a multi-ABI Mihomo core.</p></li><li><div><a class="project-name" href="/12sqwdwq.github.io/projects/CoughKD/">CoughKD</a><span>research prototype</span></div><p>Subject-disjoint cough-audio preparation and PyTorch/CUDA teacher–student experiments with measured runs separated from planned targets.</p></li></ul>
+</section>
+<section>
+  <h2>Current interests</h2>
+  <p class="topic-line"><a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a> · <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a> · <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a> · <a href="/12sqwdwq.github.io/writing/topics/engineering-software/">Engineering Software</a> · <a href="/12sqwdwq.github.io/writing/topics/cae/">CAE</a> · <a href="/12sqwdwq.github.io/writing/topics/scientific-computing/">Scientific Computing</a> · <a href="/12sqwdwq.github.io/writing/topics/embedded/">Embedded</a> · <a href="/12sqwdwq.github.io/writing/topics/medical-ai/">Medical AI</a></p>
+</section>
+<span id="notes" aria-hidden="true"></span>
+<section>
+  <div class="section-heading"><h2>Latest writing</h2><a href="/12sqwdwq.github.io/writing/">View all writing →</a></div>
+  <ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/ansys-result-state-gates/">A result object is not an evaluated result</a>
+        <div class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <p>Why automated ANSYS Mechanical work needs separate geometry, setup, solver-input, solved, evaluated, and credibility gates.</p>
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+        <p>A redacted remote-development download investigation that isolates resolver, redirect, edge-selection, and throughput stages.</p>
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/coughkd-measured-baseline/">Separating measured cough-model runs from the experiment plan</a>
+        <div class="entry-meta">Apr 27, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+        <p>A subject-disjoint Coswara pipeline, compact teacher–student baselines, and the evidence boundary before any clinical or SOTA claim.</p>
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <p>ArkTS UI, browser OAuth and deep links, native Mihomo libraries, VPN Extension limits, and repository-level evidence.</p>
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/forgespec-assembly-spec/">Why ForgeSpec keeps a typed specification between a prompt and CAD</a>
+        <div class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+        <p>Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.</p>
+      </li></ol>
+</section>
+<section id="about">
+  <h2>About</h2>
+  <p>I use coding agents as part of development, but try to keep the problem definition, architecture, experiments, negative results, and validation boundaries inspectable. Current work spans systems tooling, engineering software, CAE/CAD, scientific computing, embedded systems, and medical AI.</p>
+  <p><a href="mailto:102450592zzy@gmail.com">Email</a> · <a href="https://github.com/12sqawdwq">GitHub</a> · <a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV (PDF)</a></p>
+</section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
 </body>
 </html>

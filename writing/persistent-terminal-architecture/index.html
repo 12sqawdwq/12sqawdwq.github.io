@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="One shell, two observers: the persistent terminal architecture — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-architecture">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>One shell, two observers: the persistent terminal architecture — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>One shell, two observers: the persistent terminal architecture</h1>
+      <p class="article-description">How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.</p>
+      <p class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a>, <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/code-with-pi/">code-with-pi</a></p>
+      <p class="relation">Part 1 of <a href="/12sqwdwq.github.io/writing/series/building-code-with-pi/">Building code-with-pi</a></p>
+    </header>
+    <div class="prose"><p>This is the current architecture note for the terminal broker. It focuses on process ownership, command state, marker parsing, cancellation, output tiers, and the places where Windows and POSIX still differ.</p>
+<hr>
+<h2 id="process-and-ownership-model" tabindex="-1">Process and ownership model</h2>
+<pre class="hljs"><code>Windows Terminal tab
+  left pane: stock Pi TUI + TypeScript extension ─ control pipe ─┐
+  right pane: native monitor/attach client ─────── attach pipe ─┤
+                                                               v
+                                                native pi-terminald
+                                                  owns one ConPTY
+                                                       |
+                                                one persistent pwsh
+</code></pre>
+<p>There is exactly one shell and one PTY per workspace. Windows Terminal only lays out panes. It does not capture output or inject keystrokes. The extension never creates a second shell or PTY.</p>
+<p>On Windows, <code>pi-terminald</code> is native C11. It owns:</p>
+<ul>
+<li>the ConPTY handle and its input/output pipes;</li>
+<li>a kill-on-close Job Object containing the shell process tree;</li>
+<li>current-user-only named pipes for control and attach roles;</li>
+<li>command state, marker parser, bounded tails, transcript, and metadata;</li>
+<li>an overlapped-I/O server so a pending read does not block output written by another thread.</li>
+</ul>
+<h2 id="state-and-ownership" tabindex="-1">State and ownership</h2>
+<p>The broker reports:</p>
+<ul>
+<li><code>STARTING</code></li>
+<li><code>IDLE</code></li>
+<li><code>AGENT_COMMAND_RUNNING</code></li>
+<li><code>USER_COMMAND_OR_INTERACTIVE</code></li>
+<li><code>INTERRUPTING</code></li>
+<li><code>SHELL_EXITED</code></li>
+<li><code>DISCONNECTED</code></li>
+</ul>
+<p>A nonce-bearing prompt marker, rather than visible prompt text, indicates that the persistent shell reached its prompt callback. On Windows, PSReadLine and PowerShell formatting can still emit visible bytes after callbacks return, so the broker keeps agent ownership until output has been quiescent for 150 ms. POSIX completes at Bash prompt recovery without this settle window.</p>
+<p>The attach client starts in local read-only monitor mode. Windows displays a compact local status/command indicator in the pane title; POSIX emits the same status as <code>pane_title</code>, which <code>pio</code> exposes in a tmux pane border. Both keep local UI outside child screen content and report every terminal row to the ConPTY/PTY. <code>:t</code> enables terminal input; in terminal mode <code>Ctrl+\\</code> opens the local palette and <code>:m</code> restores monitoring. Monitor mode filters human keyboard input but recognizes CSI/OSC/DCS terminal device responses and returns them to the PTY, preserving terminal negotiation. <code>:q</code> and Ctrl+] detach locally.</p>
+<p>The marker parser and transport may split a child VT control record at any byte, notably <code>ESC[</code> and its CSI parameters. The attach client therefore carries a VT boundary state across IPC frames. Both implementations emit a complete local OSC title only in ground state and never repaint child rows. This prevents the 0.2.0 failure where split <code>ESC[K</code> records appeared as literal columns of <code>K</code> and the POSIX resize/reflow case where an old in-screen status row remained duplicated.</p>
+<p>Forwarded human attach input while idle marks a user-edited line. Enter transfers ownership to a user command until prompt recovery. Recognized terminal-generated responses use <code>TERMINAL_RESPONSE</code>, are written to the PTY, and do not claim user ownership. Agent injection is accepted only when the shell is settled idle and no user line is being edited. Agent and attach writes are serialized by the broker (with an explicit native write lock on Windows and one event loop on POSIX).</p>
+<h2 id="command-execution" tabindex="-1">Command execution</h2>
+<p>The daemon writes the exact UTF-8 command to a private source file and creates a private wrapper. The persistent PowerShell, Bash, or zsh process dot-sources it. Consequently cwd, variables, functions, environment, imported modules, and virtualenv activation can persist.</p>
+<p>The wrapper emits private start/end OSC records and the prompt hook emits cwd in base64. The end record captures exit status; Windows also carries immediate cwd there, while POSIX updates cwd from prompt recovery. The marker parser strips only records with the exact random session nonce; all other PTY bytes pass through.</p>
+<p>PowerShell success-stream values are formatted through a streaming pipeline before being written to the terminal. Completion is not returned to Pi until end/prompt markers and the output-settle window agree.</p>
+<h2 id="cancellation-and-process-lifetime" tabindex="-1">Cancellation and process lifetime</h2>
+<ul>
+<li>Right-pane Ctrl+C becomes byte <code>0x03</code> and is written to ConPTY/PTY. The waiting command is tagged as a user interrupt and normalized to exit 130.</li>
+<li>Pi <code>AbortSignal</code> sends <code>ABORT</code>. The broker writes ETX and escalates after configured grace periods; Windows uses descendant/Job termination and POSIX signals the foreground process group.</li>
+<li>A last-resort shell loss is reported. Windows can start a fresh ConPTY when configured; POSIX automatic shell restart is not yet implemented. Shell-local state is necessarily lost.</li>
+<li>Ctrl+] detaches only the right client.</li>
+<li>On Windows, closing the Job Object kills descendants, preventing orphan shell trees.</li>
+</ul>
+<p>On Windows, ConPTY keeps its output channel open after the root exits. The monitor closes the pseudoconsole while the output thread continues draining; EOF then drives <code>SHELL_EXITED</code> and optional restart. POSIX drains PTY data through <code>POLLHUP</code>/EOF, reports shell exit, and stops the broker.</p>
+<h2 id="output-tiers-and-backpressure" tabindex="-1">Output tiers and backpressure</h2>
+<ol>
+<li>Right pane: complete visible PTY byte stream.</li>
+<li>Disk: append-only visible <code>transcript.raw</code>, source files, and <code>commands.jsonl</code> metadata.</li>
+<li>Model: fixed-size active-command ring, default 100 KiB; the TypeScript layer additionally applies the configured line limit.</li>
+</ol>
+<p>On Windows, attach delivery uses a separate writer thread and a 64 MiB bounded queue. The PTY/transcript reader does not wait for normal terminal painting, and a client that exceeds the bound is disconnected explicitly. POSIX currently writes attach frames synchronously.</p>
+<p>Reconnect receives a bounded 256 KiB raw replay before live output. This is byte replay, not terminal screen emulation.</p>
+<h2 id="launcher-and-installation" tabindex="-1">Launcher and installation</h2>
+<p><code>pio.ps1</code> creates a current-user-only session directory, starts the daemon, resolves an MSIX PowerShell alias to the package executable for ConPTY, writes argument-safe left/right scripts, and submits one <code>wt.exe</code> invocation containing <code>new-tab ; split-pane</code>.</p>
+<p><code>pi-raw</code> calls the recorded original Pi without workspace environment variables. The globally discovered extension returns immediately in that mode.</p>
+<h2 id="linux-tmux-path" tabindex="-1">Linux/tmux path</h2>
+<p>The Linux path uses a POSIX PTY, Unix-domain sockets, termios attach, and tmux only as the pane host. It selects <code>PI_TERMINAL_SHELL</code> or the caller's <code>SHELL</code>. Bash uses an rcfile/PROMPT_COMMAND adapter. zsh starts through a temporary ZDOTDIR wrapper that loads the user's original <code>.zshenv</code>/<code>.zprofile</code>/<code>.zshrc</code>, restores the original ZDOTDIR, and appends <code>__pi_live_prompt_marker</code> with <code>add-zsh-hook precmd</code>; existing Oh My Zsh, P10k, plugin, completion, and user hooks stay intact. Runtime code does not use <code>send-keys</code> or <code>capture-pane</code>; the Kitty/tmux integration test uses those tmux test APIs to drive and inspect the native attach pane.</p>
+<p>Session data remains under <code>XDG_STATE_HOME</code>, while control/attach sockets use a short private directory under <code>XDG_RUNTIME_DIR</code> (or <code>/tmp</code> fallback) to stay within <code>sockaddr_un</code> path limits. <code>pio</code> first creates the final tmux split with placeholders, reads the right pane's dimensions, starts the PTY at that size, waits for the first private prompt marker, and only then respawns the Pi/attach panes. This prevents width-dependent P10k instant/final prompts from being replayed at a different geometry. The launcher explicitly carries HOME, PATH, and XDG values into panes so a long-lived tmux server cannot substitute stale environment values.</p>
+<p>Arch Linux broker, install/uninstall, and Kitty/tmux workspace tests pass. POSIX still lacks Windows parity for automatic shell restart, attach backpressure, and output-settle behavior; see <a href="/12sqwdwq.github.io/docs/code-with-pi/LIMITATIONS.md">LIMITATIONS.md</a>.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ARCHITECTURE.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-validation/">What I tested in the persistent terminal broker</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

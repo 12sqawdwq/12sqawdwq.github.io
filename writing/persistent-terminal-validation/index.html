@@ -1,0 +1,709 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Observed Windows and Linux checks for PTY lifecycle, authenticated IPC, state persistence, cancellation, replay, and human takeover.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="What I tested in the persistent terminal broker — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Observed Windows and Linux checks for PTY lifecycle, authenticated IPC, state persistence, cancellation, replay, and human takeover.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/persistent-terminal-validation">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>What I tested in the persistent terminal broker — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>What I tested in the persistent terminal broker</h1>
+      <p class="article-description">Observed Windows and Linux checks for PTY lifecycle, authenticated IPC, state persistence, cancellation, replay, and human takeover.</p>
+      <p class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/systems/">Systems</a>, <a href="/12sqwdwq.github.io/writing/topics/developer-tools/">Developer Tools</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/code-with-pi/">code-with-pi</a></p>
+      <p class="relation">Part 2 of <a href="/12sqwdwq.github.io/writing/series/building-code-with-pi/">Building code-with-pi</a></p>
+    </header>
+    <div class="prose"><p>This record separates checks that were actually observed from manual or unimplemented cases. It is long because terminal behavior crosses process lifetime, byte-stream parsing, operating-system APIs, and visible interaction.</p>
+<hr>
+<p>Validated on the Windows machine described in <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/ENVIRONMENT.md">ENVIRONMENT.md</a>. Only checks actually observed are marked PASS.</p>
+<h2 id="build-and-native-unit-tests" tabindex="-1">Build and native unit tests</h2>
+<p>Command:</p>
+<pre class="hljs"><code>.\scripts\build.ps1 <span class="hljs-literal">-Clean</span>
+</code></pre>
+<p>Compiler flags included C11, <code>-Wall</code>, <code>-Wextra</code>, and <code>-Wpedantic</code>. The final clean build emitted no warnings.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configure/build with WinLibs GCC 14.2.0 and Ninja</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>protocol-tests.exe</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Marker records split across byte/3-byte boundaries</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Bounded tail and command-finished codec</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>windows-pipe-tests.exe</code> fragmented every frame byte</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Concurrent overlapped named-pipe read/write</td>
+<td>PASS through broker integration</td>
+</tr>
+<tr>
+<td>Current-user named-pipe security descriptor creation</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>attach-mode-tests.exe</code> local parser and terminal-response classifier</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>windows-conpty-smoke.exe</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>ConPTY output with broker stdout/stderr redirected</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>windows-attach-monitor-integration.exe</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>CSI sequence deliberately split across two broker frames</td>
+<td>PASS; following sentinel remained visible, with visual no-<code>K</code> screenshot validation</td>
+</tr>
+<tr>
+<td>Native attach defaults to read-only monitor</td>
+<td>PASS in a test ConPTY</td>
+</tr>
+<tr>
+<td><code>:t</code> enables forwarded terminal input</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>Ctrl+\\</code>, then <code>:m</code> blocks human input again</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>CSI device reply still reaches PTY while monitoring</td>
+<td>PASS as <code>TERMINAL_RESPONSE</code></td>
+</tr>
+<tr>
+<td>Windows attach reports the full 100x30 pane rather than reserving one row</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>:q</code> sends DETACH and exits cleanly</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>CTest, 5 tests</td>
+<td>PASS, 0 failures</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="automated-windows-broker-integration" tabindex="-1">Automated Windows broker integration</h2>
+<p>Commands:</p>
+<pre class="hljs"><code>.\tests\windows<span class="hljs-literal">-integration</span>.ps1
+<span class="hljs-comment"># invokes:</span>
+node .\tests\windows<span class="hljs-literal">-broker-integration</span>.mjs
+</code></pre>
+<p>The latest retained report was intentionally deleted after success because it contained a 20+ MiB transcript. Its console result was <code>WINDOWS_BROKER_INTEGRATION_PASS</code>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Capability</th>
+<th>Result / observed detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ConPTY startup and private extension handshake</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Attach-role handshake and live output channel</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Terminal response is forwarded without changing broker state from <code>IDLE</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Ordinary command and exit 0</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Agent-set cwd, ordinary variable, function, and environment persistence</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Right-input-set cwd/environment visible to next agent command</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Unicode and spaces in session/cwd paths</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Resize</td>
+<td>PASS, broker status changed to 101x37</td>
+</tr>
+<tr>
+<td>ANSI bytes</td>
+<td>PASS, raw SGR bytes retained</td>
+</tr>
+<tr>
+<td>Interactive <code>Read-Host</code></td>
+<td>PASS, Unicode response from attach role</td>
+</tr>
+<tr>
+<td>Right-side Ctrl+C protocol path</td>
+<td>PASS, user interrupt, normalized 130, shell recovered</td>
+</tr>
+<tr>
+<td>Agent abort protocol path</td>
+<td>PASS, agent interrupt, normalized 130, shell recovered</td>
+</tr>
+<tr>
+<td>Ctrl+C-ignoring shell / hard escalation</td>
+<td>PASS, descendant grace elapsed, Job terminated, command normalized 130, shell restarted</td>
+</tr>
+<tr>
+<td>500 ms timeout</td>
+<td>PASS, timed-out status, normalized 130</td>
+</tr>
+<tr>
+<td>Large output</td>
+<td>PASS, 20 MiB payload generated</td>
+</tr>
+<tr>
+<td>Full transcript</td>
+<td>PASS, final 0.2.2 run grew by 23,463,510 bytes</td>
+</tr>
+<tr>
+<td>Model/broker tail</td>
+<td>PASS, no more than 100 KiB and retained end sentinel</td>
+</tr>
+<tr>
+<td>Attach live delivery</td>
+<td>PASS, at least 20 MiB received before assertion</td>
+</tr>
+<tr>
+<td>Attach detach/reconnect</td>
+<td>PASS, 256 KiB bounded replay included sentinel</td>
+</tr>
+<tr>
+<td>Shell crash</td>
+<td>PASS using <code>[Environment]::Exit(23)</code></td>
+</tr>
+<tr>
+<td>Automatic fresh ConPTY/shell after crash</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Extension control-pipe reconnect</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>JSONL command metadata</td>
+<td>PASS, 16 records including cwd, timeout, and hard-abort status</td>
+</tr>
+<tr>
+<td>Orderly shutdown and Job lifecycle</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table></div>
+<p>The test discovered and drove fixes for redirected standard handles, synchronous named-pipe cross-thread starvation, PowerShell/PSReadLine delayed output, timeout status, command-end cwd, attach backpressure, and ConPTY root-exit detection.</p>
+<h2 id="installed-pi-extension-test-no-llm-call" tabindex="-1">Installed Pi extension test, no LLM call</h2>
+<p>Command:</p>
+<pre class="hljs"><code>node .\tests\windows<span class="hljs-literal">-pi-extension-rpc</span>.mjs
+</code></pre>
+<p>Observed result: <code>WINDOWS_PI_EXTENSION_RPC_PASS</code>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pi 0.81.1 loads installed <code>index.ts</code> through its normal global discovery</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>/terminal</code>, <code>/terminal-status</code>, <code>/terminal-exec</code>, <code>/terminal-restart</code> registered</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Installed TypeScript <code>TerminalClient</code> connects to installed native broker</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>/terminal-exec</code> executes in persistent ConPTY</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Ordinary PowerShell variable/environment persists to second command</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>No <code>extension_error</code> event</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Pi <code>session_shutdown</code> stops daemon cleanly</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="installation-command-resolution-and-raw-pi" tabindex="-1">Installation, command resolution, and raw Pi</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Global install to <code>%LOCALAPPDATA%\PiLiveTerminal</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Built/installed binary SHA-256 equality</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>pio</code> resolves from per-user WindowsApps</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>pi-raw</code> resolves from per-user WindowsApps</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>pi</code> still resolves to original Pi</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>pio doctor</code> required checks</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>pi-raw --version</code></td>
+<td>PASS, 0.81.1</td>
+</tr>
+<tr>
+<td>Stock Pi RPC <code>bash</code> through configured Git Bash</td>
+<td>PASS, <code>RAW_BASH_OK</code></td>
+</tr>
+<tr>
+<td>Workspace extension inert without <code>PI_TERMINAL_*</code> variables</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Default install leaves PowerShell profiles unmodified</td>
+<td>PASS, no marker</td>
+</tr>
+<tr>
+<td>First uninstall removes root/extension/launchers</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Second uninstall when absent</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Reinstall after uninstall</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Repeated install with existing config</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table></div>
+<p>The optional <code>-SetAsDefaultPi</code> profile modification was not enabled; its opt-in path was code-reviewed but is not marked runtime PASS.</p>
+<h2 id="repository-one-step-setup" tabindex="-1">Repository one-step setup</h2>
+<p>Commands:</p>
+<pre class="hljs"><code>pwsh.exe <span class="hljs-literal">-NoProfile</span> <span class="hljs-literal">-ExecutionPolicy</span> Bypass <span class="hljs-operator">-File</span> .\setup.ps1
+powershell.exe <span class="hljs-literal">-NoProfile</span> <span class="hljs-literal">-ExecutionPolicy</span> Bypass <span class="hljs-operator">-File</span> .\setup.ps1 <span class="hljs-literal">-SkipBuild</span>
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>setup.ps1</code> syntax under the PowerShell parser</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Full setup invokes native build/CTest and broker integration before install</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Full setup installs the tested binaries and finishes with <code>pio doctor</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>-SkipBuild</code> idempotent reinstall under PowerShell 7</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td><code>-SkipBuild</code> idempotent reinstall under Windows PowerShell 5.1</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Direct no-argument <code>pio.ps1</code> call from a strict-mode shell</td>
+<td>PASS; workspace dispatched after the null-argument fix</td>
+</tr>
+<tr>
+<td><code>bootstrap.ps1</code> PowerShell syntax</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Commit-pinned remote bootstrap download, extract, full build/test/install/doctor</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Bootstrap temporary directory cleanup</td>
+<td>PASS after both failure and success paths</td>
+</tr>
+</tbody>
+</table></div>
+<p>The local full one-step run repeated 5/5 CTest, the complete broker suite (including a 23,463,796-byte transcript), installation, and doctor checks successfully. The public bootstrap was then invoked from a fresh Windows PowerShell process. Its first end-to-end run exposed a MinGW dependency-file path overflow under a long GUID directory; <code>c07bf90</code> shortened the bootstrap root to <code>%TEMP%\pio-&lt;8 hex&gt;</code>. The commit-pinned retry built from that short archive path, passed 5/5 CTest and the complete broker suite (23,464,281-byte transcript), installed, passed <code>pio doctor</code>, and removed its temporary source/build tree.</p>
+<h2 id="pio-windows-terminal-process-test" tabindex="-1"><code>pio</code> / Windows Terminal process test</h2>
+<p><code>pio --mode rpc --no-session --offline</code> was launched from an existing Windows Terminal session after installation.</p>
+<p>Observed under one <code>WindowsTerminal.exe</code> process:</p>
+<ul>
+<li>left <code>pwsh.exe</code> running generated <code>left.ps1</code>;</li>
+<li>left child <code>node.exe ... pi-coding-agent ... --mode rpc --no-session --offline</code>;</li>
+<li>right <code>pwsh.exe</code> running generated <code>right.ps1</code>;</li>
+<li>right child <code>pi-terminal-attach.exe</code>;</li>
+<li>hidden <code>pi-terminald.exe</code>;</li>
+<li>broker child MSIX <code>pwsh.exe</code> under a headless ConPTY host.</li>
+</ul>
+<p>The native attach process remained alive after raw-console setup and handshake. The broker transcript and startup log became non-empty. Both pane host processes had the same Windows Terminal parent PID. The disposable test workspace/processes were then removed.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pio</code> exits successfully after dispatch</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Left invokes recorded stock Pi with all arguments preserved</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Right invokes installed native attach with <code>--mode monitor</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>0.2.1 pane screenshot after split-ANSI fix</td>
+<td>PASS; normal PowerShell prompt, no repeated literal <code>K</code> corruption</td>
+</tr>
+<tr>
+<td>Fresh installed 0.2.2 pane screenshot</td>
+<td>PASS; full prompt visible, no in-screen status row, pane title displays `[M] &gt;</td>
+</tr>
+<tr>
+<td>Monitor input discoverability</td>
+<td>PASS for ordinary physical key injection; local buffer appeared immediately in pane title</td>
+</tr>
+<tr>
+<td>Daemon owns one persistent PowerShell</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Left and right pane processes belong to same Windows Terminal process</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Target tab / visual two-pane graph</td>
+<td>PASS in the 0.2.2 launch screenshot and UI Automation tree</td>
+</tr>
+<tr>
+<td>Native monitor/terminal keyboard routing inside test ConPTY</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Physical keyboard Ctrl+C in a visible pane</td>
+<td>MANUAL — native ConPTY attach path passed</td>
+</tr>
+<tr>
+<td>Alternate-screen visual rendering while resizing</td>
+<td>MANUAL — byte/resize path passed</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="0-2-1-regression-diagnosis" tabindex="-1">0.2.1 regression diagnosis</h2>
+<p>A screenshot of the reported failure showed a literal <code>K</code> on every right-pane row. The transcript contained valid <code>ESC[K</code> erase-line sequences. The marker parser intentionally emitted <code>ESC[</code> and the rest of a CSI record in separate visible callbacks; the 0.2.0 attach client rendered its local ANSI status bar after every callback. This produced <code>ESC[</code> + local status bytes + <code>K</code>, corrupting both the child control record and screen.</p>
+<p>The fixed attach client tracks CSI, OSC, DCS, SOS, PM, and APC boundaries across broker frames and renders local UI only in VT ground state. A clean ConPTY integration run passed, and a separately launched installed native attach was captured showing a normal <code>PS ...&gt;</code> prompt rather than the repeated <code>K</code> screen. The compact mode parser and forwarded-input path remain covered by the same native test.</p>
+<p>The launcher test also exposed that <code>-w 0</code> selected the first Windows Terminal window on this multi-window desktop. Version 0.2.1 uses <code>-w last</code>. The installed launch retained its attach process and ACL setup completed without the earlier module-loading warning.</p>
+<h2 id="0-2-2-terminal-follow-up" tabindex="-1">0.2.2 terminal follow-up</h2>
+<p>A fresh installed 0.2.2 workspace exposed two issues that the test ConPTY did not model: the in-screen bottom row could disappear after Windows Terminal viewport/scrollback changes, and focus/device responses forwarded as ordinary <code>INPUT</code> could leave broker ownership at <code>USER_COMMAND_OR_INTERACTIVE</code> without a new shell prompt. Windows status now uses a complete ground-state OSC pane title, no DECSTBM margin or cursor movement, and all rows are reported to ConPTY. Recognized terminal responses use protocol type 23 and do not claim user ownership.</p>
+<p>The final clean native suite, full broker integration, and installed Pi RPC integration passed after these changes. A fresh 0.2.2 <code>pio</code> tab was captured with its left Pi, right PowerShell prompt, and <code>[M]</code> mode/title. UI Automation selected the exact workspace tab and ordinary physical key injection updated the local monitor buffer in the title. Synthetic Windows input could not reproduce a hardware Enter/Shift-symbol event under <code>ENABLE_VIRTUAL_TERMINAL_INPUT</code>, so visible-pane <code>:t</code> + Enter remains manual; the byte path passes the native ConPTY integration.</p>
+<h2 id="arch-linux-kitty-validation" tabindex="-1">Arch Linux / Kitty validation</h2>
+<p>Commands:</p>
+<pre class="hljs"><code>./scripts/build.sh
+make -C native clean all <span class="hljs-built_in">test</span>
+node tests/linux-broker-integration.mjs
+./tests/linux-install-integration.sh
+./tests/linux-kitty-integration.sh
+./tests/linux-integration.sh
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GCC 16.1.1 CMake clean build with <code>-Wall -Wextra -Wpedantic</code></td>
+<td>PASS, no emitted warnings</td>
+</tr>
+<tr>
+<td>Clang 22.1.6 CMake clean build</td>
+<td>PASS, no emitted warnings</td>
+</tr>
+<tr>
+<td>Make clean build and unit tests</td>
+<td>PASS, no emitted warnings</td>
+</tr>
+<tr>
+<td>ASan + UBSan Debug build and CTest</td>
+<td>PASS, 4/4</td>
+</tr>
+<tr>
+<td>Protocol, attach-mode, Bash broker, and zsh broker CTest</td>
+<td>PASS, 4/4; repeated 5 consecutive runs inside an installed zsh-backed <code>pio</code> session</td>
+</tr>
+<tr>
+<td>zsh test HOME/ZDOTDIR isolation from parent <code>pio</code> adapter variables</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>POSIX broker startup and authenticated Unix sockets</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Session/state paths containing spaces, Unicode, apostrophe, and double quote</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Separate short runtime socket directory for long XDG state paths</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Immediate sequential EXEC after completion</td>
+<td>PASS; no prompt-marker busy race</td>
+</tr>
+<tr>
+<td>Persistent cwd, environment, and shell function</td>
+<td>PASS in Bash and zsh</td>
+</tr>
+<tr>
+<td>zsh original <code>.zshrc</code>, configured function, and existing <code>precmd</code> output before private marker</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Failed command and timeout status/exit normalization</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Attach stream, terminal-response forwarding, resize, and persistent input</td>
+<td>PASS; direct-input test waits for observed PTY output before asserting ownership release</td>
+</tr>
+<tr>
+<td>Detach/reconnect bounded replay</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>JSON command metadata and transcript</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Isolated XDG install, doctor, pi-raw, uninstall</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Atomic reinstall while the old broker executable is mapped</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Uninstall stops a verified broker but preserves an unrelated stale-PID process</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Kitty/tmux two-pane workspace, installed Pi RPC extension</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Caller + persistent-file proxy environment propagated across a stale tmux server into both panes</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Unsafe group/other-readable environment file rejected by <code>pio doctor</code></td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>tmux <code>extended-keys</code> + <code>extended-keys-format csi-u</code> enabled before Pi startup</td>
+<td>PASS; no startup warning</td>
+</tr>
+<tr>
+<td>Resize/reflow keeps mode status in <code>pane_title</code>, not PTY content</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Native attach monitor → terminal → monitor, local detach</td>
+<td>PASS via tmux PTY automation</td>
+</tr>
+<tr>
+<td>Kitty OS window containing <code>Pi Workspace</code> with two tmux panes</td>
+<td>PASS via Kitty remote inspection</td>
+</tr>
+<tr>
+<td>Final installed Kitty screenshot after title-border/extended-key fixes</td>
+<td>PASS; no warning, duplicate status row, or PTY row reservation</td>
+</tr>
+<tr>
+<td>User Oh My Zsh/P10k/fastfetch startup with private marker hook</td>
+<td>PASS via installed Kitty screenshot; one correctly sized P10k prompt</td>
+</tr>
+<tr>
+<td>User alias, ZDOTDIR, P10k state, existing mommy <code>precmd</code>, and private marker hook</td>
+<td>PASS; marker registered after user hooks</td>
+</tr>
+<tr>
+<td>Pi <code>/terminal-exec</code> through installed extension in zsh/P10k session</td>
+<td>PASS (<code>ZSH=5.9.1</code>, <code>P10K=loaded</code>)</td>
+</tr>
+<tr>
+<td>Initial PTY dimensions taken from final placeholder split before shell startup</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Pi pane shutdown terminates broker</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table></div>
+<p>The automated Kitty test drives tmux keys and inspects pane text; it does not claim human keyboard timing.</p>
+<h3 id="live-installed-pio-follow-up" tabindex="-1">Live installed <code>pio</code> follow-up</h3>
+<p>A subsequent test ran from the installed Pi process inside session <code>87c7ebf8…</code>, with the native attach connected and visible in the same active Kitty window.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Split ANSI/CSI record, six colors, stderr, CJK/Unicode, box drawing, carriage return, and long-line reflow</td>
+<td>PASS; inspected in a <code>grim</code> window screenshot</td>
+</tr>
+<tr>
+<td>Basic alternate-screen cursor addressing, attributes, Unicode, exit, and previous-screen restoration</td>
+<td>PASS; inspected in a second live screenshot</td>
+</tr>
+<tr>
+<td>Pane-border <code>[M]</code> status remains outside alternate-screen PTY content</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Persistent environment and Bash function across separate tool calls</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>Installed proxy values in live broker shell</td>
+<td>PASS; Google 204 and GitHub API 200</td>
+</tr>
+<tr>
+<td>Nonzero command status</td>
+<td>PASS at broker layer: <code>FAILED</code>, raw/normalized exit 1</td>
+</tr>
+<tr>
+<td>Timeout status and prompt recovery</td>
+<td>PARTIAL: <code>TIMED_OUT</code>, normalized 130, shell returned <code>IDLE</code>; a later statement in the same dot-sourced script still ran</td>
+</tr>
+<tr>
+<td>Native Pi <code>isError</code> flag for failed/timed-out command</td>
+<td>NOT IMPLEMENTED; result is structured status text</td>
+</tr>
+<tr>
+<td>Unexpected interactive <code>git log</code> pager</td>
+<td>Reproduced; timeout recovered and <code>git --no-pager</code> completed normally</td>
+</tr>
+<tr>
+<td>JSONL metadata parsing and monotonic output offsets</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="not-run-still-manual" tabindex="-1">Not run / still manual</h2>
+<ul>
+<li>MSVC <code>/W4</code> build: no configured MSVC/Windows SDK toolchain; equivalent Windows GCC warning build passed in the earlier environment.</li>
+<li>Intentional Windows attach overflow above 64 MiB: protection path is implemented but not stress-tested in the final suite.</li>
+<li>Complex alternate-screen applications during live visual resize and physical keyboard Ctrl+C remain manual.</li>
+</ul>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/code-with-pi/blob/main/pi-live-terminal/TEST-RESULTS.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-architecture/">One shell, two observers: the persistent terminal architecture</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

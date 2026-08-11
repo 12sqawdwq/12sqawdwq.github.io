@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A stepwise Discovery-to-Workbench-to-Mechanical path with explicit success signals and recovery actions.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="A narrow Mechanical delivery protocol — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="A stepwise Discovery-to-Workbench-to-Mechanical path with explicit success signals and recovery actions.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/mechanical-mvp-protocol">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>A narrow Mechanical delivery protocol — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>A narrow Mechanical delivery protocol</h1>
+      <p class="article-description">A stepwise Discovery-to-Workbench-to-Mechanical path with explicit success signals and recovery actions.</p>
+      <p class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/engineering-software/">Engineering Software</a>, <a href="/12sqwdwq.github.io/writing/topics/cae/">CAE</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/ANSYS_skill/">ANSYS_skill</a></p>
+      <p class="relation">Part 2 of <a href="/12sqwdwq.github.io/writing/series/validating-mechanical-automation/">Validating Mechanical automation</a></p>
+    </header>
+    <div class="prose"><p>The protocol is intentionally narrow. Each stage names the evidence expected before the workflow advances, and the final gate remains an evaluated Mechanical result rather than file existence alone.</p>
+<hr>
+<p>Use this as a strict operating checklist when Codex drives Ansys Workbench Mechanical.</p>
+<h2 id="step-1-create-geometry" tabindex="-1">Step 1: Create Geometry</h2>
+<p>Goal: create the physical body to solve.</p>
+<p>Required action: create or import geometry in Discovery or SpaceClaim using simple, inspectable dimensions.</p>
+<p>Do not do: claim a simulation result from geometry color, viewport deformation, or a <code>.dsco</code> file.</p>
+<p>Success signal: geometry opens and the body dimensions are visible or otherwise inspectable.</p>
+<p>Failure recovery: if only a visual file exists, export or attach the geometry to Workbench before any solver claim.</p>
+<h2 id="step-2-save-workbench-project" tabindex="-1">Step 2: Save Workbench Project</h2>
+<p>Goal: create a persistent Workbench container for Mechanical.</p>
+<p>Required action: save a <code>.wbpj</code> and keep its matching <code>_files</code> folder beside it.</p>
+<p>Do not do: move or send the <code>.wbpj</code> without <code>_files</code>.</p>
+<p>Success signal: both <code>project.wbpj</code> and <code>project_files/</code> exist.</p>
+<p>Failure recovery: reopen Workbench, save the project again, and verify the <code>_files</code> folder appears.</p>
+<h2 id="step-3-enter-mechanical" tabindex="-1">Step 3: Enter Mechanical</h2>
+<p>Goal: move from project container to solver setup.</p>
+<p>Required action: open the <code>Model</code> cell of a <code>Static Structural</code> system.</p>
+<p>Do not do: stop at Workbench schematic or geometry editor if the task asks for Mechanical results.</p>
+<p>Success signal: Mechanical Outline shows Model, Geometry, Mesh, Static Structural, and Solution branches.</p>
+<p>Failure recovery: if Mechanical did not open, reattach geometry to the Static Structural system and open <code>Model</code>.</p>
+<h2 id="step-4-assign-material" tabindex="-1">Step 4: Assign Material</h2>
+<p>Goal: define solver material properties.</p>
+<p>Required action: assign material with Young's modulus and Poisson ratio to the body.</p>
+<p>Do not do: rely on unnamed defaults when the benchmark specifies material constants.</p>
+<p>Success signal: material assignment is visible in Mechanical and solver input contains material data such as <code>MP,EX</code>.</p>
+<p>Failure recovery: add or edit Engineering Data, update the model, and confirm the material is assigned to all bodies.</p>
+<h2 id="step-5-generate-mesh" tabindex="-1">Step 5: Generate Mesh</h2>
+<p>Goal: create finite elements for the body.</p>
+<p>Required action: apply mesh controls if needed and run <code>Generate Mesh</code>.</p>
+<p>Do not do: treat a mesh object in the tree as a generated mesh.</p>
+<p>Success signal: mesh is visible and Mechanical reports nodes/elements or solver input contains element counts.</p>
+<p>Failure recovery: regenerate mesh after geometry, material, or sizing changes.</p>
+<h2 id="step-6-apply-fixed-support-and-force" tabindex="-1">Step 6: Apply Fixed Support And Force</h2>
+<p>Goal: define boundary condition and load for a solvable structural model.</p>
+<p>Required action: apply fixed support to the intended fixed face and force to the intended load face or remote point.</p>
+<p>Do not do: leave the model underconstrained or apply load to an unintended edge/body selection.</p>
+<p>Success signal: Mechanical tree contains support/load objects and solver input contains constraint and force commands.</p>
+<p>Failure recovery: review scoping by face/body selection, then regenerate solver input or solve again.</p>
+<h2 id="step-7-solve" tabindex="-1">Step 7: Solve</h2>
+<p>Goal: run the backend solver.</p>
+<p>Required action: click <code>Solve</code> on Solution or run the equivalent Mechanical solve command.</p>
+<p>Do not do: stop after generating <code>ds.dat</code> if Mechanical has not completed solve.</p>
+<p>Success signal: Mechanical Solution branch has a solved state and solver logs show a completed solve.</p>
+<p>Failure recovery: open Solution Information, read the solver error, fix mesh/material/BC/load, and solve again.</p>
+<h2 id="step-8-evaluate-result" tabindex="-1">Step 8: Evaluate Result</h2>
+<p>Goal: populate result objects with numerical data.</p>
+<p>Required action: insert expected result objects and run <code>Evaluate All Results</code>.</p>
+<p>Do not do: assume inserted result objects are already evaluated.</p>
+<p>Success signal: selected results show numeric Minimum and Maximum values.</p>
+<p>Failure recovery: select Solution, run <code>Evaluate All Results</code>, and wait for result status icons to clear.</p>
+<h2 id="step-9-verify-contour-legend-and-min-max" tabindex="-1">Step 9: Verify Contour, Legend, And Min/Max</h2>
+<p>Goal: prove that the result is viewable and evaluated in Mechanical.</p>
+<p>Required action: select each required result and inspect the viewport and Details panel.</p>
+<p>Do not do: accept a gray body, blank red result rows, or missing legend.</p>
+<p>Success signal: colored contour, legend, Min/Max markers, and non-empty Minimum/Maximum values are visible.</p>
+<p>Failure recovery: solve and evaluate again. If still blank, check result scoping, unit system, suppressed objects, and failed solver state.</p>
+<h2 id="step-10-export-evidence-and-save-project" tabindex="-1">Step 10: Export Evidence And Save Project</h2>
+<p>Goal: preserve a repeatable delivery state.</p>
+<p>Required action: save the <code>.wbpj</code>, preserve <code>_files</code>, and export screenshots or result views as evidence.</p>
+<p>Do not do: export evidence before solving/evaluating unless it is clearly labeled as a failure state.</p>
+<p>Success signal: saved project reopens and evidence matches the evaluated Mechanical viewport.</p>
+<p>Failure recovery: reopen the project, select result objects, verify contours again, re-export evidence, and rerun the delivery checker.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/12sqwdwq.github.io/blob/main/docs/ansys-skill/skill/mechanical_mvp_protocol.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/ansys-result-state-gates/">A result object is not an evaluated result</a>
+        <div class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-failure-taxonomy/">Failure taxonomy for automated Mechanical handoffs</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/forgespec-assembly-spec/">Why ForgeSpec keeps a typed specification between a prompt and CAD</a>
+        <div class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
+        <div class="entry-meta">Aug 10, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

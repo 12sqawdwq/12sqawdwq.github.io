@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A subject-disjoint Coswara pipeline, compact teacher–student baselines, and the evidence boundary before any clinical or SOTA claim.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Separating measured cough-model runs from the experiment plan — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="A subject-disjoint Coswara pipeline, compact teacher–student baselines, and the evidence boundary before any clinical or SOTA claim.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/coughkd-measured-baseline">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>Separating measured cough-model runs from the experiment plan — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Research Note · Working</p>
+      <h1>Separating measured cough-model runs from the experiment plan</h1>
+      <p class="article-description">A subject-disjoint Coswara pipeline, compact teacher–student baselines, and the evidence boundary before any clinical or SOTA claim.</p>
+      <p class="entry-meta">Apr 27, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · <a href="/12sqwdwq.github.io/writing/topics/medical-ai/">Medical AI</a>, <a href="/12sqwdwq.github.io/writing/topics/scientific-computing/">Scientific Computing</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/CoughKD/">CoughKD</a></p>
+
+    </header>
+    <div class="prose"><h2 id="question" tabindex="-1">Question</h2>
+<p>Can a cough-audio teacher–student pipeline be made reproducible before arguing about model quality?</p>
+<p>The first risk was not architecture selection. It was subject leakage, ambiguous dataset roles, and target tables that could be mistaken for observations.</p>
+<h2 id="setup" tabindex="-1">Setup</h2>
+<p>The current Coswara path filters cough recordings and constructs a subject-disjoint split:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Split item</th>
+<th style="text-align:right">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Filtered recordings</td>
+<td style="text-align:right">5,247</td>
+</tr>
+<tr>
+<td>Subjects</td>
+<td style="text-align:right">2,635</td>
+</tr>
+<tr>
+<td>Train recordings</td>
+<td style="text-align:right">3,671</td>
+</tr>
+<tr>
+<td>Validation recordings</td>
+<td style="text-align:right">785</td>
+</tr>
+<tr>
+<td>Test recordings</td>
+<td style="text-align:right">791</td>
+</tr>
+</tbody>
+</table></div>
+<p>Manifests carry recording and subject identity, dataset, path, label, and split. Validation is intended to fail if one subject crosses split boundaries. External datasets are not used for checkpoint selection.</p>
+<h2 id="measured-baselines" tabindex="-1">Measured baselines</h2>
+<p>One compact CUDA closed loop trained an in-repository <code>ConvTeacher</code> with 110,277 parameters and a <code>DepthwiseStudent + KD</code> with 20,717 parameters. Held-out macro one-vs-rest AUROC was 0.577184 for the teacher and 0.580959 for the student.</p>
+<p>A fresh 2+2 epoch run against the actual local Coswara directory measured 0.566054 for the same compact teacher and 0.571329 for the distilled student.</p>
+<p>The first completed foundation-teacher run used the official PANNs CNN14 16 kHz checkpoint as a frozen AudioSet backbone. On its held-out test split, macro one-vs-rest AUROC was 0.613420 for the PANNs teacher, 0.563910 for the CE-only depthwise student, and 0.566423 for the KD student.</p>
+<h2 id="interpretation" tabindex="-1">Interpretation</h2>
+<p>These runs show that the pipeline can build a subject-disjoint manifest, train on CUDA, select on validation data, and evaluate a held-out test split. They do not show that the compact models are clinically useful, state of the art, or robust across datasets.</p>
+<p>The PANNs result also keeps an important comparison visible: knowledge distillation slightly exceeded the CE-only student in that run, but both remained below the teacher. One run is not enough to claim a general distillation gain.</p>
+<h2 id="limitations" tabindex="-1">Limitations</h2>
+<ul>
+<li>Labels come from a public crowdsourced dataset with device, demographic, collection, and label-noise confounders.</li>
+<li>Cross-dataset evaluation, calibration, subgroup analysis, confidence intervals, and deployment benchmarks remain incomplete.</li>
+<li>Patient-level representation learning is only defensible where identity labels and permissions support it.</li>
+<li>Planned target values elsewhere in the research scaffold are not measurements.</li>
+<li>This repository makes no clinical or diagnostic claim.</li>
+</ul>
+<h2 id="next-question" tabindex="-1">Next question</h2>
+<p>Before longer training, the experiment needs frozen manifests, feature-cache provenance, CE-only controls, multiple seeds or folds, extended metrics, and external evaluation. The useful next result is not a larger number by itself; it is a result whose data and selection path remain auditable.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/CoughKD">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
+        <div class="entry-meta">Aug 10, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/iop-parameter-identifiability/">When a parameter sweep cannot identify its own model</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

@@ -1,0 +1,12 @@
+[
+  {"name":"Systems","description":"Processes, terminals, operating-system interfaces, and low-level execution models."},
+  {"name":"Developer Tools","description":"Tools for building, observing, testing, and operating software."},
+  {"name":"AI Agents","description":"Agent-assisted development, execution boundaries, observability, and validation."},
+  {"name":"Engineering Software","description":"Software structures for inspectable engineering workflows and evidence."},
+  {"name":"CAE","description":"Finite-element workflows, solver state, contact models, and numerical validation."},
+  {"name":"Scientific Computing","description":"Numerical models, reproducible experiments, and evidence-aware analysis."},
+  {"name":"HPC","description":"Schedulers, accelerators, distributed runs, and reproducible compute environments."},
+  {"name":"Embedded","description":"Microcontrollers, constrained interfaces, firmware, and hardware/software integration."},
+  {"name":"Medical AI","description":"Medical-data pipelines and model evaluation with explicit clinical claim boundaries."},
+  {"name":"CAD","description":"Parametric geometry, typed design intent, standards, and manufacturing-review boundaries."}
+]

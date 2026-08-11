@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A three-level finite-element audit where response ordering remained stable but the absolute output missed the registered mesh-independence criterion.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="The trend survived mesh refinement; the amplitude did not — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="A three-level finite-element audit where response ordering remained stable but the absolute output missed the registered mesh-independence criterion.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/eyelid-mesh-sensitivity">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>The trend survived mesh refinement; the amplitude did not — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Research Note · Working</p>
+      <h1>The trend survived mesh refinement; the amplitude did not</h1>
+      <p class="article-description">A three-level finite-element audit where response ordering remained stable but the absolute output missed the registered mesh-independence criterion.</p>
+      <p class="entry-meta">Aug 10, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · <a href="/12sqwdwq.github.io/writing/topics/cae/">CAE</a>, <a href="/12sqwdwq.github.io/writing/topics/scientific-computing/">Scientific Computing</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/ANSYS_simulation_IOP/">ANSYS_simulation_IOP</a></p>
+
+    </header>
+    <div class="prose"><h2 id="question" tabindex="-1">Question</h2>
+<p>When eyelid thickness increased from 1.60 mm to 2.00 mm, a coarse finite-element model showed a decreasing pressure-related response. I wanted to separate two questions:</p>
+<ol>
+<li>Does the <strong>ordering</strong> survive mesh refinement?</li>
+<li>Is the <strong>absolute amplitude</strong> mesh independent under the registered 2% criterion?</li>
+</ol>
+<p>They are not the same question.</p>
+<h2 id="setup" tabindex="-1">Setup</h2>
+<p>The audit used three eyelid thicknesses, three global mesh sizes, and paired 0/20 mmHg pressure states. Probe advancement, corneal thickness, material scales, contact formulation, and the pressure-related observable were held fixed across each comparison.</p>
+<p>The observable was computed from the pressure-paired probe-force difference:</p>
+<p class='katex-block'><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>q</mi><mn>20</mn></msub><mo stretchy="false">(</mo><mi>h</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mrow><mi>F</mi><mo stretchy="false">(</mo><mi>h</mi><mo separator="true">,</mo><mn>20</mn><mo separator="true">,</mo><mi>d</mi><mo stretchy="false">)</mo><mo>−</mo><mi>F</mi><mo stretchy="false">(</mo><mi>h</mi><mo separator="true">,</mo><mn>0</mn><mo separator="true">,</mo><mi>d</mi><mo stretchy="false">)</mo></mrow><msub><mi>A</mi><mrow><mi>p</mi><mi>r</mi><mi>o</mi><mi>b</mi><mi>e</mi></mrow></msub></mfrac><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">q_{20}(h)=\frac{F(h,20,d)-F(h,0,d)}{A_{probe}}.
+</annotation></semantics></math></span></p>
+<p>The study used completed MAPDL endpoints with zero solver errors, matched discretization inside each pressure pair, and a penetration quality-control threshold. Those checks reject incomplete runs and mismatched pairs; they do not establish convergence by themselves.</p>
+<h2 id="result" tabindex="-1">Result</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th style="text-align:right">Global mesh</th>
+<th style="text-align:right">q(1.60 mm)</th>
+<th style="text-align:right">q(1.80 mm)</th>
+<th style="text-align:right">q(2.00 mm)</th>
+<th style="text-align:right">Largest change from previous level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0.30 mm</td>
+<td style="text-align:right">7.3720 mmHg</td>
+<td style="text-align:right">7.2205 mmHg</td>
+<td style="text-align:right">6.7996 mmHg</td>
+<td style="text-align:right">—</td>
+</tr>
+<tr>
+<td style="text-align:right">0.24 mm</td>
+<td style="text-align:right">6.6048 mmHg</td>
+<td style="text-align:right">6.3904 mmHg</td>
+<td style="text-align:right">5.9892 mmHg</td>
+<td style="text-align:right">11.92%</td>
+</tr>
+<tr>
+<td style="text-align:right">0.20 mm</td>
+<td style="text-align:right">5.8586 mmHg</td>
+<td style="text-align:right">5.6457 mmHg</td>
+<td style="text-align:right">5.2518 mmHg</td>
+<td style="text-align:right">12.31%</td>
+</tr>
+</tbody>
+</table></div>
+<p>All three levels preserve</p>
+<p class='katex-block'><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>q</mi><mo stretchy="false">(</mo><mn>1.60</mn><mo stretchy="false">)</mo><mo>&gt;</mo><mi>q</mi><mo stretchy="false">(</mo><mn>1.80</mn><mo stretchy="false">)</mo><mo>&gt;</mo><mi>q</mi><mo stretchy="false">(</mo><mn>2.00</mn><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">q(1.60)&gt;q(1.80)&gt;q(2.00).
+</annotation></semantics></math></span></p>
+<p>But the two finest levels still differ by as much as 12.31%, well above the pre-registered 2% threshold.</p>
+<h2 id="interpretation" tabindex="-1">Interpretation</h2>
+<p>The direction of the thick-end response is robust <strong>inside the current model and tested meshes</strong>. The absolute values are not mesh independent. A stable ordering is useful evidence, but it is weaker than a converged quantitative prediction.</p>
+<p>This means the audit does not support calling 1.60 mm a physical threshold, using the current amplitudes as hardware calibration, or extrapolating them to different materials, geometries, loading paths, or tissue.</p>
+<h2 id="limitation" tabindex="-1">Limitation</h2>
+<p>The refinement was global rather than targeted at the two contact interfaces. Solver ranks, I/O conditions, and campaign concurrency also differed, so recorded wall time is historical operational evidence rather than a controlled scaling benchmark.</p>
+<h2 id="next-question" tabindex="-1">Next question</h2>
+<p>A better next experiment is a pre-registered local-refinement study with consistent contact-surface topology, tighter force/contact tolerances, and one pressure pair used as a resource preflight before expanding the matrix. More global refinement would be expensive without directly resolving why the contact response is still moving.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/ANSYS_simulation_IOP/blob/main/thickness_mesh_independence/DETAILED_REPORT.md">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/iop-parameter-identifiability/">When a parameter sweep cannot identify its own model</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/ansys-result-state-gates/">A result object is not an evaluated result</a>
+        <div class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/coughkd-measured-baseline/">Separating measured cough-model runs from the experiment plan</a>
+        <div class="entry-meta">Apr 27, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-mvp-protocol/">A narrow Mechanical delivery protocol</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

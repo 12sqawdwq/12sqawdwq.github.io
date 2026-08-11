@@ -1,58 +1,30 @@
 # Remote Solve Packages
 
-This folder contains Windows-to-Linux MAPDL solve packages.
+This folder documents a Windows-to-Linux MAPDL solve handoff. Infrastructure-specific aliases and absolute paths have been removed from the public copy.
 
-Default SSH target:
-
-- `5090`
-
-Default remote root:
-
-- `~/ziyuworkspace/blueknow_offset_remote`
-
-The current configured package is:
-
-- `09_fine_offset1p0_press0p6_0p2s`
-
-Because this machine's non-interactive SSH key login currently fails for `ssh 5090`, run these scripts in PowerShell yourself so you can type the SSH password when prompted.
-
-To make later automation non-interactive, install the local SSH key once:
+Configure the SSH target and workspace locally rather than committing them:
 
 ```powershell
-cd D:\PROJECT\blueknow\simulation\offset\REMOTE_SOLVE_PACKAGES
-.\setup_ssh_key.ps1
-```
-
-This appends `~/.ssh/id_ed25519.pub` to the remote user's `~/.ssh/authorized_keys`.
-
-## One-Time Environment Overrides
-
-Optional PowerShell environment variables:
-
-```powershell
-$env:REMOTE_SSH = "5090"
-$env:REMOTE_ROOT = "~/ziyuworkspace/blueknow_offset_remote"
+$env:REMOTE_SSH = "<solver-host-alias>"
+$env:REMOTE_ROOT = "<remote-workspace>"
 $env:REMOTE_CONDA_ENV = "base"
 $env:REMOTE_NP = "16"
-$env:REMOTE_ANSYS_CMD = "/path/to/ansys252"
+$env:REMOTE_ANSYS_CMD = "<path-to-mapdl>"
 ```
 
-If `ansys252` is already on the remote `PATH`, you do not need `REMOTE_ANSYS_CMD`.
+Use SSH keys or an approved interactive login flow. Do not commit passwords, private keys, host inventories, or scheduler credentials.
 
 ## Workflow
 
+From a selected solve package:
+
 ```powershell
-cd D:\PROJECT\blueknow\simulation\offset\REMOTE_SOLVE_PACKAGES\09_fine_offset1p0_press0p6_0p2s
 .\upload.ps1
 .\start_remote_solve.ps1
 .\monitor_remote.ps1
 .\fetch_results.ps1
 ```
 
-Fetched results are written to:
+Fetched solver results remain outside Git. Open the retrieved `file.rst` from the local result archive in Mechanical for review.
 
-```text
-D:\PROJECT\blueknow\simulation\offset\MECHANICAL_RESULTS_ARCHIVE\10_linux_fine_offset1p0_press0p6_0p2s
-```
-
-Open `file.rst` from that folder in Mechanical.
+This is an operational handoff note, not evidence that a solve converged or that the model is physically valid. Inspect the run manifest, solver errors, quality-control outputs, and evaluated result state separately.

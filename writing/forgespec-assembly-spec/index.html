@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="Why ForgeSpec keeps a typed specification between a prompt and CAD — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://12sqawdwq.github.io/12sqwdwq.github.io/writing/forgespec-assembly-spec">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/12sqwdwq.github.io/writing/rss.xml">
+  <link rel="stylesheet" href="/12sqwdwq.github.io/assets/site.css">
+  <title>Why ForgeSpec keeps a typed specification between a prompt and CAD — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/12sqwdwq.github.io/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/12sqwdwq.github.io/">Home</a></li><li><a href="/12sqwdwq.github.io/projects/">Projects</a></li><li><a aria-current="page" href="/12sqwdwq.github.io/writing/">Writing</a></li><li><a href="/12sqwdwq.github.io/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>Why ForgeSpec keeps a typed specification between a prompt and CAD</h1>
+      <p class="article-description">Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.</p>
+      <p class="entry-meta">May 24, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a> · <a href="/12sqwdwq.github.io/writing/topics/engineering-software/">Engineering Software</a>, <a href="/12sqwdwq.github.io/writing/topics/cad/">CAD</a>, <a href="/12sqwdwq.github.io/writing/topics/ai-agents/">AI Agents</a></p>
+      <p class="relation">Related project: <a href="/12sqwdwq.github.io/projects/ForgeSpec-Studio/">ForgeSpec-Studio</a></p>
+
+    </header>
+    <div class="prose"><h2 id="problem" tabindex="-1">Problem</h2>
+<p>A prompt-to-CAD demo can collapse requirement interpretation, planning, geometry generation, and the final artifact into one opaque step. If the output is wrong, it becomes difficult to tell whether the model misunderstood the object, selected the wrong generator, invented a standard dimension, or built the geometry incorrectly.</p>
+<p>ForgeSpec Studio inserts typed intermediate representations so those failures remain distinguishable.</p>
+<h2 id="current-path" tabindex="-1">Current path</h2>
+<pre class="hljs"><code>engineering brief
+  → typed CadBrief
+  → task classification
+  → domain planner and standards library
+  → AssemblySpec
+  → deterministic CadQuery source
+  → STEP / STL / preview / metadata
+  → validation and assurance artifacts
+</code></pre>
+<p>The model may help interpret a loose brief. It does not directly become the manufacturing definition. A local standards table can expand supported fasteners, while the planner keeps standard parts separate from the main requested object.</p>
+<h2 id="why-assemblyspec-matters" tabindex="-1">Why <code>AssemblySpec</code> matters</h2>
+<p><code>AssemblySpec</code> is a review boundary. It records named parts, dimensions, materials, tolerances, interfaces, standard references, transforms, and assumptions before geometry is exported. The same specification can be inspected, edited, regenerated, or rejected without treating a mesh preview as design truth.</p>
+<p>Keeping runnable CadQuery source beside STEP and STL also makes the build reconstructable. The source is policy-checked before source-driven builds, and every job writes a manifest and an assurance report.</p>
+<h2 id="trade-offs" tabindex="-1">Trade-offs</h2>
+<p>Typed planning narrows what the generator can express. The current standards catalog and deterministic generator families are deliberately small. Assembly placement is planning-oriented rather than a complete mating-constraint solver, and structural artifact checks are not FEA, tolerance-stack analysis, fatigue assessment, or design-code validation.</p>
+<p>The extra representation layer also creates schema-maintenance work. A field that is too vague simply moves ambiguity from the prompt into JSON; a field that is too rigid prevents useful designs. The schema therefore has to evolve with actual failed briefs rather than with an attempt to model every possible CAD system in advance.</p>
+<h2 id="what-changed" tabindex="-1">What changed</h2>
+<p>The project moved away from direct prompt-to-final-JSON generation. Intent classification, part planning, standard-library expansion, target-drift checks, deterministic source generation, and job-scoped validation now form separate stages covered by tests.</p>
+<h2 id="remaining-question" tabindex="-1">Remaining question</h2>
+<p>The open question is how far deterministic families and inspectable intermediate state can go before a richer geometric constraint system becomes necessary. No generated artifact should be manufactured without dimensional, material, load, tolerance, and safety review.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/ForgeSpec-Studio">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/ansys-result-state-gates/">A result object is not an evaluated result</a>
+        <div class="entry-meta">May 17, 2026 · updated Aug 11, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-mvp-protocol/">A narrow Mechanical delivery protocol</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/mechanical-failure-taxonomy/">Failure taxonomy for automated Mechanical handoffs</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/12sqwdwq.github.io/writing/persistent-terminal-limitations/">Known limits of a shared persistent terminal</a>
+        <div class="entry-meta">Aug 6, 2026 · <a href="/12sqwdwq.github.io/writing/notes/">Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>
