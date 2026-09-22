@@ -5,6 +5,17 @@
 <description>Essays, build notes, research notes, and working technical notes.</description>
 <language>en</language>
 <item>
+  <title>微电子学习工具笔记</title>
+  <link>https://12sqawdwq.github.io/writing/microelectronics-tools</link>
+  <guid isPermaLink="true">https://12sqawdwq.github.io/writing/microelectronics-tools</guid>
+  <pubDate>Tue, 22 Sep 2026 00:00:00 GMT</pubDate>
+  <description>课程工具、操作说明、官方配图与RC练习。</description>
+  <category>Note</category>
+  <category>Developer Tools</category>
+  <category>Embedded</category>
+  <category>AI Agents</category>
+</item>
+<item>
   <title>A result object is not an evaluated result</title>
   <link>https://12sqawdwq.github.io/writing/ansys-result-state-gates</link>
   <guid isPermaLink="true">https://12sqawdwq.github.io/writing/ansys-result-state-gates</guid>

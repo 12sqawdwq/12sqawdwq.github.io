@@ -1,6 +1,7 @@
 import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { findPrivateIPv4 } from "./privacy-guards.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const site = JSON.parse(await readFile(path.join(ROOT, "content", "site.json"), "utf8"));
@@ -106,11 +107,13 @@ for (const [file, html] of htmlCache) {
 }
 
 const combinedGenerated = [...htmlCache.values()].join("\n");
+if (findPrivateIPv4(combinedGenerated).length > 0) {
+  errors.push("generated site contains a private IPv4 address");
+}
 for (const pattern of [
   /https?:\/\/(?:www\.)?(?:notion\.so|notion\.site)/i,
   /C:\\Users\\/i,
   /D:\\PROJECT\\/i,
-  /\b(?:10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/,
   /\.ts\.net\b/i,
   /\b\d{4}\.site\b/i,
   /\b[a-z]+-ecs-[a-z0-9-]+\b/i,

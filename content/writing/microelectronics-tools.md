@@ -7,7 +7,7 @@ topics:
   - Developer Tools
   - Embedded
   - AI Agents
-status: draft
+status: published
 featured: false
 lang: zh-CN
 source: docs/microelectronics-tools/README.md

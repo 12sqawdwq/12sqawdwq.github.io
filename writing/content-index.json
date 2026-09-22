@@ -149,6 +149,23 @@
     "url": "/writing/mechanical-mvp-protocol/"
   },
   {
+    "title": "微电子学习工具笔记",
+    "description": "课程工具、操作说明、官方配图与RC练习。",
+    "date": "2026-09-22",
+    "updated": null,
+    "type": "Note",
+    "topics": [
+      "Developer Tools",
+      "Embedded",
+      "AI Agents"
+    ],
+    "status": "published",
+    "project": null,
+    "series": null,
+    "featured": false,
+    "url": "/writing/microelectronics-tools/"
+  },
+  {
     "title": "One shell, two observers: the persistent terminal architecture",
     "description": "How a native broker owns one PTY or ConPTY while an agent and a human share observation and controlled input.",
     "date": "2026-08-06",
