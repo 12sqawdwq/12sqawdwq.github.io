@@ -1,0 +1,56 @@
+{
+  "document": "Microelectronics learning tools",
+  "retrieved_date": "2026-09-22",
+  "rights": "Third-party product screenshots and documentation illustrations retain their original rights. Source links are provided in README.md.",
+  "images": [
+    {
+      "file": "assets/github-official.png",
+      "source_url": "https://docs.github.com/en/get-started/start-your-journey/about-github-and-git",
+      "sha256": "9a322284389c2a90056acd83c258b68db578397f150e0554fd7fe98b03ee4203"
+    },
+    {
+      "file": "assets/lceda-official.png",
+      "source_url": "https://pro.lceda.cn/",
+      "sha256": "3f7df68d4a08fc6f970faba66ca9bf9134d00dc10b24cbba90e4d1dccf97717e"
+    },
+    {
+      "file": "assets/obsidian-official.png",
+      "source_url": "https://obsidian.md/",
+      "sha256": "7fa9b63fa6fe8bf40e58dba8dc6fc1e135af5f06e96a98dd8bce8f02ac296d5a"
+    },
+    {
+      "file": "assets/vscode-interface.png",
+      "source_url": "https://code.visualstudio.com/docs/editing/getting-started/userinterface",
+      "asset_url": "https://code.visualstudio.com/assets/docs/editing/userinterface/hero.png",
+      "method": "Unmodified official image download",
+      "sha256": "c813500df6be03419383ced61b3a1cb4a97bdb44c7eebd4fd7856019d578fd58",
+      "dimensions": [
+        1200,
+        796
+      ]
+    },
+    {
+      "file": "assets/ltspice-rc.jpg",
+      "source_url": "https://www.analog.com/en/resources/design-tools-and-calculators/ltspice-simulator.html",
+      "asset_url": "https://www.analog.com/en/_/media/analog/en/design-center/ltspice/spotlight-ltspice-basics.jpg",
+      "method": "Unmodified official image download",
+      "sha256": "3be8f90e1621f380aeb6dfbb2b6b8f36ae117b847abb74f37e0b37442cb4b465",
+      "dimensions": [
+        512,
+        288
+      ]
+    },
+    {
+      "file": "assets/pi-interface-detail.png",
+      "source_url": "https://www.npmjs.com/package/@earendil-works/pi-coding-agent",
+      "method": "Rectangular crop only; historical official documentation illustration",
+      "crop_box": [
+        0,
+        1300,
+        1726,
+        2162
+      ],
+      "sha256": "36bfbe8ceafd38bc41e5349758d26c2d2586a48f0324d0b476aebb0b35fe2f80"
+    }
+  ]
+}
