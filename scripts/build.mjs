@@ -497,8 +497,8 @@ const recentResearchBuild = sorted
   .filter((article) => ["Research Note", "Build Note"].includes(article.type))
   .slice(0, 6);
 const writingBody = `<header class="page-heading"><p class="eyebrow">Technical notebook</p><h1>Writing</h1><p>Notes, experiments, and longer writing around systems, engineering software, simulation, and things I am currently trying to understand.</p></header>
-<section><h2>Featured</h2>${articleList(featured)}</section>
 <section><h2>Recent</h2>${articleList(sorted.slice(0, 7))}</section>
+<section><h2>Featured</h2>${articleList(featured)}</section>
 <section><h2>Research / Build Notes</h2>${articleList(recentResearchBuild, { descriptions: false })}</section>
 <section><h2>Browse by type</h2><ul class="archive-links">${typeCounts
   .map(
