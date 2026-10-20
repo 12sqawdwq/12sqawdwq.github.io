@@ -1,0 +1,87 @@
+{
+  "experience": [
+    {
+      "org": "LanZhi Medical · Shenzhen InnoX Academy",
+      "role": "Embedded & Algorithm Development Intern",
+      "period": "Jul 2025 – present",
+      "summary": "Home-use, eyelid-closed tonometer. Bluetooth and closed-loop probe-motor control, then eyelid–eyeball FEM in ANSYS/ABAQUS turned into control and compensation strategies: within ±2.5 mmHg of the gold standard, ocular-hypertension detection raised from ~60% to 85%. Three invention patent applications."
+    },
+    {
+      "org": "XJTLU Academy of Artificial Intelligence · University of Liverpool",
+      "role": "Research Assistant",
+      "period": "2024 – present",
+      "summary": "Prostate MRI AI with Assoc. Prof. Hong-Seng Gan: ReFER (case AUROC 0.843 on PI-CAI with 12.14M parameters), PAD-Former and EDRF. Equal-data benchmarks on a Slurm cluster; maintain the group's GPU infrastructure (2 racks, 16× NVIDIA A800)."
+    },
+    {
+      "org": "Finkey · Shuangfu Technology (Suzhou)",
+      "role": "Co-founder & Embedded Software Lead",
+      "period": "Aug 2025 – present",
+      "summary": "Open-source hardware security key: OTP/HOTP/TOTP and FIDO2 in Rust on Tock OS (nRF52840), building on Google OpenSK. 100+ units shipped in small batches; incubated at XJTLU's entrepreneurship hub."
+    },
+    {
+      "org": "ByteDance · Volcano Engine",
+      "role": "Technical Operations Intern",
+      "period": "Dec 2025 – May 2026",
+      "summary": "Benchmarked large models on reasoning, coding, tool use and instruction following; analysed LLM-agent products and AI-coding workflows; triaged community issues into reports for product and engineering."
+    },
+    {
+      "org": "Z.ai (Zhipu AI)",
+      "role": "Campus Ambassador",
+      "period": "Aug 2025 – Apr 2026",
+      "summary": "Talks at XJTLU on LLM inference infrastructure (vLLM, SGLang, LangChain); launched a Dify campus partnership and hosted a Dify-based agent hackathon."
+    },
+    {
+      "org": "DeepBlue Technology (Shanghai)",
+      "role": "Embedded Software Engineer Intern",
+      "period": "Apr 2024 – Jun 2025",
+      "summary": "Wheeled-biped robot: gait control and motor interfaces; Raspberry Pi 5 for planning, SLAM and depth-camera obstacle avoidance, with CAN-linked controllers using IMU fusion and PID."
+    },
+    {
+      "org": "Fudan University · Intelligent Perception & Autonomous Systems Lab",
+      "role": "Research Intern",
+      "period": "Jun 2024 – Aug 2024",
+      "summary": "ROS 2 autonomous vehicle on Jetson NX: LiDAR perception, SLAM localization, A* planning and PID control in one navigation pipeline."
+    },
+    {
+      "org": "East China Normal University · Intelligent Ultrasound Research Center",
+      "role": "Research Intern",
+      "period": "Nov 2023 – May 2024",
+      "summary": "Multi-channel electrical-stimulation system (STM32/ESP32 firmware, CAN/BLE, Flutter app, bio-impedance closed-loop output); pressure-array cushion with KNN posture recognition."
+    },
+    {
+      "org": "Sanyi 3D Technology (Qingdao)",
+      "role": "Embedded Full-Stack Engineer Intern",
+      "period": "Jan 2024 – Mar 2024",
+      "summary": "Large-format FDM printers: delta kinematics simulation in SolidWorks and Marlin firmware with PID motor and sensor control."
+    }
+  ],
+  "outreach": [
+    {
+      "org": "XJTLU Science Innovation Association",
+      "role": "President, two terms",
+      "period": "2023 – 2025",
+      "summary": "200+ members; co-organised NVIDIA China Developer Day at XJTLU (~200 attendees); built the X-SIA member platform on Cloudflare Workers."
+    },
+    {
+      "org": "JetBrains · MathWorks",
+      "role": "Campus Ambassador",
+      "period": "",
+      "summary": "JetBrains on-site technical support at Apsara Conference 2024 and 2025; MATLAB/Simulink outreach at XJTLU."
+    }
+  ],
+  "publications": [
+    {
+      "text": "Z. Zhao et al., “PAD-Former: A Two-Stage PI-RADS Classification Framework with Multi-Modal Anomaly Diffusion and Cross-Attention,” IEEE BIBM 2025.",
+      "note": "first author",
+      "url": "https://doi.org/10.1109/BIBM66473.2025.11356522"
+    },
+    {
+      "text": "Z. Zhao et al., “ReFER: Learned Soft-Region Priors for Clinically Significant Prostate Cancer Detection and Diagnosis in Biparametric MRI,” IEEE BIBM 2026.",
+      "note": "first author · accepted, to appear"
+    },
+    {
+      "text": "“EDRF: Evidence-Decoupled Reliability Fusion for Case-Level csPCa Risk Assessment,” IEEE BIBM 2026.",
+      "note": "second author · accepted, to appear"
+    }
+  ]
+}

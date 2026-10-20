@@ -30,6 +30,7 @@ const topicDefinitions = JSON.parse(
   await readFile(path.join(ROOT, "content", "topics.json"), "utf8"),
 );
 const projects = JSON.parse(await readFile(path.join(ROOT, "content", "projects.json"), "utf8"));
+const experience = JSON.parse(await readFile(path.join(ROOT, "content", "experience.json"), "utf8"));
 const topicMap = new Map(topicDefinitions.map((topic) => [topic.name, topic]));
 const projectMap = new Map(projects.map((project) => [project.id, project]));
 
@@ -288,6 +289,22 @@ function articleList(entries, { descriptions = true } = {}) {
     .join("")}</ol>`;
 }
 
+function roleList(entries) {
+  return `<ul class="project-index">${entries
+    .map(
+      (entry) => `<li><div><span class="project-name">${escapeHtml(entry.org)}</span>${entry.period ? `<span>${escapeHtml(entry.period)}</span>` : ""}</div><p><strong>${escapeHtml(entry.role)}</strong> — ${escapeHtml(entry.summary)}</p></li>`,
+    )
+    .join("")}</ul>`;
+}
+
+function publicationList(entries) {
+  return `<ol class="entry-list">${entries
+    .map(
+      (entry) => `<li>${escapeHtml(entry.text)}<div class="entry-meta">${escapeHtml(entry.note)}${entry.url ? ` · <a href="${escapeHtml(entry.url)}">DOI</a>` : ""}</div></li>`,
+    )
+    .join("")}</ol>`;
+}
+
 function header(active) {
   const links = [
     ["Home", "/", "home"],
@@ -372,7 +389,7 @@ const homeBody = `
 <section class="lede">
   <p class="eyebrow">Undergraduate engineering notebook</p>
   <h1>Projects, experiments, and questions I am trying to understand.</h1>
-  <p>I study Microelectronics Science and Technology at Xi'an Jiaotong-Liverpool University. This site keeps project state, technical notes, research limits, and failed checks close to the work that produced them.</p>
+  <p>I am a final-year BEng student in Microelectronic Science and Engineering at Xi'an Jiaotong-Liverpool University and the University of Liverpool (dual degree; First Class averages in Years 1–2). This site keeps project state, technical notes, research limits, and failed checks close to the work that produced them.</p>
 </section>
 <span id="engineering" aria-hidden="true"></span>
 <span id="embedded" aria-hidden="true"></span>
@@ -384,6 +401,18 @@ const homeBody = `
       (project) => `<li><div><a class="project-name" href="${href(`/projects/${project.id}/`)}">${escapeHtml(project.name)}</a><span>${escapeHtml(project.status)}</span></div><p>${escapeHtml(project.summary)}</p></li>`,
     )
     .join("")}</ul>
+</section>
+<section id="experience">
+  <div class="section-heading"><h2>Experience</h2><a href="${href("/CV_Ziyu_Zhao_final.pdf")}">Full CV (PDF) →</a></div>
+  ${roleList(experience.experience)}
+</section>
+<section id="publications">
+  <h2>Publications</h2>
+  ${publicationList(experience.publications)}
+</section>
+<section id="outreach">
+  <h2>Leadership and outreach</h2>
+  ${roleList(experience.outreach)}
 </section>
 <section>
   <h2>Current interests</h2>
