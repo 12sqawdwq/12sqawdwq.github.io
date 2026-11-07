@@ -2,7 +2,7 @@
 
 Static GitHub Pages site for projects and technical writing.
 
-Live site: <https://12sqawdwq.github.io/>
+Live site: <https://ziyu.mnilab.cn/>
 
 ## Content model
 

@@ -1,10 +1,29 @@
 [
   {
+    "id": "FlyHead",
+    "name": "FlyHead",
+    "group": "Robotics and embodied AI",
+    "status": "active project",
+    "summary": "A testbed for connectome-driven control that connects a simulated whole-brain fruit-fly connectome (FlyWire) to a real wheel-legged robot. The LIF brain model is taken unmodified from eonsystemspbc/fly-brain; as sole developer, built everything around it: sensor encoders, the descending-neuron decoder, GPU acceleration, the safety layer, LiDAR SLAM navigation, a web console and a 3D site, demonstrated on the real robot.",
+    "repo": "https://github.com/12sqawdwq/FlyHead",
+    "selected": true,
+    "links": [
+      {
+        "label": "interactive site",
+        "url": "https://flyhead.live/"
+      },
+      {
+        "label": "upstream LIF model (eonsystemspbc/fly-brain)",
+        "url": "https://github.com/eonsystemspbc/fly-brain"
+      }
+    ]
+  },
+  {
     "id": "code-with-pi",
     "name": "code-with-pi",
     "group": "Systems and developer tools",
     "status": "active experiment",
-    "summary": "A C11 broker keeps one PTY/ConPTY shell alive so Pi and its user can observe or take over the same terminal through authenticated local IPC.",
+    "summary": "A terminal broker that lets an AI coding agent and its user monitor or take over the same live shell. Written in C11 for Windows and Linux.",
     "repo": "https://github.com/12sqawdwq/code-with-pi",
     "selected": true
   },
@@ -13,7 +32,7 @@
     "name": "ANSYS_skill",
     "group": "Engineering and scientific computing",
     "status": "experimental",
-    "summary": "Checks which state an automated Mechanical workflow actually reached without treating file or result-object existence as physical validation.",
+    "summary": "A checker for automated ANSYS Mechanical workflows that records which stage a run reached and the result evidence behind it.",
     "repo": "https://github.com/12sqawdwq/ANSYS_skill",
     "selected": true
   },
@@ -22,27 +41,37 @@
     "name": "ForgeSpec-Studio",
     "group": "Engineering and scientific computing",
     "status": "prototype",
-    "summary": "Turns a loose engineering brief into typed intent, a reviewable AssemblySpec, and deterministic CadQuery source and geometry.",
+    "summary": "A design automation tool that converts a loose engineering brief into a reviewable assembly specification and deterministic CadQuery source.",
     "repo": "https://github.com/12sqawdwq/ForgeSpec-Studio",
     "selected": true,
-    "links": [{"label":"structure","url":"docs/html/forgespec-studio-app/"}]
+    "links": [
+      {
+        "label": "structure",
+        "url": "docs/html/forgespec-studio-app/"
+      }
+    ]
   },
   {
     "id": "ANSYS_simulation_IOP",
     "name": "ANSYS_simulation_IOP",
     "group": "Engineering and scientific computing",
     "status": "research code",
-    "summary": "APDL models and analysis scripts for transpalpebral tonometry, retaining provenance, mesh dependence, non-identifiability, and failed calibration checks.",
+    "summary": "Finite-element models and analysis scripts for studying transpalpebral eye-pressure measurement, built in ANSYS APDL and released as research code.",
     "repo": "https://github.com/12sqawdwq/ANSYS_simulation_IOP",
     "selected": true,
-    "links": [{"label":"call graph","url":"docs/html/eye-pressure-callgraph/"}]
+    "links": [
+      {
+        "label": "call graph",
+        "url": "docs/html/eye-pressure-callgraph/"
+      }
+    ]
   },
   {
     "id": "Harmony_TaskFlow",
     "name": "Harmony_TaskFlow",
     "group": "Systems and developer tools",
     "status": "prototype",
-    "summary": "HarmonyOS integration work involving ArkTS, deep links, Calendar OAuth, Workers/D1, VPN Extension behavior, and a multi-ABI Mihomo core.",
+    "summary": "A HarmonyOS systems-integration experiment: a task app with calendar sign-in, a cloud back end and a native proxy core.",
     "repo": "https://github.com/12sqawdwq/Harmony_TaskFlow",
     "selected": true
   },
@@ -51,7 +80,7 @@
     "name": "CoughKD",
     "group": "Engineering and scientific computing",
     "status": "research prototype",
-    "summary": "Subject-disjoint cough-audio preparation and PyTorch/CUDA teacher–student experiments with measured runs separated from planned targets.",
+    "summary": "A research pipeline for cough-audio screening. It prepares subject-disjoint data and distils large audio teachers into smaller student models.",
     "repo": "https://github.com/12sqawdwq/CoughKD",
     "selected": true
   },
@@ -60,7 +89,7 @@
     "name": "pixel_probetop",
     "group": "Systems and developer tools",
     "status": "supporting project",
-    "summary": "A dependency-light Python hub and Linux agent for multi-server monitoring, with a small Web UI and Android/Pixel viewer.",
+    "summary": "A lightweight multi-server monitor used to watch the research group's GPU servers, with a web UI and an Android viewer.",
     "repo": "https://github.com/12sqawdwq/pixel_probetop"
   },
   {
@@ -68,7 +97,7 @@
     "name": "stm32-cli-toolkit",
     "group": "Systems and developer tools",
     "status": "small tool",
-    "summary": "Shell wrappers around OpenOCD for building and flashing STM32 projects from a terminal or headless machine.",
+    "summary": "A set of shell wrappers around OpenOCD for building and flashing STM32 projects from a terminal or headless machine.",
     "repo": "https://github.com/12sqawdwq/stm32-cli-toolkit"
   },
   {
@@ -76,7 +105,7 @@
     "name": "MES204 LCD projects",
     "group": "Embedded and small experiments",
     "status": "course experiments",
-    "summary": "STM32F446 LCD1602/2004 work: a T-Rex game, custom character rendering, and graphics experiments on constrained displays.",
+    "summary": "STM32F446 character-LCD projects from the Microprocessor Systems module, including a T-Rex game, custom characters and graphics experiments.",
     "repo": "https://github.com/12sqawdwq/MES204_lcd"
   },
   {
@@ -84,7 +113,7 @@
     "name": "terminal-gauss-Mamma-viz",
     "group": "Embedded and small experiments",
     "status": "small experiment",
-    "summary": "A C terminal renderer for sampled mathematical surfaces using perspective projection, a z-buffer, and ANSI color.",
+    "summary": "A terminal renderer written in C that draws mathematical surfaces in perspective using ANSI colour.",
     "repo": "https://github.com/12sqawdwq/terminal-gauss-Mamma-viz"
   },
   {
@@ -92,7 +121,13 @@
     "name": "sky_monitor_api",
     "group": "Engineering and scientific computing",
     "status": "supporting project",
-    "summary": "A FastAPI service that calculates visible stars, planets, and deep-sky objects for a location and observation time.",
-    "repo": "https://github.com/12sqawdwq/sky_monitor_api"
+    "summary": "An astronomy API built with FastAPI that returns the stars, planets and deep-sky objects visible from a given location and time, with a live web demo.",
+    "repo": "https://github.com/12sqawdwq/sky_monitor_api",
+    "links": [
+      {
+        "label": "live site",
+        "url": "https://sky.eunoia.top/"
+      }
+    ]
   }
 ]

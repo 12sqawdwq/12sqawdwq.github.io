@@ -389,7 +389,7 @@ const homeBody = `
 <section class="lede">
   <p class="eyebrow">Undergraduate engineering notebook</p>
   <h1>Projects, experiments, and questions I am trying to understand.</h1>
-  <p>I am a final-year BEng student in Microelectronic Science and Engineering at Xi'an Jiaotong-Liverpool University and the University of Liverpool (dual degree; First Class averages in Years 1–2). This site keeps project state, technical notes, research limits, and failed checks close to the work that produced them.</p>
+  <p>${escapeHtml(site.intro)}</p>
 </section>
 <span id="engineering" aria-hidden="true"></span>
 <span id="embedded" aria-hidden="true"></span>
@@ -427,7 +427,7 @@ const homeBody = `
 </section>
 <section id="about">
   <h2>About</h2>
-  <p>I use coding agents as part of development, but try to keep the problem definition, architecture, experiments, negative results, and validation boundaries inspectable. Current work spans systems tooling, engineering software, CAE/CAD, scientific computing, embedded systems, and medical AI.</p>
+  <p>${escapeHtml(site.about)}</p>
   <p><a href="mailto:${site.email}">Email</a> · <a href="${site.github}">GitHub</a> · <a href="${href("/CV_Ziyu_Zhao_final.pdf")}">CV (PDF)</a></p>
 </section>`;
 await writeRoute(
@@ -502,7 +502,10 @@ await writeRoute(
 for (const project of projects) {
   const writing = sorted.filter((article) => article.project === project.id);
   const extraLinks = (project.links ?? [])
-    .map((link) => `<a href="${href(`/${link.url}`)}">${escapeHtml(link.label)}</a>`)
+    .map((link) => {
+      const target = /^https?:/.test(link.url) ? link.url : href(`/${link.url}`);
+      return `<a href="${escapeHtml(target)}">${escapeHtml(link.label)}</a>`;
+    })
     .join(" · ");
   const body = `<header class="page-heading"><p class="eyebrow">${escapeHtml(project.status)}</p><h1>${escapeHtml(project.name)}</h1><p>${escapeHtml(project.summary)}</p><p><a href="${project.repo}">Repository →</a>${extraLinks ? ` · ${extraLinks}` : ""}</p></header>
   <section><h2>Writing about this project</h2>${articleList(writing)}</section>`;

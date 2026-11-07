@@ -1,8 +1,10 @@
 {
   "name": "Ziyu Zhao (Victor)",
   "title": "Ziyu Zhao — engineering notebook",
-  "description": "Projects and technical notes on systems, engineering software, simulation, scientific computing, embedded systems, and medical AI.",
-  "siteUrl": "https://12sqawdwq.github.io",
+  "description": "Projects and technical notes on AI infrastructure, hardware/software co-design, high-performance computing, embedded systems, biomedical sensing front ends, robotics, and medical AI.",
+  "intro": "I am a final-year BEng student in Microelectronic Science and Engineering at Xi'an Jiaotong-Liverpool University and the University of Liverpool (dual degree, Sep 2023 – Jul 2027). I hold First Class averages in Years 1–2 and rank 9/91 in the programme cohort (top 10%). My interests include AI infrastructure, hardware/software co-design, high-performance computing, embedded systems and biomedical sensing front ends. This site collects my projects, research and technical notes.",
+  "about": "I use coding agents during development and keep each project's problem definition, architecture, experiments and validation open to inspection. My current work spans AI infrastructure, hardware/software co-design, high-performance computing, embedded systems, biomedical sensing front ends, connectome-driven robotics and medical imaging AI.",
+  "siteUrl": "https://ziyu.mnilab.cn",
   "basePath": "",
   "github": "https://github.com/12sqawdwq",
   "email": "102450592zzy@gmail.com"
