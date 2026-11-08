@@ -4,7 +4,7 @@
     "name": "FlyHead",
     "group": "Robotics and embodied AI",
     "status": "active project",
-    "summary": "A testbed for connectome-driven control that connects a simulated whole-brain fruit-fly connectome (FlyWire) to a real wheel-legged robot. The LIF brain model is taken unmodified from eonsystemspbc/fly-brain; as sole developer, built everything around it: sensor encoders, the descending-neuron decoder, GPU acceleration, the safety layer, LiDAR SLAM navigation, a web console and a 3D site, demonstrated on the real robot.",
+    "summary": "A testbed where a GPU-simulated whole-brain fruit-fly connectome (FlyWire, 138,639 neurons, 15.09M connections) drives a real wheel-legged robot. I built the platform around the upstream LIF model, including sensor encoders, the neuron decoder, safety layer, LiDAR SLAM navigation and web console.",
     "repo": "https://github.com/12sqawdwq/FlyHead",
     "selected": true,
     "links": [
@@ -19,44 +19,26 @@
     ]
   },
   {
-    "id": "code-with-pi",
-    "name": "code-with-pi",
-    "group": "Systems and developer tools",
-    "status": "active experiment",
-    "summary": "A terminal broker that lets an AI coding agent and its user monitor or take over the same live shell. Written in C11 for Windows and Linux.",
-    "repo": "https://github.com/12sqawdwq/code-with-pi",
-    "selected": true
-  },
-  {
-    "id": "ANSYS_skill",
-    "name": "ANSYS_skill",
+    "id": "sky_monitor_api",
+    "name": "Sky Atlas",
     "group": "Engineering and scientific computing",
-    "status": "experimental",
-    "summary": "A checker for automated ANSYS Mechanical workflows that records which stage a run reached and the result evidence behind it.",
-    "repo": "https://github.com/12sqawdwq/ANSYS_skill",
-    "selected": true
-  },
-  {
-    "id": "ForgeSpec-Studio",
-    "name": "ForgeSpec-Studio",
-    "group": "Engineering and scientific computing",
-    "status": "prototype",
-    "summary": "A design automation tool that converts a loose engineering brief into a reviewable assembly specification and deterministic CadQuery source.",
-    "repo": "https://github.com/12sqawdwq/ForgeSpec-Studio",
-    "selected": true,
+    "status": "live site",
+    "summary": "A live, bilingual stargazing site that computes visibility for any place and time. I built the FastAPI back end, three.js front end, API docs, monitoring, and tests; the site renders about 109,000 real stars across 16 orders of magnitude of scale.",
+    "repo": "https://github.com/12sqawdwq/sky_monitor_api",
     "links": [
       {
-        "label": "structure",
-        "url": "docs/html/forgespec-studio-app/"
+        "label": "live site",
+        "url": "https://sky.eunoia.top/"
       }
-    ]
+    ],
+    "selected": true
   },
   {
     "id": "ANSYS_simulation_IOP",
     "name": "ANSYS_simulation_IOP",
     "group": "Engineering and scientific computing",
     "status": "research code",
-    "summary": "Finite-element models and analysis scripts for studying transpalpebral eye-pressure measurement, built in ANSYS APDL and released as research code.",
+    "summary": "Finite-element models of the eyelid and eyeball for a home-use transpalpebral tonometer. During my Shenzhen InnoX Academy internship, I wrote the ANSYS APDL models and scripts that supported the probe-control and calibration work behind three patent applications.",
     "repo": "https://github.com/12sqawdwq/ANSYS_simulation_IOP",
     "selected": true,
     "links": [
@@ -67,13 +49,45 @@
     ]
   },
   {
+    "id": "code-with-pi",
+    "name": "code-with-pi",
+    "group": "Systems and developer tools",
+    "status": "active experiment",
+    "summary": "A terminal broker where an AI coding agent and its user watch or take over the same live shell. I wrote it in C11 over Windows ConPTY and POSIX PTY with authenticated local IPC, and added CI tests on Windows and Linux.",
+    "repo": "https://github.com/12sqawdwq/code-with-pi",
+    "selected": true
+  },
+  {
+    "id": "ForgeSpec-Studio",
+    "name": "ForgeSpec-Studio",
+    "group": "Engineering and scientific computing",
+    "status": "prototype",
+    "summary": "An AI-assisted CAD tool that turns a loose engineering brief into a reviewable assembly specification. I built it to generate deterministic CadQuery source from a standard-parts library and export STEP and STL with a browser preview.",
+    "repo": "https://github.com/12sqawdwq/ForgeSpec-Studio",
+    "selected": true,
+    "links": [
+      {
+        "label": "structure",
+        "url": "docs/html/forgespec-studio-app/"
+      }
+    ]
+  },
+  {
+    "id": "ANSYS_skill",
+    "name": "ANSYS_skill",
+    "group": "Engineering and scientific computing",
+    "status": "experimental",
+    "summary": "A validation layer for automated ANSYS Mechanical runs. I built it to record the stage each run reached and the result evidence behind it; a cantilever benchmark matches Euler-Bernoulli theory within 0.223%.",
+    "repo": "https://github.com/12sqawdwq/ANSYS_skill",
+    "selected": true
+  },
+  {
     "id": "Harmony_TaskFlow",
     "name": "Harmony_TaskFlow",
     "group": "Systems and developer tools",
     "status": "prototype",
     "summary": "A HarmonyOS systems-integration experiment: a task app with calendar sign-in, a cloud back end and a native proxy core.",
-    "repo": "https://github.com/12sqawdwq/Harmony_TaskFlow",
-    "selected": true
+    "repo": "https://github.com/12sqawdwq/Harmony_TaskFlow"
   },
   {
     "id": "CoughKD",
@@ -81,8 +95,7 @@
     "group": "Engineering and scientific computing",
     "status": "research prototype",
     "summary": "A research pipeline for cough-audio screening. It prepares subject-disjoint data and distils large audio teachers into smaller student models.",
-    "repo": "https://github.com/12sqawdwq/CoughKD",
-    "selected": true
+    "repo": "https://github.com/12sqawdwq/CoughKD"
   },
   {
     "id": "pixel_probetop",
@@ -115,19 +128,5 @@
     "status": "small experiment",
     "summary": "A terminal renderer written in C that draws mathematical surfaces in perspective using ANSI colour.",
     "repo": "https://github.com/12sqawdwq/terminal-gauss-Mamma-viz"
-  },
-  {
-    "id": "sky_monitor_api",
-    "name": "sky_monitor_api",
-    "group": "Engineering and scientific computing",
-    "status": "supporting project",
-    "summary": "An astronomy API built with FastAPI that returns the stars, planets and deep-sky objects visible from a given location and time, with a live web demo.",
-    "repo": "https://github.com/12sqawdwq/sky_monitor_api",
-    "links": [
-      {
-        "label": "live site",
-        "url": "https://sky.eunoia.top/"
-      }
-    ]
   }
 ]

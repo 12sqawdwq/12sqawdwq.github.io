@@ -398,7 +398,7 @@ const homeBody = `
   <div class="section-heading"><h2>Selected work</h2><a href="${href("/projects/")}">View all projects →</a></div>
   <ul class="project-index">${selectedProjects
     .map(
-      (project) => `<li><div><a class="project-name" href="${href(`/projects/${project.id}/`)}">${escapeHtml(project.name)}</a><span>${escapeHtml(project.status)}</span></div><p>${escapeHtml(project.summary)}</p></li>`,
+      (project) => `<li><div><a class="project-name" href="${href(`/projects/${project.id}/`)}">${escapeHtml(project.name)}</a><span>${escapeHtml(project.status)}</span></div><p>${escapeHtml(project.summary)}</p>${(project.links || []).filter((link) => /site/.test(link.label) && /^https?:/.test(link.url)).map((link) => `<a class="project-live" href="${escapeHtml(link.url)}">${escapeHtml(link.label)} ↗</a>`).join("")}</li>`,
     )
     .join("")}</ul>
 </section>
