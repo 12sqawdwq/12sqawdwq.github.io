@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Two problems from building Sky Atlas: an API that quietly dropped the brightest stars, and a three.js scene that spans about 16 orders of magnitude of scale.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="From one star to the cosmic horizon in a browser — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Two problems from building Sky Atlas: an API that quietly dropped the brightest stars, and a three.js scene that spans about 16 orders of magnitude of scale.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://ziyu.mnilab.cn/writing/sky-atlas-scale">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/writing/rss.xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <title>From one star to the cosmic horizon in a browser — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a aria-current="page" href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note</p>
+      <h1>From one star to the cosmic horizon in a browser</h1>
+      <p class="article-description">Two problems from building Sky Atlas: an API that quietly dropped the brightest stars, and a three.js scene that spans about 16 orders of magnitude of scale.</p>
+      <p class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a> · <a href="/writing/topics/scientific-computing/">Scientific Computing</a>, <a href="/writing/topics/developer-tools/">Developer Tools</a></p>
+      <p class="relation">Related project: <a href="/projects/sky_monitor_api/">Sky Atlas</a></p>
+
+    </header>
+    <div class="prose"><h2 id="what-it-is" tabindex="-1">What it is</h2>
+<p><a href="https://sky.eunoia.top/">Sky Atlas</a> has two halves. A FastAPI back end answers &quot;what can I see from here, now?&quot; for any place and time. A three.js front end, written in TypeScript with no UI framework, lets you zoom from tonight's sky out to the edge of the observable universe and back.</p>
+<p>The back end started as a tool for voice queries on AI glasses, which is why it returns a compact, ranked list rather than a full catalogue. Its data sources:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Objects</th>
+<th>Source</th>
+<th>Computation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stars</td>
+<td>HYG v3, stars to magnitude 6.0, in SQLite</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Deep-sky objects</td>
+<td>Messier M1–M110 plus five NGC/Melotte targets</td>
+<td>positions checked against OpenNGC</td>
+</tr>
+<tr>
+<td>Sun, Moon and planets</td>
+<td>JPL DE421 ephemeris</td>
+<td>Skyfield</td>
+</tr>
+<tr>
+<td>Stars and deep-sky positions</td>
+<td>—</td>
+<td>one bulk Astropy call converts them to altitude and azimuth</td>
+</tr>
+</tbody>
+</table></div>
+<p><img src="/assets/writing/sky-atlas-scale/sky-sirius.jpg" alt="Tonight's Sky over Shanghai, with Sirius selected: altitude 20.2°, azimuth 126°, magnitude −1.44, 8.6 light-years, with rise, transit and set times, and a bar of recommended targets along the bottom."></p>
+<h2 id="problem-1-the-brightest-stars-went-missing" tabindex="-1">Problem 1: the brightest stars went missing</h2>
+<p>The first version of <code>/sky/chart</code> filled per-category quotas and sorted stars altitude-first. That looked fine at the default magnitude limit. When a client raised <code>star_max_mag</code>, more faint stars passed the filter, the quota filled with stars that happened to be higher in the sky, and Vega, Altair and Deneb dropped out of the answer.</p>
+<p>The fix was to make the selection order explicit and remove the quotas:</p>
+<ol>
+<li><strong>Filter</strong> on what the client asked for: magnitude limits and minimum altitude. The altitude limit now applies to every object, including the Sun and Moon.</li>
+<li><strong>Rank</strong> by brightness. Altitude adds at most 0.5 to the priority, which only breaks ties.</li>
+<li><strong>Cut</strong> at <code>total_limit</code>, which is a ceiling, not a target.</li>
+</ol>
+<p>A regression test now checks that bright stars are not crowded out when the limits change. The same release fixed two smaller honesty problems:</p>
+<ul>
+<li><strong>Placeholder distances.</strong> HYG uses 100,000 pc for an unknown distance. The API now returns <code>null</code> instead of presenting the placeholder as a measurement.</li>
+<li><strong>The Sun.</strong> The reasoning context never recommends the Sun as a target, and it adds a safety note whenever the Sun is up.</li>
+</ul>
+<h2 id="problem-2-sixteen-orders-of-magnitude-in-float32" tabindex="-1">Problem 2: sixteen orders of magnitude in float32</h2>
+<p>The atlas camera's orbit radius runs from about 0.4 AU (log₁₀ −5.2 in light-years) to about four times the radius of the observable universe (log₁₀ 11.6). A GPU vertex position is float32, which carries about seven significant digits, so a single world coordinate system cannot hold the Solar System and the cosmic web at the same time.</p>
+<p>Three choices keep it stable:</p>
+<ul>
+<li><strong>A floating origin.</strong> The camera always orbits (0, 0, 0). Each layer (Solar System, stars, Milky Way, galaxies, cosmic web) keeps its own origin, and every frame its group is placed at <code>layer.origin − focus</code>. That subtraction is done in float64 on the CPU, so the GPU only ever sees small numbers near the camera.</li>
+<li><strong>Near and far planes that scale with distance.</strong> <code>near = r × 10⁻⁴</code> and <code>far = max(r × 10⁷, 10³)</code>, where <em>r</em> is the orbit radius. Point clouds and dust use additive blending with an explicit render order instead of depth testing.</li>
+<li><strong>Layers that fade over log-distance.</strong> Each layer has an opacity window over log₁₀(<em>r</em>): it fades in over one range and out over another. For example, planet orbits are visible from −6 to −1.8, the Milky Way halo from 3.9 to 7.0, and the far cosmic web from 9.1 to 13.2. At any zoom level only a few layers are drawn, and handovers are cross-fades rather than pops.</li>
+</ul>
+<p><img src="/assets/writing/sky-atlas-scale/atlas-solar.jpg" alt="The Solar System at a viewing distance of 56.4 AU, with planet orbits, Kuiper-belt dust and constellation lines."></p>
+<p><img src="/assets/writing/sky-atlas-scale/atlas-milkyway.jpg" alt="The Milky Way at a viewing distance of 132,000 light-years: a procedural spiral with labelled arms, M13 and the Sagittarius Dwarf."></p>
+<p>Long camera flights use the same log scale. On a long hop the camera first pulls back to about log₁₀(travel × 1.6), moves sideways mostly while zoomed out, and then comes in again. Flight duration is clamped to 1.4–5.5 s.</p>
+<h2 id="level-of-detail-by-pixels-not-by-distance" tabindex="-1">Level of detail by pixels, not by distance</h2>
+<p>Several objects change representation according to how large they appear on screen:</p>
+<ul>
+<li><strong>Stars.</strong> Each star's brightness is computed per vertex from its absolute magnitude and the live camera distance. The stars come from HYG v3, about 109,400 of them.</li>
+<li><strong>Dust.</strong> A dust particle smaller than a pixel dims instead of shrinking further, so it does not flicker.</li>
+<li><strong>Star clusters.</strong> A cluster smaller than about 2.5–10 px hands over from its member stars to a single point of integrated light.</li>
+</ul>
+<p>Globular clusters needed one more correction. ω Centauri (absolute magnitude −10.3) had 8,000 particles against M13's 5,000, so it looked sparse and sparkly rather than brighter. Now every globular uses the same light per particle, so a brighter cluster gets more particles: ω Cen has about 26,000. The Plummer scale radii were also recalibrated to published half-light radii: M13 10.9 ly, M22 10.4 ly and ω Cen 25 ly.</p>
+<p><img src="/assets/writing/sky-atlas-scale/atlas-universe.jpg" alt="The observable universe as a mottled CMB shell, at a viewing distance of 131.8 billion light-years."></p>
+<h2 id="what-is-measured-and-what-is-illustrative" tabindex="-1">What is measured and what is illustrative</h2>
+<p>The stars (HYG v3), the planets (J2000 mean elements and Kepler's equation, accurate to arcminutes) and the deep-sky positions are real data. The Milky Way is procedural (four logarithmic spirals with a 13° pitch and a 27° bar), the 18 cluster and nebula models are built from literature values, and the cosmic web is illustrative; its near nodes are anchored on real galaxy clusters. The atlas labels these layers as models.</p>
+<p>The repository has 17 back-end tests and front-end tests for the astronomy helpers, the picks cache and the nebula models. One of those tests came from a real crash. In polar night the Sun's rise/transit/set solver returns no time, and an unchecked value crashed the render loop. The front-end tests now cover polar night, polar day and a year of high-latitude Sun, Moon and planet passes.</p>
+<p>I have not measured frame rates or API response times systematically, so this note makes no performance claims. The code is in the <a href="https://github.com/12sqawdwq/sky_monitor_api">sky_monitor_api repository</a>.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/sky_monitor_api">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/writing/flyhead-connectome-control/">A fly connectome in a robot&#39;s control loop</a>
+        <div class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/microelectronics-tools/">微电子学习工具笔记</a>
+        <div class="entry-meta">Sep 22, 2026 · <a href="/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/jetbrains-network-validation/">Separating DNS failure from slow CDN delivery</a>
+        <div class="entry-meta">Apr 29, 2026 · updated Aug 11, 2026 · <a href="/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/coughkd-measured-baseline/">Separating measured cough-model runs from the experiment plan</a>
+        <div class="entry-meta">Apr 27, 2026 · updated Aug 11, 2026 · <a href="/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

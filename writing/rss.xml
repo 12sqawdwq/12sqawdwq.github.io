@@ -5,6 +5,37 @@
 <description>Essays, build notes, research notes, and working technical notes.</description>
 <language>en</language>
 <item>
+  <title>A fly connectome in a robot&#39;s control loop</title>
+  <link>https://ziyu.mnilab.cn/writing/flyhead-connectome-control</link>
+  <guid isPermaLink="true">https://ziyu.mnilab.cn/writing/flyhead-connectome-control</guid>
+  <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+  <description>Running the full FlyWire v783 LIF model inside 100 ms control windows on a wheel-legged robot: the sensing path, a 4.85× faster propagation step, and a safety envelope that may only reduce commands.</description>
+  <category>Build Note</category>
+  <category>Robotics</category>
+  <category>Scientific Computing</category>
+  <category>HPC</category>
+</item>
+<item>
+  <title>From one star to the cosmic horizon in a browser</title>
+  <link>https://ziyu.mnilab.cn/writing/sky-atlas-scale</link>
+  <guid isPermaLink="true">https://ziyu.mnilab.cn/writing/sky-atlas-scale</guid>
+  <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+  <description>Two problems from building Sky Atlas: an API that quietly dropped the brightest stars, and a three.js scene that spans about 16 orders of magnitude of scale.</description>
+  <category>Build Note</category>
+  <category>Scientific Computing</category>
+  <category>Developer Tools</category>
+</item>
+<item>
+  <title>The point a robot turns about</title>
+  <link>https://ziyu.mnilab.cn/writing/turning-point-navigation</link>
+  <guid isPermaLink="true">https://ziyu.mnilab.cn/writing/turning-point-navigation</guid>
+  <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+  <description>Why LiDAR navigation on a wheel-legged robot kept rocking, cancelling tours and cutting corners, and how controlling the measured turning point fixed it.</description>
+  <category>Build Note</category>
+  <category>Robotics</category>
+  <category>Embedded</category>
+</item>
+<item>
   <title>微电子学习工具笔记</title>
   <link>https://ziyu.mnilab.cn/writing/microelectronics-tools</link>
   <guid isPermaLink="true">https://ziyu.mnilab.cn/writing/microelectronics-tools</guid>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Running the full FlyWire v783 LIF model inside 100 ms control windows on a wheel-legged robot: the sensing path, a 4.85× faster propagation step, and a safety envelope that may only reduce commands.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="A fly connectome in a robot&#39;s control loop — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Running the full FlyWire v783 LIF model inside 100 ms control windows on a wheel-legged robot: the sensing path, a 4.85× faster propagation step, and a safety envelope that may only reduce commands.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://ziyu.mnilab.cn/writing/flyhead-connectome-control">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/writing/rss.xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <title>A fly connectome in a robot&#39;s control loop — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a aria-current="page" href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note · Working</p>
+      <h1>A fly connectome in a robot&#39;s control loop</h1>
+      <p class="article-description">Running the full FlyWire v783 LIF model inside 100 ms control windows on a wheel-legged robot: the sensing path, a 4.85× faster propagation step, and a safety envelope that may only reduce commands.</p>
+      <p class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a> · <a href="/writing/topics/robotics/">Robotics</a>, <a href="/writing/topics/scientific-computing/">Scientific Computing</a>, <a href="/writing/topics/hpc/">HPC</a></p>
+      <p class="relation">Related project: <a href="/projects/FlyHead/">FlyHead</a></p>
+
+    </header>
+    <div class="prose"><h2 id="question" tabindex="-1">Question</h2>
+<p>Can a whole-brain connectome simulation sit inside the control loop of a real robot? It has to keep up with 100 ms control windows, read real sensor data, and be contained so that a strange neural output cannot move the robot in an unsafe way.</p>
+<p>FlyHead is my attempt at this on a DIABLO wheel-legged robot. The connectome is the FlyWire v783 <em>Drosophila</em> leaky integrate-and-fire (LIF) model from <a href="https://github.com/eonsystemspbc/fly-brain">eonsystemspbc/fly-brain</a>, fetched at a pinned commit with unmodified equations and no learning: 138,639 neurons and 15,091,983 connection records. Everything around the model is engineering work: how LiDAR becomes input, how output becomes motion, and what is allowed to reach the wheels.</p>
+<h2 id="the-loop-per-100-ms-window" tabindex="-1">The loop, per 100 ms window</h2>
+<p>The robot (Raspberry Pi 4B, ROS 2 Foxy, Unitree L1 LiDAR at about 10 Hz) only streams sensors and executes velocity commands. SLAM, planning and the brain run on a GPU host.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Step</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Band filter</td>
+<td>Keep LiDAR points 0.08–0.50 m above the floor, in the body frame.</td>
+</tr>
+<tr>
+<td>Retina proxy</td>
+<td>Pool points over 0.3 s into 24 bins of 15°. Angular expansion (looming) becomes a firing rate: 600 Hz per rad/s above a 0.12 rad/s deadband. Free space 0.5–2.5 m ahead drives LC9 up to 120 Hz. All rates are capped at 200 Hz.</td>
+</tr>
+<tr>
+<td>Input cells</td>
+<td>Poisson input to identified LC4, LPLC2 and LC9 cells, left and right. A scan older than 0.30 s gives zero input.</td>
+</tr>
+<tr>
+<td>Connectome</td>
+<td>The LIF model steps 100 ms of neural time in 10 blocks of 10 ms.</td>
+</tr>
+<tr>
+<td>Readout</td>
+<td>Spike rates of descending neurons per anatomical side: DNp01 (giant fibre), DNa02, DNp09, MDN and five other types.</td>
+</tr>
+<tr>
+<td>Decoder</td>
+<td>Rates become a state and a velocity, for example DNp09 at 60 Hz → 0.15 m/s forward, DNa02 right − left at 20 Hz → 0.40 rad/s, a DNp01 burst ≥ 60 Hz → escape program.</td>
+</tr>
+<tr>
+<td>Envelope</td>
+<td>The command may only be reduced or zeroed, with a 0.30 m/s ceiling.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Neurons are bound by exact <code>cell_type</code> → <code>root_id</code> → model index. The registry holds 513 cells and is rebuilt from the annotation table and compared before use, so same-named cells in different columns are never merged.</p>
+<p><img src="/assets/writing/flyhead-connectome-control/decision_chain_escape.png" alt="FlyHead decision chain in simulation: a person approaches from the right, right-side LC4 input rises, DNp01 and other loom-responsive descending neurons fire, and the decoder switches to ESCAPE_PROGRAM and then FLEE."></p>
+<p><em>One simulated window (synthetic arena, ray-cast LiDAR): input rates (1), descending-neuron rates (2), decoder features (3), and the decoder state and executed command over the run (4).</em></p>
+<h2 id="making-100-ms-of-neural-time-fit-in-100-ms" tabindex="-1">Making 100 ms of neural time fit in 100 ms</h2>
+<p>The upstream step took a median of 222.7 ms per 100 ms window on the RTX 5090D, about 2.2× slower than real time. CUDA Graph capture on its own had given only 1.023× in an earlier trial, so most of the time was in the synaptic propagation.</p>
+<p>The change that mattered was event-driven propagation. Every step still updates all neuron states, but propagation only walks the outgoing edges of neurons that spiked in that step, with an active list sized for all 138,639 cells so nothing is truncated. The model's weights are all integers, and the largest absolute input sum onto any target cell is 69,948, below 2^24. Spike inputs can therefore be accumulated exactly in int32 and converted to FP32 afterwards, which avoids the run-to-run differences of floating-point atomic adds.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Fixed input</th>
+<th style="text-align:right">Upstream eager, median</th>
+<th style="text-align:right">Event-driven + CUDA Graph, median</th>
+<th style="text-align:right">Speed-up</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HS_LEFT</td>
+<td style="text-align:right">222.69 ms</td>
+<td style="text-align:right">45.87 ms</td>
+<td style="text-align:right">4.85×</td>
+</tr>
+<tr>
+<td>LC9_200</td>
+<td style="text-align:right">222.68 ms</td>
+<td style="text-align:right">47.87 ms</td>
+<td style="text-align:right">4.65×</td>
+</tr>
+</tbody>
+</table></div>
+<p>Timings are medians of 10 interleaved 100 ms runs per backend. For six fixed-input conditions of 500 ms each, whole-brain spike counts were identical to the upstream backend, and the final conductances, delay buffers, membrane potentials and refractory states differed by exactly 0. This equivalence holds for these conditions and for integer weights; I do not claim it for arbitrary models.</p>
+<p>On the live system the GPU is shared with other jobs, and a window takes 84–110 ms (0.9–1.2× real time); on an idle GPU it takes 46 ms. A fresh clone reproduces all 629 recorded stage-1 rates exactly.</p>
+<h2 id="who-is-allowed-to-move-the-robot" tabindex="-1">Who is allowed to move the robot</h2>
+<p>The brain is never the only thing between a command and the wheels.</p>
+<ul>
+<li><strong>Modes.</strong> <code>off</code>, <code>shadow</code> (decoded and logged, never sent), <code>drive</code> (brain commands go through the envelope) and <code>reflex</code> (the planner drives, and the brain takes over on FREEZE or ESCAPE).</li>
+<li><strong>Envelope.</strong> It can reduce or zero a command, never raise one.</li>
+<li><strong>Leases.</strong> Every velocity command carries a deadline of at most 0.3 s on the robot clock, and the robot zeroes motion after 2 s without server traffic.</li>
+<li><strong>Opt-ins.</strong> Motion needs explicit switches on both the compute host and the robot, and a person with the RC transmitter stays at the robot during every drive.</li>
+</ul>
+<p>Navigation (KISS-ICP SLAM, A* and pure pursuit at 10 Hz) works without the brain. I wrote about that half separately in <a href="/writing/turning-point-navigation/">the navigation note</a>.</p>
+<h2 id="results-so-far" tabindex="-1">Results so far</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Result</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shadow mode on the real robot (stage 4)</td>
+<td>reaction 0.0–0.33 s to 9 approaches by an operator</td>
+</tr>
+<tr>
+<td>Brain drive on the real robot (stage 5)</td>
+<td>loom → escape decision median 0.35 s (0.09–1.08 s); 4 of 12 episodes not triggered</td>
+</tr>
+<tr>
+<td>Contacts in brain drive</td>
+<td>0 in every drive where the operator recorded contacts</td>
+</tr>
+<tr>
+<td>Simulation on the real SLAM map</td>
+<td>person, wall and roam scenarios: 0 contacts</td>
+</tr>
+<tr>
+<td>Loom stress tests (objects that never stop)</td>
+<td>21–37 contacts, against 19 for a robot without the brain</td>
+</tr>
+</tbody>
+</table></div>
+<p><img src="/assets/writing/flyhead-connectome-control/scenarios_brain_vs_blind.png" alt="Eight simulation scenarios on the real SLAM map. The brain-driven robot (coloured by decoder state) escapes and flees from approaching people with no contacts; in the three loom stress tests the pursuing object still reaches it."></p>
+<p><em>Simulation on the saved map of the real site. Grey dashes are a robot without the brain; the orange line is the approaching person or object.</em></p>
+<p><img src="/assets/writing/flyhead-connectome-control/decoder_states.png" alt="Decoder state over time in each scenario: mostly FORWARD and EXPLORE, with ESCAPE_PROGRAM followed by FLEE when something looms."></p>
+<h2 id="limits" tabindex="-1">Limits</h2>
+<p>The stimulus encoders and the decoder are engineering proxies, not a reconstruction of fly vision or motor control. EXPLORE and the arousal term are decoder-side additions, not connectome activity, and the records keep them apart.</p>
+<p>The open problems are recorded rather than averaged away:</p>
+<ul>
+<li>Against a loom that keeps following, the robot escapes but still gets hit more often than the blind baseline (37 vs 19 in <code>loom_front</code>). Escape distance and direction against a pursuer are not solved.</li>
+<li>While standing, the robot overshoots keep-in and fence limits by 0.05–0.2 m.</li>
+<li>The stage-3 closed-loop simulation formally failed on one scenario because of a flaw in its own evaluation.</li>
+<li>The chassis-driver changes on the robot are not in the repository yet.</li>
+<li>A Jetson Nano cannot run the full connectome in real time: the neuron update alone is about 2× slower than real time, before any propagation.</li>
+</ul>
+<p>The code, the neuron registry and the figures are in the <a href="https://github.com/12sqawdwq/FlyHead">FlyHead repository</a>, and <a href="https://flyhead.live/">flyhead.live</a> has an interactive 3D walk-through.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/FlyHead">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/writing/turning-point-navigation/">The point a robot turns about</a>
+        <div class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/sky-atlas-scale/">From one star to the cosmic horizon in a browser</a>
+        <div class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/coughkd-measured-baseline/">Separating measured cough-model runs from the experiment plan</a>
+        <div class="entry-meta">Apr 27, 2026 · updated Aug 11, 2026 · <a href="/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/eyelid-mesh-sensitivity/">The trend survived mesh refinement; the amplitude did not</a>
+        <div class="entry-meta">Aug 10, 2026 · <a href="/writing/research-notes/">Research Note</a> · Working</div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

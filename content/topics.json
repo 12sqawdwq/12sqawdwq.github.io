@@ -8,5 +8,6 @@
   {"name":"HPC","description":"Schedulers, accelerators, distributed runs, and reproducible compute environments."},
   {"name":"Embedded","description":"Microcontrollers, constrained interfaces, firmware, and hardware/software integration."},
   {"name":"Medical AI","description":"Medical-data pipelines and model evaluation with explicit clinical claim boundaries."},
-  {"name":"CAD","description":"Parametric geometry, typed design intent, standards, and manufacturing-review boundaries."}
+  {"name":"CAD","description":"Parametric geometry, typed design intent, standards, and manufacturing-review boundaries."},
+  {"name":"Robotics","description":"Mobile robots, SLAM, navigation, and closed-loop control on real hardware."}
 ]

@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Why LiDAR navigation on a wheel-legged robot kept rocking, cancelling tours and cutting corners, and how controlling the measured turning point fixed it.">
+  <meta name="color-scheme" content="light dark">
+  <meta property="og:title" content="The point a robot turns about — Ziyu Zhao (Victor)">
+  <meta property="og:description" content="Why LiDAR navigation on a wheel-legged robot kept rocking, cancelling tours and cutting corners, and how controlling the measured turning point fixed it.">
+  <meta property="og:type" content="article">
+  <link rel="canonical" href="https://ziyu.mnilab.cn/writing/turning-point-navigation">
+  <link rel="alternate" type="application/rss+xml" title="Writing RSS" href="/writing/rss.xml">
+  <link rel="stylesheet" href="/assets/site.css">
+  <title>The point a robot turns about — Ziyu Zhao (Victor)</title>
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
+      <nav aria-label="Primary navigation"><ul><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a aria-current="page" href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+    </div>
+  </header>
+  <main class="wrap article-wrap" id="content"><article>
+    <header class="article-heading">
+      <p class="eyebrow">Build Note · Working</p>
+      <h1>The point a robot turns about</h1>
+      <p class="article-description">Why LiDAR navigation on a wheel-legged robot kept rocking, cancelling tours and cutting corners, and how controlling the measured turning point fixed it.</p>
+      <p class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a> · <a href="/writing/topics/robotics/">Robotics</a>, <a href="/writing/topics/embedded/">Embedded</a></p>
+      <p class="relation">Related project: <a href="/projects/FlyHead/">FlyHead</a></p>
+
+    </header>
+    <div class="prose"><h2 id="setting" tabindex="-1">Setting</h2>
+<p>The robot is a DIABLO wheel-legged robot with a Raspberry Pi 4B (ROS 2 Foxy) and a Unitree L1 LiDAR mounted facing backwards. Navigation is classical and does not use the <a href="/writing/flyhead-connectome-control/">fly brain</a>: KISS-ICP odometry with IMU rotational deskew, relocalisation on a saved map, A* route planning and pure pursuit at 10 Hz.</p>
+<p>The system went through three layouts in two weeks. It started with the robot reachable only through a compute server, then the whole stack moved onboard so it could work without a network. The Pi was not real-time at 200–340 ms per frame. Since 6 October it has been distributed: SLAM, planning and control on a GPU host, sensor I/O only on the robot, and a Three.js console on the operator's PC. Velocity commands carry a deadline of at most 0.3 s on the robot clock, so a slow link stops the robot rather than letting an old command run on.</p>
+<p><img src="/assets/writing/turning-point-navigation/mapbuild.gif" alt="Map-build animation: the local point cloud grows around the robot as it drives the mapping path."></p>
+<h2 id="the-symptom" tabindex="-1">The symptom</h2>
+<p>Up to 7 October, tours on the real robot failed in ways that looked unrelated:</p>
+<ul>
+<li>the robot rocked back and forth when starting;</li>
+<li>it reported &quot;arrived&quot; while still turning;</li>
+<li>tours were cancelled for leaving the route;</li>
+<li>the body cut inside every curve.</li>
+</ul>
+<p>The best tour by then covered 35.46 m of a 213 m route, with 6 detours. Each symptom had a plausible local cause (controller gains, arrival tolerance, localisation noise). Earlier changes, such as a regulated pure-pursuit controller with turn hysteresis and rate limits, treated them one at a time.</p>
+<h2 id="the-cause" tabindex="-1">The cause</h2>
+<p>The controller tracked a &quot;body centre&quot; 0.45 m <em>ahead</em> of the LiDAR. That is not the point the robot turns about. To find the real one, I fitted the fixed point of 47 in-place turns from four runs. It lies 0.11 m <em>behind</em> the LiDAR, with a residual under 1 cm.</p>
+<p>So the controlled point sat 0.56 m in front of the turning point. Every turn in place swung it sideways by about 0.45 m per 46°. The pursuit controller saw that as a sudden lateral error and corrected it; the arrival check saw the point sweep through the goal; and the deviation monitor saw the robot leave the route. All four symptoms came from one wrong offset.</p>
+<p>The old simulator turned the robot about the controlled point, so it could not show the bug. The new simulator turns the robot about its measured turning point, with the LiDAR 0.11 m ahead of it, a 0.25 s command lag, and pose noise.</p>
+<h2 id="the-rebuild" tabindex="-1">The rebuild</h2>
+<p>Everything is now planned and controlled on the turning point, with the body modelled as a 0.35 m disc around it. The navigation was rebuilt around that:</p>
+<ul>
+<li><strong>Centreline routes.</strong> Routes follow the λ-medial axis of free space (λ = 0.8 m, only cells with at least 0.45 m clearance), so between two walls the robot keeps equal clearance on both sides.</li>
+<li><strong>A* on a 0.10 m grid.</strong> The step cost is 1 + 39<em>r</em>², where <em>r</em> is the offset ratio from the centreline: 0 on it, approaching 1 at a wall.</li>
+<li><strong>Pure pursuit.</strong> It tracks the turning point with a lookahead of 0.5 m + 4 s × speed, capped at 1.0 m.</li>
+<li><strong>No timer replanning.</strong> A committed route only changes for a confirmed obstacle (a debounced local detour) or a sustained deviation (a short rejoin route).</li>
+<li><strong>Cusps.</strong> Out-and-back turnarounds are handled explicitly, so progress along a route that passes the same place twice cannot jump between its two legs.</li>
+</ul>
+<p><img src="/assets/writing/turning-point-navigation/nav_layers.jpg" alt="Navigation layers of the saved map: occupancy grid, clearance field with the centreline, obstacle-height layer, and the mapping path with two real tours."></p>
+<p><em>Panel 2 shows the clearance field and the cyan centreline network that routes follow. The tours in panel 4 are from 4 October, before the rebuild.</em></p>
+<h2 id="results" tabindex="-1">Results</h2>
+<p>In closed-loop simulation on the same map, from the same two tour starts at 0.10 m/s:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tour start</th>
+<th>Navigator</th>
+<th>Result</th>
+<th>Centre offset ratio, median / p90</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>facing east</td>
+<td>previous</td>
+<td>cancelled at 9.1 m: deviation over 0.75 m</td>
+<td>0.14 / 0.28</td>
+</tr>
+<tr>
+<td>facing east</td>
+<td>rebuilt</td>
+<td>complete, 72.0 m</td>
+<td>0.00 / 0.07</td>
+</tr>
+<tr>
+<td>facing west</td>
+<td>previous</td>
+<td>stuck after 17.6 m, with contact</td>
+<td>0.24 / 0.52</td>
+</tr>
+<tr>
+<td>facing west</td>
+<td>rebuilt</td>
+<td>complete, 72.8 m</td>
+<td>0.00 / 0.07</td>
+</tr>
+</tbody>
+</table></div>
+<p>The first standing tour on the real robot then exposed a second problem: localisation drifted by about 2° of heading over 25 m. KISS-ICP keeps at most 6 points per voxel and fills the voxels around the robot with its own scans first, so the saved map barely constrained the pose. The fix aligns the current scan to the saved map about once per second and applies a confident correction at half strength. Corrections larger than 0.3 m or 5° are rejected.</p>
+<p>After that, the full 71.2 m tour on the real robot finished in 11.3 minutes on a single route, with no replans. Tracking error had a median of 0.06 m, a p95 of 0.20 m and a maximum of 0.35 m. 582 map corrections were applied and none rejected.</p>
+<h2 id="still-open" tabindex="-1">Still open</h2>
+<ul>
+<li><strong>Stall holds.</strong> 64 s of that run were holds caused by link or LiDAR stalls on the robot side.</li>
+<li><strong>Optimistic stopping constants.</strong> The host's stop-distance constants are based on commanded speed. Standing, the robot moves 1.3–2× the command.</li>
+<li><strong>Turbo slip.</strong> In a fast Turbo run the pose slipped about 0.5 m during a turn. The correction limit rejected the right fix, and the cause does not reproduce offline.</li>
+<li><strong>Slow onboard hardware.</strong> Neither the Pi nor a Jetson Nano is fast enough to run this SLAM onboard. That is the reason for the distributed layout, not a design preference.</li>
+</ul>
+<p>The lesson I keep from this: when several failures show up together, check the geometry the controller assumes before tuning anything. One wrong offset was behind most of two weeks of symptoms, and a simulator built on the same assumption had hidden it.</p>
+</div>
+    <p class="source-link">Current public source: <a href="https://github.com/12sqawdwq/FlyHead">repository document →</a></p>
+  </article>
+  <section class="related"><h2>Related writing</h2><ol class="entry-list"><li>
+        <a class="entry-title" href="/writing/flyhead-connectome-control/">A fly connectome in a robot&#39;s control loop</a>
+        <div class="entry-meta">Nov 15, 2026 · <a href="/writing/build-notes/">Build Note</a> · Working</div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/microelectronics-tools/">微电子学习工具笔记</a>
+        <div class="entry-meta">Sep 22, 2026 · <a href="/writing/notes/">Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/harmonyos-integration-boundaries/">What the HarmonyOS prototype could and could not verify</a>
+        <div class="entry-meta">Aug 4, 2026 · updated Aug 11, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
+
+      </li><li>
+        <a class="entry-title" href="/writing/stm32-lcd-trex/">A T-Rex runner on a 16×2 character LCD</a>
+        <div class="entry-meta">Jun 1, 2026 · <a href="/writing/build-notes/">Build Note</a></div>
+
+      </li></ol></section></main>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+</body>
+</html>

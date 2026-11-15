@@ -49,6 +49,23 @@
     "url": "/writing/eyelid-mesh-sensitivity/"
   },
   {
+    "title": "A fly connectome in a robot's control loop",
+    "description": "Running the full FlyWire v783 LIF model inside 100 ms control windows on a wheel-legged robot: the sensing path, a 4.85× faster propagation step, and a safety envelope that may only reduce commands.",
+    "date": "2026-11-15",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Robotics",
+      "Scientific Computing",
+      "HPC"
+    ],
+    "status": "working",
+    "project": "FlyHead",
+    "series": null,
+    "featured": false,
+    "url": "/writing/flyhead-connectome-control/"
+  },
+  {
     "title": "Why ForgeSpec keeps a typed specification between a prompt and CAD",
     "description": "Separating requirement interpretation, domain planning, deterministic CadQuery generation, and artifact validation.",
     "date": "2026-05-24",
@@ -217,6 +234,22 @@
     "url": "/writing/persistent-terminal-validation/"
   },
   {
+    "title": "From one star to the cosmic horizon in a browser",
+    "description": "Two problems from building Sky Atlas: an API that quietly dropped the brightest stars, and a three.js scene that spans about 16 orders of magnitude of scale.",
+    "date": "2026-11-15",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Scientific Computing",
+      "Developer Tools"
+    ],
+    "status": "published",
+    "project": "sky_monitor_api",
+    "series": null,
+    "featured": false,
+    "url": "/writing/sky-atlas-scale/"
+  },
+  {
     "title": "A T-Rex runner on a 16×2 character LCD",
     "description": "Timer-driven game state, interrupt input, and eight CGRAM slots on an STM32F446.",
     "date": "2026-06-01",
@@ -230,5 +263,21 @@
     "series": null,
     "featured": false,
     "url": "/writing/stm32-lcd-trex/"
+  },
+  {
+    "title": "The point a robot turns about",
+    "description": "Why LiDAR navigation on a wheel-legged robot kept rocking, cancelling tours and cutting corners, and how controlling the measured turning point fixed it.",
+    "date": "2026-11-15",
+    "updated": null,
+    "type": "Build Note",
+    "topics": [
+      "Robotics",
+      "Embedded"
+    ],
+    "status": "working",
+    "project": "FlyHead",
+    "series": null,
+    "featured": false,
+    "url": "/writing/turning-point-navigation/"
   }
 ]
