@@ -2,11 +2,15 @@ import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { findPrivateIPv4 } from "./privacy-guards.mjs";
+import { MPCE_EMBED_SCRIPT_TAG } from "./mpce-embed.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const site = JSON.parse(await readFile(path.join(ROOT, "content", "site.json"), "utf8"));
 const index = JSON.parse(await readFile(path.join(ROOT, "writing", "content-index.json"), "utf8"));
 const errors = [];
+// Same-origin sites deployed from other repositories (e.g. /MPCE/ from the
+// MPCE repo). Links into them cannot be resolved against this checkout.
+const siblingPaths = site.siblingPaths ?? [];
 
 async function exists(target) {
   try {
@@ -75,7 +79,13 @@ for (const [file, html] of htmlCache) {
   if ((html.match(/<link rel="canonical"/g) ?? []).length !== 1) {
     errors.push(`${relative}: expected one canonical link`);
   }
-  if (/<script\b/i.test(html)) errors.push(`${relative}: script element is not allowed`);
+  // The only permitted script is the MPCE iframe sizer, once, on the homepage.
+  const allowedScripts = relative === "index.html" ? 1 : 0;
+  const pageScripts = (html.match(/<script\b/gi) ?? []).length;
+  const knownScripts = html.split(MPCE_EMBED_SCRIPT_TAG).length - 1;
+  if (pageScripts !== knownScripts || knownScripts > allowedScripts) {
+    errors.push(`${relative}: script element is not allowed`);
+  }
   const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]);
   const duplicates = ids.filter((id, position) => ids.indexOf(id) !== position);
   if (duplicates.length) errors.push(`${relative}: duplicate ids ${[...new Set(duplicates)].join(", ")}`);
@@ -83,6 +93,8 @@ for (const [file, html] of htmlCache) {
   for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
     const reference = match[1];
     if (/^(?:https?:|mailto:|data:)/i.test(reference)) continue;
+    const referencePath = reference.split(/[?#]/, 1)[0];
+    if (siblingPaths.some((prefix) => referencePath.startsWith(prefix))) continue;
     const { target, fragment, outsideProject } = resolveInternal(reference, file);
     if (outsideProject) {
       errors.push(`${relative}: root-relative URL escapes project base: ${reference}`);

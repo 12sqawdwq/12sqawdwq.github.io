@@ -27,6 +27,10 @@ npm ci
 npm test
 ```
 
-Generated HTML is committed because GitHub Pages serves the repository root directly. The site uses no browser JavaScript, framework runtime, analytics, or remote font dependency.
+Generated HTML is committed because GitHub Pages serves the repository root directly. The site uses no framework runtime, analytics, or remote font dependency. The only browser JavaScript is a short inline script on the homepage (`scripts/mpce-embed.mjs`) that sizes the embedded MPCE board iframe from same-origin `postMessage` height updates; `scripts/check.mjs` rejects any other `<script>` element.
+
+## MPCE embed
+
+The homepage section `#mpce` and the `MPCE` navigation entry are driven by `content/mpce.json`. The board itself is served from the separate MPCE repository at `/MPCE/` on the same origin (embed route `/MPCE/#/embed`), so its mastery progress in `localStorage` is shared with the full MPCE site. `content/site.json` lists `/MPCE/` under `siblingPaths` so the link checker skips targets that are not in this checkout.
 
 See `docs/WRITING_CONTENT_AUDIT.md` for the migration disposition of legacy material.

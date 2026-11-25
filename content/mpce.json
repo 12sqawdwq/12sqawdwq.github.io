@@ -1,0 +1,25 @@
+{
+  "heading": "Mathematical Physics & Computational Engineering",
+  "eyebrow": "MPCE · study board",
+  "summary": "A five-layer map of the mathematics behind physical modelling and engineering software, moving top to bottom from macro mathematical areas to concrete methods, governing physics, numerical solvers, and seven engineering domains. Hover or click any card to trace its dependencies across all five layers, or open the linked derivations, Python experiments, and 67-node knowledge graph.",
+  "note": "Board labels are in Chinese. Mastery status is stored in this browser only and is shared with the full MPCE site.",
+  "repo": "https://github.com/12sqawdwq/MPCE",
+  "links": [
+    {
+      "label": "Full interactive board",
+      "route": "/MPCE/"
+    },
+    {
+      "label": "Nested wiki",
+      "route": "/MPCE/#/wiki/README.md"
+    },
+    {
+      "label": "67-node knowledge graph",
+      "route": "/MPCE/#/graph"
+    }
+  ],
+  "embed": {
+    "src": "/MPCE/#/embed",
+    "title": "MPCE panoramic board: five layers from mathematics to seven application domains"
+  }
+}

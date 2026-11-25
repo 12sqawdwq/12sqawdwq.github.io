@@ -18,7 +18,7 @@
   <header class="site-header">
     <div class="wrap header-row">
       <a class="site-name" href="/">Ziyu Zhao (Victor)</a>
-      <nav aria-label="Primary navigation"><ul><li><a aria-current="page" href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/writing/">Writing</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
+      <nav aria-label="Primary navigation"><ul><li><a aria-current="page" href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/writing/">Writing</a></li><li><a href="/MPCE/">MPCE</a></li><li><a href="/CV_Ziyu_Zhao_final.pdf">CV</a></li><li><a href="https://github.com/12sqawdwq">GitHub</a></li></ul></nav>
     </div>
   </header>
   <main class="wrap" id="content">
@@ -33,6 +33,16 @@
 <section id="projects">
   <div class="section-heading"><h2>Selected work</h2><a href="/projects/">View all projects →</a></div>
   <ul class="project-index"><li><div><a class="project-name" href="/projects/FlyHead/">FlyHead</a><span>active project</span></div><p>A testbed where a GPU-simulated whole-brain fruit-fly connectome (FlyWire, 138,639 neurons, 15.09M connections) drives a real wheel-legged robot. I built the platform around the upstream LIF model, including sensor encoders, the neuron decoder, safety layer, LiDAR SLAM navigation and web console.</p><a class="project-live" href="https://flyhead.live/">interactive site ↗</a></li><li><div><a class="project-name" href="/projects/sky_monitor_api/">Sky Atlas</a><span>live site</span></div><p>A live, bilingual stargazing site that computes visibility for any place and time. I built the FastAPI back end, three.js front end, API docs, monitoring, and tests; the site renders about 109,000 real stars across 16 orders of magnitude of scale.</p><a class="project-live" href="https://sky.eunoia.top/">live site ↗</a></li><li><div><a class="project-name" href="/projects/ANSYS_simulation_IOP/">ANSYS_simulation_IOP</a><span>research code</span></div><p>Finite-element models of the eyelid and eyeball for a home-use transpalpebral tonometer. During my Shenzhen InnoX Academy internship, I wrote the ANSYS APDL models and scripts that supported the probe-control and calibration work behind three patent applications.</p></li><li><div><a class="project-name" href="/projects/code-with-pi/">code-with-pi</a><span>active experiment</span></div><p>A terminal broker where an AI coding agent and its user watch or take over the same live shell. I wrote it in C11 over Windows ConPTY and POSIX PTY with authenticated local IPC, and added CI tests on Windows and Linux.</p></li><li><div><a class="project-name" href="/projects/ForgeSpec-Studio/">ForgeSpec-Studio</a><span>prototype</span></div><p>An AI-assisted CAD tool that turns a loose engineering brief into a reviewable assembly specification. I built it to generate deterministic CadQuery source from a standard-parts library and export STEP and STL with a browser preview.</p></li><li><div><a class="project-name" href="/projects/ANSYS_skill/">ANSYS_skill</a><span>experimental</span></div><p>A validation layer for automated ANSYS Mechanical runs. I built it to record the stage each run reached and the result evidence behind it; a cantilever benchmark matches Euler-Bernoulli theory within 0.223%.</p></li></ul>
+</section>
+<section id="mpce" class="mpce">
+  <div class="section-heading"><h2>Mathematical Physics &amp; Computational Engineering</h2><a href="https://github.com/12sqawdwq/MPCE">Repository →</a></div>
+  <p class="eyebrow mpce-eyebrow">MPCE · study board</p>
+  <p>A five-layer map of the mathematics behind physical modelling and engineering software, moving top to bottom from macro mathematical areas to concrete methods, governing physics, numerical solvers, and seven engineering domains. Hover or click any card to trace its dependencies across all five layers, or open the linked derivations, Python experiments, and 67-node knowledge graph.</p>
+  <p class="mpce-links"><a href="/MPCE/">Full interactive board →</a><a href="/MPCE/#/wiki/README.md">Nested wiki →</a><a href="/MPCE/#/graph">67-node knowledge graph →</a></p>
+  <figure class="wide-figure">
+    <iframe id="mpce-board" class="mpce-frame" src="/MPCE/#/embed" title="MPCE panoramic board: five layers from mathematics to seven application domains" loading="lazy"></iframe>
+    <figcaption>Board labels are in Chinese. Mastery status is stored in this browser only and is shared with the full MPCE site.</figcaption>
+  </figure>
 </section>
 <section id="experience">
   <div class="section-heading"><h2>Experience</h2><a href="/CV_Ziyu_Zhao_final.pdf">Full CV (PDF) →</a></div>
@@ -81,5 +91,17 @@
   <p><a href="mailto:102450592zzy@gmail.com">Email</a> · <a href="https://github.com/12sqawdwq">GitHub</a> · <a href="/CV_Ziyu_Zhao_final.pdf">CV (PDF)</a></p>
 </section></main>
   <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+  <script>(() => {
+  const frame = document.getElementById("mpce-board");
+  if (!frame) return;
+  window.addEventListener("message", (event) => {
+    if (event.origin !== window.location.origin || event.source !== frame.contentWindow) return;
+    const data = event.data;
+    if (!data || data.type !== "mpce-embed-height") return;
+    const height = Number(data.height);
+    if (!Number.isFinite(height) || height < 200 || height > 6000) return;
+    frame.style.height = `${Math.ceil(height)}px`;
+  });
+})();</script>
 </body>
 </html>

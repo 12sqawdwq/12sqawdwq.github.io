@@ -438,3 +438,43 @@ footer{
   margin-top:-.4rem;
   font-size:.9em
 }
+.mpce-eyebrow{
+  margin-top:1rem
+}
+.mpce-links{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.35rem 1.4rem;
+  font-weight:650
+}
+.wide-figure{
+  position:relative;
+  left:50%;
+  width:min(calc(100vw - 3rem),1280px);
+  margin:1.4rem 0 0;
+  transform:translateX(-50%)
+}
+.mpce-frame{
+  display:block;
+  width:100%;
+  height:960px;
+  border:1px solid var(--line);
+  border-radius:4px;
+  background:#fff;
+  color-scheme:light
+}
+.wide-figure figcaption{
+  margin-top:.5rem;
+  color:var(--muted);
+  font-size:.82rem
+}
+@media(max-width:620px){
+  .wide-figure{
+    width:calc(100vw - 1.25rem)
+  }
+}
+@media print{
+  .wide-figure{
+    display:none
+  }
+}

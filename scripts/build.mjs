@@ -9,6 +9,8 @@ import anchor from "markdown-it-anchor";
 import footnote from "markdown-it-footnote";
 import YAML from "yaml";
 
+import { MPCE_EMBED_SCRIPT_TAG, MPCE_FRAME_ID } from "./mpce-embed.mjs";
+
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = path.join(ROOT, "content", "writing");
 const GENERATED_DIRS = [
@@ -31,6 +33,7 @@ const topicDefinitions = JSON.parse(
 );
 const projects = JSON.parse(await readFile(path.join(ROOT, "content", "projects.json"), "utf8"));
 const experience = JSON.parse(await readFile(path.join(ROOT, "content", "experience.json"), "utf8"));
+const mpce = JSON.parse(await readFile(path.join(ROOT, "content", "mpce.json"), "utf8"));
 const topicMap = new Map(topicDefinitions.map((topic) => [topic.name, topic]));
 const projectMap = new Map(projects.map((project) => [project.id, project]));
 
@@ -310,6 +313,7 @@ function header(active) {
     ["Home", "/", "home"],
     ["Projects", "/projects/", "projects"],
     ["Writing", "/writing/", "writing"],
+    ["MPCE", "/MPCE/", "mpce"],
     ["CV", "/CV_Ziyu_Zhao_final.pdf", "cv"],
   ];
   return `<header class="site-header">
@@ -325,7 +329,7 @@ function header(active) {
   </header>`;
 }
 
-function layout({ title, description, route, body, active, lang = "en", article = false }) {
+function layout({ title, description, route, body, active, lang = "en", article = false, script = "" }) {
   return `<!doctype html>
 <html lang="${escapeHtml(lang)}">
 <head>
@@ -345,7 +349,7 @@ function layout({ title, description, route, body, active, lang = "en", article 
   <a class="skip-link" href="#content">Skip to content</a>
   ${header(active)}
   <main class="wrap${article ? " article-wrap" : ""}" id="content">${body}</main>
-  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>
+  <footer><div class="wrap">Static HTML generated from frontmatter and Markdown · no client-side framework · no analytics</div></footer>${script ? `\n  ${script}` : ""}
 </body>
 </html>
 `.replace(/[ \t]+$/gm, "");
@@ -402,6 +406,18 @@ const homeBody = `
     )
     .join("")}</ul>
 </section>
+<section id="mpce" class="mpce">
+  <div class="section-heading"><h2>${escapeHtml(mpce.heading)}</h2><a href="${escapeHtml(mpce.repo)}">Repository →</a></div>
+  <p class="eyebrow mpce-eyebrow">${escapeHtml(mpce.eyebrow)}</p>
+  <p>${escapeHtml(mpce.summary)}</p>
+  <p class="mpce-links">${mpce.links
+    .map((link) => `<a href="${escapeHtml(href(link.route))}">${escapeHtml(link.label)} →</a>`)
+    .join("")}</p>
+  <figure class="wide-figure">
+    <iframe id="${MPCE_FRAME_ID}" class="mpce-frame" src="${escapeHtml(href(mpce.embed.src))}" title="${escapeHtml(mpce.embed.title)}" loading="lazy"></iframe>
+    <figcaption>${escapeHtml(mpce.note)}</figcaption>
+  </figure>
+</section>
 <section id="experience">
   <div class="section-heading"><h2>Experience</h2><a href="${href("/CV_Ziyu_Zhao_final.pdf")}">Full CV (PDF) →</a></div>
   ${roleList(experience.experience)}
@@ -438,6 +454,7 @@ await writeRoute(
     route: "/",
     active: "home",
     body: homeBody,
+    script: MPCE_EMBED_SCRIPT_TAG,
   }),
 );
 
