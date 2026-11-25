@@ -448,11 +448,8 @@ footer{
   font-weight:650
 }
 .wide-figure{
-  position:relative;
-  left:50%;
-  width:min(calc(100vw - 3rem),1280px);
-  margin:1.4rem 0 0;
-  transform:translateX(-50%)
+  width:100%;
+  margin:1.4rem 0 0
 }
 .mpce-frame{
   display:block;
